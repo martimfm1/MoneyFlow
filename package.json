@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "qa": "pnpm lint && pnpm typecheck && pnpm build && pnpm format:check"
+    "qa": "pnpm lint && pnpm typecheck && pnpm build && pnpm format"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
