@@ -6,7 +6,7 @@ The product follows the flow **Track → Understand → Prioritize → Decide**.
 
 ## Status
 
-Phase 2 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, account creation, transaction creation, categories, category management, filtering, search and transaction history are implemented.
+Phase 3 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accounts, transactions, categories, transaction filtering/search, wishlist planning and goal contributions are implemented.
 
 ## Implemented
 
@@ -17,24 +17,30 @@ Phase 2 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 - Accounts and balances
 - Fast income and expense tracking
 - Default personal finance categories
-- Category selection on transactions
 - Personal category management
+- Category selection on transactions
 - Transaction history with type/category filters and description search
 - Database trigger to keep account balances synchronized with transactions
-- Savings goals data model and goal creation
+- Wishlist with price, priority, notes, target date, URL and status
+- Wishlist state management: want, saving, ready and purchased
+- Savings goals with priorities and target dates
+- Goal contributions with automatic progress synchronization
+- Database guard preventing goal contributions from exceeding the target, including concurrent writes
 - Row Level Security with cross-table ownership checks
 - Mobile-first dashboard shell
 - Reusable button and link-button primitives
 
 ## Planned core features
 
+- Wishlist-to-goal conversion flow
+- Account management and archival
+- Transaction editing and deletion
 - Budgets and financial overview
-- Goals and contribution history
-- Wishlist with priorities
 - Financial insights with transparent calculations
 - Portuguese (Portugal) and English localization
 - Light and dark mode
 - PWA support
+- Accessibility, performance and automated tests
 
 ## Stack
 
