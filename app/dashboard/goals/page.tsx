@@ -3,6 +3,7 @@ import { Plus, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { addGoalContribution } from './actions'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,7 +13,8 @@ function formatMoney(amount: number, currency: string) {
   return new Intl.NumberFormat('pt-PT', { style: 'currency', currency }).format(amount)
 }
 
-export default async function GoalsPage() {
+export default async function GoalsPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const params = await searchParams
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -34,6 +36,8 @@ export default async function GoalsPage() {
         <Button asChild size="sm"><Link href="/dashboard/goals/new"><Plus className="size-4" /> Novo</Link></Button>
       </header>
 
+      {params.error ? <p className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm">{params.error}</p> : null}
+
       {!goals?.length ? (
         <section className="mt-8 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center">
           <Target className="mx-auto size-6" />
@@ -46,6 +50,7 @@ export default async function GoalsPage() {
           {goals.map((goal) => {
             const current = Number(goal.current_amount)
             const target = Number(goal.target_amount)
+            const remaining = Math.max(0, target - current)
             const progress = Math.min(100, Math.round((current / target) * 100))
             return (
               <article key={goal.id} className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
@@ -64,6 +69,19 @@ export default async function GoalsPage() {
                   <span className="text-[hsl(var(--muted-foreground))]">de {formatMoney(target, currency)}</span>
                 </div>
                 {goal.target_date ? <p className="mt-3 text-xs text-[hsl(var(--muted-foreground))]">Data alvo: {new Intl.DateTimeFormat('pt-PT').format(new Date(`${goal.target_date}T00:00:00`))}</p> : null}
+
+                {remaining > 0 ? (
+                  <form action={addGoalContribution} className="mt-5 grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+                    <input type="hidden" name="goalId" value={goal.id} />
+                    <label className="sr-only" htmlFor={`contribution-${goal.id}`}>Valor da contribuição</label>
+                    <input id={`contribution-${goal.id}`} name="amount" type="number" inputMode="decimal" step="0.01" min="0.01" max={remaining.toFixed(2)} placeholder={`Até ${formatMoney(remaining, currency)}`} className="min-h-10 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none" />
+                    <label className="sr-only" htmlFor={`note-${goal.id}`}>Nota da contribuição</label>
+                    <input id={`note-${goal.id}`} name="note" maxLength={500} placeholder="Nota opcional" className="min-h-10 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none" />
+                    <Button type="submit" size="sm">Guardar</Button>
+                  </form>
+                ) : (
+                  <p className="mt-5 text-sm font-medium">Objetivo concluído.</p>
+                )}
               </article>
             )
           })}
