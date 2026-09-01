@@ -125,7 +125,9 @@ export default async function EditAccountPage({
                   </>
                 )}
               </Button>
-              <Button type="submit">Guardar alterações</Button>
+              <Button type="submit" formAction={updateAccount}>
+                Guardar alterações
+              </Button>
             </div>
           </div>
         </form>
