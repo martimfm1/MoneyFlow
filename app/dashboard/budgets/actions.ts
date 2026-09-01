@@ -1,0 +1,71 @@
+'use server'
+
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+
+const budgetSchema = z.object({
+  categoryId: z.uuid(),
+  amount: z.coerce.number().finite().positive(),
+  month: z.string().regex(/^\d{4}-\d{2}$/),
+})
+
+function redirectWithError(month: string, message: string): never {
+  redirect(
+    `/dashboard/budgets?month=${encodeURIComponent(month)}&error=${encodeURIComponent(message)}`,
+  )
+}
+
+export async function upsertBudget(formData: FormData) {
+  const parsed = budgetSchema.safeParse({
+    categoryId: formData.get('categoryId'),
+    amount: formData.get('amount'),
+    month: formData.get('month'),
+  })
+
+  if (!parsed.success) redirectWithError('current', 'Dados do orçamento inválidos.')
+
+  const [year, monthNumber] = parsed.data.month.split('-').map(Number)
+  const monthStart = new Date(Date.UTC(year, monthNumber - 1, 1))
+  const normalizedMonth = `${year.toString().padStart(4, '0')}-${monthNumber.toString().padStart(2, '0')}`
+
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(monthNumber) ||
+    monthNumber < 1 ||
+    monthNumber > 12 ||
+    monthStart.getUTCFullYear() !== year ||
+    monthStart.getUTCMonth() !== monthNumber - 1
+  ) {
+    redirectWithError(normalizedMonth, 'Mês inválido.')
+  }
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { data: category } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('id', parsed.data.categoryId)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (!category) redirectWithError(normalizedMonth, 'Categoria inválida.')
+
+  const { error } = await supabase.from('budgets').upsert(
+    {
+      user_id: user.id,
+      category_id: parsed.data.categoryId,
+      month_start: normalizedMonth,
+      amount: parsed.data.amount,
+    },
+    { onConflict: 'user_id,category_id,month_start' },
+  )
+
+  if (error) redirectWithError(normalizedMonth, 'Não foi possível guardar o orçamento.')
+
+  redirect(`/dashboard/budgets?month=${encodeURIComponent(normalizedMonth)}`)
+}
