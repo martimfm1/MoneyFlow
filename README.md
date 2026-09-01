@@ -6,7 +6,7 @@ The product follows the flow **Track → Understand → Prioritize → Decide**.
 
 ## Status
 
-Phase 2 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, account creation, transaction creation, categories and transaction history are implemented.
+Phase 2 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, account creation, transaction creation, categories, category management, filtering, search and transaction history are implemented.
 
 ## Implemented
 
@@ -18,7 +18,8 @@ Phase 2 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 - Fast income and expense tracking
 - Default personal finance categories
 - Category selection on transactions
-- Transaction history
+- Personal category management
+- Transaction history with type/category filters and description search
 - Database trigger to keep account balances synchronized with transactions
 - Savings goals data model and goal creation
 - Row Level Security with cross-table ownership checks
@@ -27,8 +28,6 @@ Phase 2 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 
 ## Planned core features
 
-- Category management UI
-- Transaction filtering and search
 - Budgets and financial overview
 - Goals and contribution history
 - Wishlist with priorities
