@@ -6,7 +6,7 @@ The product follows the flow **Track → Understand → Prioritize → Decide**.
 
 ## Status
 
-Phase 3 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accounts, transactions, categories, transaction filtering/search, wishlist planning, goal contributions, account management and monthly budgets are implemented.
+Phase 4 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accounts, transactions, categories, transaction filtering/search, wishlist planning, goal contributions, account management, monthly budgets and financial analytics are implemented.
 
 ## Implemented
 
@@ -33,6 +33,9 @@ Phase 3 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 - Database guard preventing goal contributions from exceeding the target, including concurrent writes
 - Monthly budgets per category with real expense tracking and month navigation
 - Budget status with remaining amount and overspend detection
+- Financial analytics with six-month income/expense trends
+- Current-period spending breakdown by category
+- Transparent net balance and savings-rate calculations
 - Row Level Security with cross-table ownership checks
 - Mobile-first dashboard shell
 - Dashboard overview with recent activity and active goal summary
@@ -40,8 +43,7 @@ Phase 3 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 
 ## Planned core features
 
-- Richer financial overview and analytics
-- Transparent spending insights and trend visualizations
+- More advanced financial insights and comparisons
 - Portuguese (Portugal) and English localization
 - Light and dark mode
 - PWA support
