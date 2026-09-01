@@ -171,7 +171,7 @@ export default async function EditTransactionPage({
               <Button
                 type="submit"
                 formAction={deleteTransaction}
-                variant="destructive"
+                variant="danger"
               >
                 <Trash2 className="size-4" /> Eliminar
               </Button>
