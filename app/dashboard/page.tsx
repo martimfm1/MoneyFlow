@@ -16,7 +16,9 @@ function formatMoney(amount: number, currency: string) {
 
 export default async function DashboardPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (!user) redirect('/login')
 
@@ -37,7 +39,10 @@ export default async function DashboardPage() {
   if (!profile?.onboarding_completed_at) redirect('/onboarding')
 
   const currency = profile.currency_code ?? 'EUR'
-  const totalBalance = (accounts ?? []).reduce((sum, account) => sum + Number(account.balance), 0)
+  const totalBalance = (accounts ?? []).reduce(
+    (sum, account) => sum + Number(account.balance),
+    0,
+  )
   const firstName = profile.display_name?.trim()?.split(/\s+/)[0] ?? 'aí'
 
   return (
@@ -45,19 +50,32 @@ export default async function DashboardPage() {
       <div className="moneyflow-shell py-6 sm:py-8">
         <header className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">Olá, {firstName}</p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">O teu dinheiro</h1>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Olá, {firstName}
+            </p>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
+              O teu dinheiro
+            </h1>
           </div>
           <form action={signOut}>
-            <Button type="submit" variant="ghost" size="icon" aria-label="Terminar sessão">
+            <Button
+              type="submit"
+              variant="ghost"
+              size="icon"
+              aria-label="Terminar sessão"
+            >
               <LogOut className="size-4" />
             </Button>
           </form>
         </header>
 
         <section className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Saldo total</p>
-          <p className="mt-2 text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">{formatMoney(totalBalance, currency)}</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Saldo total
+          </p>
+          <p className="mt-2 text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
+            {formatMoney(totalBalance, currency)}
+          </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <Button asChild>
               <a href="#add">
@@ -77,7 +95,9 @@ export default async function DashboardPage() {
         <section id="accounts" className="mt-8">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Onde está o teu dinheiro</p>
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                Onde está o teu dinheiro
+              </p>
               <h2 className="mt-1 text-lg font-semibold">Contas</h2>
             </div>
             <Button variant="ghost" size="sm" asChild>
@@ -88,7 +108,10 @@ export default async function DashboardPage() {
           {accounts?.length ? (
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {accounts.map((account) => (
-                <article key={account.id} className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4">
+                <article
+                  key={account.id}
+                  className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4"
+                >
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
                       <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
@@ -96,10 +119,17 @@ export default async function DashboardPage() {
                       </span>
                       <div className="min-w-0">
                         <p className="truncate font-medium">{account.name}</p>
-                        <p className="text-xs capitalize text-[hsl(var(--muted-foreground))]">{account.account_type}</p>
+                        <p className="text-xs capitalize text-[hsl(var(--muted-foreground))]">
+                          {account.account_type}
+                        </p>
                       </div>
                     </div>
-                    <p className="font-semibold tabular-nums">{formatMoney(Number(account.balance), account.currency_code || currency)}</p>
+                    <p className="font-semibold tabular-nums">
+                      {formatMoney(
+                        Number(account.balance),
+                        account.currency_code || currency,
+                      )}
+                    </p>
                   </div>
                 </article>
               ))}
@@ -107,7 +137,9 @@ export default async function DashboardPage() {
           ) : (
             <div className="mt-4 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-6 text-center">
               <p className="font-medium">Ainda não tens contas</p>
-              <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">Cria a tua primeira conta para começarmos a acompanhar o saldo.</p>
+              <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
+                Cria a tua primeira conta para começarmos a acompanhar o saldo.
+              </p>
               <Button className="mt-4" asChild>
                 <a href="/dashboard/accounts/new">Criar conta</a>
               </Button>
@@ -121,9 +153,19 @@ export default async function DashboardPage() {
             ['Receita', 'Regista dinheiro que entrou.'],
             ['Objetivo', 'Começa a dar um propósito ao teu dinheiro.'],
           ].map(([title, description]) => (
-            <a key={title} href={title === 'Objetivo' ? '/dashboard/goals/new' : '/dashboard/transactions/new'} className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 transition hover:-translate-y-0.5 hover:shadow-sm">
+            <a
+              key={title}
+              href={
+                title === 'Objetivo'
+                  ? '/dashboard/goals/new'
+                  : '/dashboard/transactions/new'
+              }
+              className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 transition hover:-translate-y-0.5 hover:shadow-sm"
+            >
               <p className="font-medium">{title}</p>
-              <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">{description}</p>
+              <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+                {description}
+              </p>
             </a>
           ))}
         </section>

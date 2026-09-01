@@ -22,7 +22,9 @@ export async function createGoal(formData: FormData) {
   if (!parsed.success) redirect('/dashboard/goals/new?error=Dados%20inválidos.')
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { error } = await supabase.from('goals').insert({
@@ -33,6 +35,9 @@ export async function createGoal(formData: FormData) {
     target_date: parsed.data.targetDate ?? null,
   })
 
-  if (error) redirect('/dashboard/goals/new?error=Não%20foi%20possível%20criar%20o%20objetivo.')
+  if (error)
+    redirect(
+      '/dashboard/goals/new?error=Não%20foi%20possível%20criar%20o%20objetivo.',
+    )
   redirect('/dashboard')
 }

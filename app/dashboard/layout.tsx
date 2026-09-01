@@ -1,6 +1,8 @@
 import { DashboardNavigation } from './navigation'
 
-export default function DashboardLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function DashboardLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className="min-h-screen bg-[hsl(var(--background))]">
       <div className="mx-auto max-w-7xl md:flex md:gap-6 md:px-6">
@@ -8,7 +10,9 @@ export default function DashboardLayout({ children }: Readonly<{ children: React
           <div className="sticky top-6 space-y-4">
             <div className="px-3">
               <p className="text-sm font-semibold tracking-tight">MoneyFlow</p>
-              <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">Track → Understand → Decide</p>
+              <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
+                Track → Understand → Decide
+              </p>
             </div>
             <DashboardNavigation />
           </div>

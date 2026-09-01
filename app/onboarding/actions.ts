@@ -24,7 +24,9 @@ export async function completeOnboarding(formData: FormData) {
   if (!parsed.success) redirect('/onboarding?error=Confirma%20os%20dados.')
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { error: profileError } = await supabase
@@ -36,7 +38,10 @@ export async function completeOnboarding(formData: FormData) {
     })
     .eq('id', user.id)
 
-  if (profileError) redirect('/onboarding?error=Não%20foi%20possível%20guardar%20a%20preferência.')
+  if (profileError)
+    redirect(
+      '/onboarding?error=Não%20foi%20possível%20guardar%20a%20preferência.',
+    )
 
   const { error: accountError } = await supabase.from('accounts').insert({
     user_id: user.id,
@@ -47,7 +52,10 @@ export async function completeOnboarding(formData: FormData) {
   })
 
   if (accountError) {
-    await supabase.from('profiles').update({ onboarding_completed_at: null }).eq('id', user.id)
+    await supabase
+      .from('profiles')
+      .update({ onboarding_completed_at: null })
+      .eq('id', user.id)
     redirect('/onboarding?error=Não%20foi%20possível%20criar%20a%20conta.')
   }
 

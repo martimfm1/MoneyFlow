@@ -23,10 +23,13 @@ export async function createTransaction(formData: FormData) {
     occurredAt: formData.get('occurredAt'),
   })
 
-  if (!parsed.success) redirect('/dashboard/transactions/new?error=Dados%20inválidos.')
+  if (!parsed.success)
+    redirect('/dashboard/transactions/new?error=Dados%20inválidos.')
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { data: account } = await supabase
@@ -47,7 +50,8 @@ export async function createTransaction(formData: FormData) {
       .eq('user_id', user.id)
       .maybeSingle()
 
-    if (!category) redirect('/dashboard/transactions/new?error=Categoria%20inválida.')
+    if (!category)
+      redirect('/dashboard/transactions/new?error=Categoria%20inválida.')
   }
 
   const { error } = await supabase.from('transactions').insert({
@@ -60,6 +64,9 @@ export async function createTransaction(formData: FormData) {
     occurred_at: parsed.data.occurredAt,
   })
 
-  if (error) redirect('/dashboard/transactions/new?error=Não%20foi%20possível%20guardar%20o%20movimento.')
+  if (error)
+    redirect(
+      '/dashboard/transactions/new?error=Não%20foi%20possível%20guardar%20o%20movimento.',
+    )
   redirect('/dashboard/transactions')
 }

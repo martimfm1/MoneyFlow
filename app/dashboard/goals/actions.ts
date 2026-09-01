@@ -17,10 +17,13 @@ export async function addGoalContribution(formData: FormData) {
     note: formData.get('note') || undefined,
   })
 
-  if (!parsed.success) redirect('/dashboard/goals?error=Contribuição%20inválida.')
+  if (!parsed.success)
+    redirect('/dashboard/goals?error=Contribuição%20inválida.')
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { data: goal } = await supabase
@@ -33,7 +36,10 @@ export async function addGoalContribution(formData: FormData) {
   if (!goal) redirect('/dashboard/goals?error=Objetivo%20inválido.')
 
   const remaining = Number(goal.target_amount) - Number(goal.current_amount)
-  if (parsed.data.amount > remaining) redirect('/dashboard/goals?error=A%20contribuição%20ultrapassa%20o%20valor%20em%20falta.')
+  if (parsed.data.amount > remaining)
+    redirect(
+      '/dashboard/goals?error=A%20contribuição%20ultrapassa%20o%20valor%20em%20falta.',
+    )
 
   const { error } = await supabase.from('goal_contributions').insert({
     user_id: user.id,
@@ -42,6 +48,9 @@ export async function addGoalContribution(formData: FormData) {
     note: parsed.data.note || null,
   })
 
-  if (error) redirect('/dashboard/goals?error=Não%20foi%20possível%20adicionar%20a%20contribuição.')
+  if (error)
+    redirect(
+      '/dashboard/goals?error=Não%20foi%20possível%20adicionar%20a%20contribuição.',
+    )
   redirect('/dashboard/goals')
 }

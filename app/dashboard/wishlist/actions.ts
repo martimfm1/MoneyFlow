@@ -28,10 +28,13 @@ export async function createWishlistItem(formData: FormData) {
     notes: formData.get('notes') || undefined,
   })
 
-  if (!parsed.success) redirect('/dashboard/wishlist/new?error=Confirma%20os%20dados.')
+  if (!parsed.success)
+    redirect('/dashboard/wishlist/new?error=Confirma%20os%20dados.')
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { error } = await supabase.from('wishlist_items').insert({
@@ -44,7 +47,10 @@ export async function createWishlistItem(formData: FormData) {
     notes: parsed.data.notes || null,
   })
 
-  if (error) redirect('/dashboard/wishlist/new?error=Não%20foi%20possível%20guardar%20o%20item.')
+  if (error)
+    redirect(
+      '/dashboard/wishlist/new?error=Não%20foi%20possível%20guardar%20o%20item.',
+    )
   redirect('/dashboard/wishlist')
 }
 
@@ -57,7 +63,9 @@ export async function updateWishlistStatus(formData: FormData) {
   if (!parsed.success) redirect('/dashboard/wishlist?error=Estado%20inválido.')
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { error } = await supabase
@@ -66,6 +74,9 @@ export async function updateWishlistStatus(formData: FormData) {
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
 
-  if (error) redirect('/dashboard/wishlist?error=Não%20foi%20possível%20atualizar%20o%20item.')
+  if (error)
+    redirect(
+      '/dashboard/wishlist?error=Não%20foi%20possível%20atualizar%20o%20item.',
+    )
   redirect('/dashboard/wishlist')
 }

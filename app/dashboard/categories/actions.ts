@@ -10,10 +10,13 @@ const schema = z.object({
 
 export async function createCategory(formData: FormData) {
   const parsed = schema.safeParse({ name: formData.get('name') })
-  if (!parsed.success) redirect('/dashboard/categories?error=Nome%20de%20categoria%20inválido.')
+  if (!parsed.success)
+    redirect('/dashboard/categories?error=Nome%20de%20categoria%20inválido.')
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { data: existing } = await supabase
@@ -23,7 +26,8 @@ export async function createCategory(formData: FormData) {
     .eq('name', parsed.data.name)
     .maybeSingle()
 
-  if (existing) redirect('/dashboard/categories?error=Essa%20categoria%20já%20existe.')
+  if (existing)
+    redirect('/dashboard/categories?error=Essa%20categoria%20já%20existe.')
 
   const { data: lastCategory } = await supabase
     .from('categories')
@@ -39,6 +43,9 @@ export async function createCategory(formData: FormData) {
     sort_order: (lastCategory?.sort_order ?? -1) + 1,
   })
 
-  if (error) redirect('/dashboard/categories?error=Não%20foi%20possível%20criar%20a%20categoria.')
+  if (error)
+    redirect(
+      '/dashboard/categories?error=Não%20foi%20possível%20criar%20a%20categoria.',
+    )
   redirect('/dashboard/categories')
 }

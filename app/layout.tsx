@@ -1,29 +1,32 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import type { Metadata, Viewport } from 'next'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: {
-    default: "MoneyFlow",
-    template: "%s · MoneyFlow",
+    default: 'MoneyFlow',
+    template: '%s · MoneyFlow',
   },
-  description: "Track, understand, prioritize and decide what to do with your money.",
-  applicationName: "MoneyFlow",
-};
+  description:
+    'Track, understand, prioritize and decide what to do with your money.',
+  applicationName: 'MoneyFlow',
+}
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
-  viewportFit: "cover",
+  viewportFit: 'cover',
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fafafa" },
-    { media: "(prefers-color-scheme: dark)", color: "#09090b" },
+    { media: '(prefers-color-scheme: light)', color: '#fafafa' },
+    { media: '(prefers-color-scheme: dark)', color: '#09090b' },
   ],
-};
+}
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-PT">
       <body>{children}</body>
     </html>
-  );
+  )
 }
