@@ -6,7 +6,7 @@ The product follows the flow **Track → Understand → Prioritize → Decide**.
 
 ## Status
 
-Phase 3 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accounts, transactions, categories, transaction filtering/search, wishlist planning and goal contributions are implemented.
+Phase 3 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accounts, transactions, categories, transaction filtering/search, wishlist planning, goal contributions, account management and monthly budgets are implemented.
 
 ## Implemented
 
@@ -15,19 +15,24 @@ Phase 3 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 - Guided onboarding with name, currency and first account setup
 - User profiles with locale and currency defaults
 - Accounts and balances
+- Account editing, archiving and reactivation
 - Fast income and expense tracking
+- Transaction editing and deletion with ownership validation
 - Default personal finance categories
 - Personal category management
 - Category selection on transactions
 - Transaction history with type/category filters and description search
 - Database trigger to keep account balances synchronized with transactions
+- Protection against creating new transactions on archived accounts
 - Wishlist with price, priority, notes, target date, URL and status
 - Wishlist state management: want, saving, ready and purchased
+- Wishlist-to-goal conversion while preserving the item relationship
 - Savings goals with priorities and target dates
 - Goal detail pages with progress and contribution history
 - Goal contributions with automatic progress synchronization
-- Wishlist-to-goal conversion while preserving the item relationship
 - Database guard preventing goal contributions from exceeding the target, including concurrent writes
+- Monthly budgets per category with real expense tracking and month navigation
+- Budget status with remaining amount and overspend detection
 - Row Level Security with cross-table ownership checks
 - Mobile-first dashboard shell
 - Dashboard overview with recent activity and active goal summary
@@ -35,10 +40,8 @@ Phase 3 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 
 ## Planned core features
 
-- Account archival and richer account management
-- Transaction editing and deletion
-- Budgets and financial overview
-- Financial insights with transparent calculations
+- Richer financial overview and analytics
+- Transparent spending insights and trend visualizations
 - Portuguese (Portugal) and English localization
 - Light and dark mode
 - PWA support
@@ -85,7 +88,7 @@ See [`docs/architecture.md`](docs/architecture.md) for the information architect
 
 1. Foundation: auth, design system, Supabase clients, schema and RLS
 2. Onboarding, accounts, transactions and dashboard
-3. Wishlist, priorities and goals
+3. Wishlist, priorities, goals and budgets
 4. Analytics, PWA, dark mode and responsive refinements
 5. Accessibility, performance, security, tests and UX polish
 
