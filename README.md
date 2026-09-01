@@ -6,15 +6,19 @@ The product follows the flow **Track → Understand → Prioritize → Decide**.
 
 ## Status
 
-Phase 1 is in progress. Authentication, the initial PostgreSQL schema/RLS layer, account creation, transaction creation and the first authenticated dashboard are implemented.
+Phase 2 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, account creation, transaction creation, categories and transaction history are implemented.
 
 ## Implemented
 
 - Supabase SSR authentication with Next.js 16 proxy session refresh
 - Sign in / sign up flow
+- Guided onboarding with name, currency and first account setup
 - User profiles with locale and currency defaults
 - Accounts and balances
 - Fast income and expense tracking
+- Default personal finance categories
+- Category selection on transactions
+- Transaction history
 - Database trigger to keep account balances synchronized with transactions
 - Savings goals data model and goal creation
 - Row Level Security with cross-table ownership checks
@@ -23,9 +27,8 @@ Phase 1 is in progress. Authentication, the initial PostgreSQL schema/RLS layer,
 
 ## Planned core features
 
-- Onboarding flow with currency/account setup
-- Categories and category management
-- Transaction history and filtering
+- Category management UI
+- Transaction filtering and search
 - Budgets and financial overview
 - Goals and contribution history
 - Wishlist with priorities
