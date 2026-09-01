@@ -21,7 +21,12 @@ export default async function TransactionsPage() {
 
   const [{ data: profile }, { data: transactions }] = await Promise.all([
     supabase.from('profiles').select('currency_code').eq('id', user.id).maybeSingle(),
-    supabase.from('transactions').select('id, account_id, transaction_type, amount, description, occurred_at, accounts(name, currency_code)').eq('user_id', user.id).order('occurred_at', { ascending: false }).limit(50),
+    supabase
+      .from('transactions')
+      .select('id, transaction_type, amount, description, occurred_at, accounts(name, currency_code), categories(name)')
+      .eq('user_id', user.id)
+      .order('occurred_at', { ascending: false })
+      .limit(100),
   ])
 
   const currency = profile?.currency_code ?? 'EUR'
@@ -48,6 +53,8 @@ export default async function TransactionsPage() {
             {transactions.map((transaction) => {
               const isIncome = transaction.transaction_type === 'income'
               const account = Array.isArray(transaction.accounts) ? transaction.accounts[0] : transaction.accounts
+              const category = Array.isArray(transaction.categories) ? transaction.categories[0] : transaction.categories
+
               return (
                 <article key={transaction.id} className="flex items-center gap-3 p-4">
                   <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))]">
@@ -55,7 +62,9 @@ export default async function TransactionsPage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium">{transaction.description || (isIncome ? 'Receita' : 'Despesa')}</p>
-                    <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">{account?.name ?? 'Conta'} · {formatDate(transaction.occurred_at)}</p>
+                    <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
+                      {account?.name ?? 'Conta'} · {formatDate(transaction.occurred_at)}{category?.name ? ` · ${category.name}` : ''}
+                    </p>
                   </div>
                   <p className={`shrink-0 font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}>
                     {isIncome ? '+' : '-'}{formatMoney(Number(transaction.amount), account?.currency_code || currency)}
