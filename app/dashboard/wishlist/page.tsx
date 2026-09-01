@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import { ExternalLink, Heart, Plus } from 'lucide-react'
+import { ExternalLink, Heart, Plus, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { updateWishlistStatus } from './actions'
+import { createGoalFromWishlist, updateWishlistStatus } from './actions'
 
 export const dynamic = 'force-dynamic'
 
@@ -58,15 +58,10 @@ export default async function WishlistPage({
     <main className="moneyflow-shell py-6 sm:py-10">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            Priorizar
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">
-            Wishlist
-          </h1>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">Priorizar</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight">Wishlist</h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-            Guarda aquilo que queres comprar e decide o que merece prioridade
-            antes de gastar.
+            Guarda aquilo que queres comprar e decide o que merece prioridade antes de gastar.
           </p>
         </div>
         <Button asChild size="sm">
@@ -87,8 +82,7 @@ export default async function WishlistPage({
           <Heart className="mx-auto size-6" />
           <h2 className="mt-4 font-medium">A tua wishlist está vazia</h2>
           <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-            Adiciona algo que queres comprar e transforma a intenção numa
-            decisão planeada.
+            Adiciona algo que queres comprar e transforma a intenção numa decisão planeada.
           </p>
           <Button asChild className="mt-5">
             <Link href="/dashboard/wishlist/new">Adicionar item</Link>
@@ -105,8 +99,8 @@ export default async function WishlistPage({
                 <div className="min-w-0">
                   <h2 className="truncate font-medium">{item.name}</h2>
                   <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                    Prioridade {priorityLabels[item.priority] ?? item.priority}{' '}
-                    · {statusLabels[item.status] ?? item.status}
+                    Prioridade {priorityLabels[item.priority] ?? item.priority} ·{' '}
+                    {statusLabels[item.status] ?? item.status}
                   </p>
                 </div>
                 <p className="shrink-0 text-lg font-semibold tabular-nums">
@@ -138,23 +132,25 @@ export default async function WishlistPage({
                     id={`status-${item.id}`}
                     name="status"
                     defaultValue={item.status}
-                    className="min-h-10 rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 text-sm outline-none"
-                    onChange={undefined}
+                    className="min-h-10 rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
                   >
                     <option value="want">Quero</option>
                     <option value="saving">A guardar</option>
                     <option value="ready">Pronto</option>
                     <option value="purchased">Comprado</option>
                   </select>
-                  <Button
-                    type="submit"
-                    size="sm"
-                    variant="outline"
-                    className="ml-2"
-                  >
+                  <Button type="submit" size="sm" variant="outline" className="ml-2">
                     Guardar estado
                   </Button>
                 </form>
+
+                <form action={createGoalFromWishlist}>
+                  <input type="hidden" name="id" value={item.id} />
+                  <Button type="submit" size="sm" variant="ghost">
+                    <Target className="size-4" /> Criar objetivo
+                  </Button>
+                </form>
+
                 {item.url ? (
                   <Button asChild size="sm" variant="ghost">
                     <a href={item.url} target="_blank" rel="noreferrer">
