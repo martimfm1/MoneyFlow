@@ -50,26 +50,19 @@ export default async function TransactionsPage({
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: profile }, { data: accounts }, { data: categories }] =
-    await Promise.all([
-      supabase
-        .from('profiles')
-        .select('currency_code')
-        .eq('id', user.id)
-        .maybeSingle(),
-      supabase
-        .from('accounts')
-        .select('id, name, currency_code')
-        .eq('user_id', user.id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: true }),
-      supabase
-        .from('categories')
-        .select('id, name')
-        .eq('user_id', user.id)
-        .order('sort_order', { ascending: true })
-        .order('name', { ascending: true }),
-    ])
+  const [{ data: profile }, { data: categories }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('currency_code')
+      .eq('id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('categories')
+      .select('id, name')
+      .eq('user_id', user.id)
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true }),
+  ])
 
   let query = supabase
     .from('transactions')
