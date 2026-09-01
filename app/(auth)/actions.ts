@@ -18,7 +18,13 @@ export async function signIn(_state: AuthState, formData: FormData): Promise<Aut
   const { error } = await supabase.auth.signInWithPassword(parsed.data)
 
   if (error) return { error: 'Não foi possível entrar. Confirma o email e a palavra-passe.' }
-  redirect('/dashboard')
+
+  const { count } = await supabase
+    .from('accounts')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', (await supabase.auth.getUser()).data.user?.id ?? '')
+
+  redirect(count ? '/dashboard' : '/onboarding')
 }
 
 export async function signUp(_state: AuthState, formData: FormData): Promise<AuthState> {
@@ -39,6 +45,6 @@ export async function signUp(_state: AuthState, formData: FormData): Promise<Aut
 
   if (error) return { error: 'Não foi possível criar a conta. Tenta novamente.' }
 
-  if (data.session) redirect('/dashboard')
+  if (data.session) redirect('/onboarding')
   redirect('/login?message=Confirma%20o%20teu%20email%20para%20continuar.')
 }
