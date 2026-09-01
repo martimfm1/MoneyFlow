@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+build/
+coverage/
+.vercel/
+public/
+*.min.js
+*.map
+pnpm-lock.yaml
