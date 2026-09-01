@@ -34,12 +34,14 @@ export async function createTransaction(formData: FormData) {
 
   const { data: account } = await supabase
     .from('accounts')
-    .select('id')
+    .select('id, is_active')
     .eq('id', parsed.data.accountId)
     .eq('user_id', user.id)
     .maybeSingle()
 
   if (!account) redirect('/dashboard/transactions/new?error=Conta%20inválida.')
+  if (!account.is_active)
+    redirect('/dashboard/transactions/new?error=Essa%20conta%20está%20arquivada.')
 
   const categoryId = parsed.data.categoryId || null
   if (categoryId) {
