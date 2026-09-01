@@ -3,6 +3,7 @@ import {
   ArrowDownLeft,
   ArrowUpRight,
   ChevronRight,
+  CircleDollarSign,
   LogOut,
   Plus,
   Target,
@@ -321,24 +322,24 @@ export default async function DashboardPage() {
           </section>
         </div>
 
-        <section id="add" className="mt-8 grid gap-3 sm:grid-cols-3">
+        <section id="add" className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            ['Despesa', 'Regista dinheiro que saiu.'],
-            ['Receita', 'Regista dinheiro que entrou.'],
-            ['Objetivo', 'Começa a dar um propósito ao teu dinheiro.'],
-          ].map(([title, description]) => (
+            ['Despesa', 'Regista dinheiro que saiu.', '/dashboard/transactions/new', Plus],
+            ['Receita', 'Regista dinheiro que entrou.', '/dashboard/transactions/new', ArrowDownLeft],
+            ['Objetivo', 'Começa a dar um propósito ao teu dinheiro.', '/dashboard/goals/new', Target],
+            ['Orçamento', 'Define limites mensais por categoria.', '/dashboard/budgets', CircleDollarSign],
+          ].map(([title, description, href, Icon]) => (
             <Link
-              key={title}
-              href={
-                title === 'Objetivo'
-                  ? '/dashboard/goals/new'
-                  : '/dashboard/transactions/new'
-              }
+              key={title as string}
+              href={href as string}
               className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 transition hover:-translate-y-0.5 hover:shadow-sm"
             >
-              <p className="font-medium">{title}</p>
+              <span className="inline-flex size-9 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))]">
+                <Icon className="size-4" />
+              </span>
+              <p className="mt-3 font-medium">{title as string}</p>
               <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-                {description}
+                {description as string}
               </p>
             </Link>
           ))}
