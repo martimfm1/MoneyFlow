@@ -21,13 +21,24 @@ export default async function DashboardPage() {
   if (!user) redirect('/login')
 
   const [{ data: profile }, { data: accounts }] = await Promise.all([
-    supabase.from('profiles').select('display_name, currency_code').eq('id', user.id).maybeSingle(),
-    supabase.from('accounts').select('id, name, account_type, balance, currency_code').eq('user_id', user.id).eq('is_active', true).order('created_at', { ascending: true }),
+    supabase
+      .from('profiles')
+      .select('display_name, currency_code, onboarding_completed_at')
+      .eq('id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('accounts')
+      .select('id, name, account_type, balance, currency_code')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: true }),
   ])
 
-  const currency = profile?.currency_code ?? 'EUR'
+  if (!profile?.onboarding_completed_at) redirect('/onboarding')
+
+  const currency = profile.currency_code ?? 'EUR'
   const totalBalance = (accounts ?? []).reduce((sum, account) => sum + Number(account.balance), 0)
-  const firstName = profile?.display_name?.trim()?.split(/\s+/)[0] ?? 'aí'
+  const firstName = profile.display_name?.trim()?.split(/\s+/)[0] ?? 'aí'
 
   return (
     <main className="min-h-screen pb-24">
@@ -46,9 +57,7 @@ export default async function DashboardPage() {
 
         <section className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
           <p className="text-sm text-[hsl(var(--muted-foreground))]">Saldo total</p>
-          <p className="mt-2 text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
-            {formatMoney(totalBalance, currency)}
-          </p>
+          <p className="mt-2 text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">{formatMoney(totalBalance, currency)}</p>
           <div className="mt-6 flex flex-wrap gap-2">
             <Button asChild>
               <a href="#add">
