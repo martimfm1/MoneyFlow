@@ -21,33 +21,33 @@ export default async function EditTransactionPage({
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: transaction }, { data: accounts }, { data: categories }, { data: profile }] =
-    await Promise.all([
-      supabase
-        .from('transactions')
-        .select('id, transaction_type, amount, account_id, category_id, description, occurred_at')
-        .eq('id', id)
-        .eq('user_id', user.id)
-        .maybeSingle(),
-      supabase
-        .from('accounts')
-        .select('id, name, currency_code, is_active')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: true }),
-      supabase
-        .from('categories')
-        .select('id, name')
-        .eq('user_id', user.id)
-        .order('sort_order', { ascending: true })
-        .order('name', { ascending: true }),
-      supabase.from('profiles').select('currency_code').eq('id', user.id).maybeSingle(),
-    ])
+  const [{ data: transaction }, { data: accounts }, { data: categories }, { data: profile }] = await Promise.all([
+    supabase
+      .from('transactions')
+      .select('id, transaction_type, amount, account_id, category_id, description, occurred_at')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('accounts')
+      .select('id, name, currency_code, is_active')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: true }),
+    supabase
+      .from('categories')
+      .select('id, name')
+      .eq('user_id', user.id)
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true }),
+    supabase.from('profiles').select('currency_code').eq('id', user.id).maybeSingle(),
+  ])
 
   if (!transaction) notFound()
 
   const currency = profile?.currency_code ?? 'EUR'
   const dateValue = transaction.occurred_at.slice(0, 10)
-  const activeAccounts = accounts?.filter((account) => account.is_active || account.id === transaction.account_id) ?? []
+  const activeAccounts =
+    accounts?.filter((account) => account.is_active || account.id === transaction.account_id) ?? []
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
@@ -168,12 +168,13 @@ export default async function EditTransactionPage({
               <Link href="/dashboard/transactions">Cancelar</Link>
             </Button>
             <div className="flex flex-wrap gap-2">
-              <form action={deleteTransaction}>
-                <input type="hidden" name="id" value={transaction.id} />
-                <Button type="submit" variant="destructive">
-                  <Trash2 className="size-4" /> Eliminar
-                </Button>
-              </form>
+              <Button
+                type="submit"
+                formAction={deleteTransaction}
+                variant="destructive"
+              >
+                <Trash2 className="size-4" /> Eliminar
+              </Button>
               <Button type="submit" formAction={updateTransaction}>
                 Guardar alterações
               </Button>
