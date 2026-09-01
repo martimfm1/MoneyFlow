@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
+import { redirect } from 'next/navigation'
 import { createTransaction } from './actions'
 
 export const dynamic = 'force-dynamic'
@@ -11,14 +12,22 @@ export default async function NewTransactionPage({ searchParams }: { searchParam
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) return null
+  if (!user) redirect('/login')
 
-  const { data: accounts } = await supabase
-    .from('accounts')
-    .select('id, name, currency_code')
-    .eq('user_id', user.id)
-    .eq('is_active', true)
-    .order('created_at', { ascending: true })
+  const [{ data: accounts }, { data: categories }] = await Promise.all([
+    supabase
+      .from('accounts')
+      .select('id, name, currency_code')
+      .eq('user_id', user.id)
+      .eq('is_active', true)
+      .order('created_at', { ascending: true }),
+    supabase
+      .from('categories')
+      .select('id, name')
+      .eq('user_id', user.id)
+      .order('sort_order', { ascending: true })
+      .order('name', { ascending: true }),
+  ])
 
   return (
     <main className="min-h-screen">
@@ -54,6 +63,14 @@ export default async function NewTransactionPage({ searchParams }: { searchParam
                 <span>Conta</span>
                 <select name="accountId" defaultValue={accounts[0].id} className="min-h-11 w-full rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 outline-none">
                   {accounts.map((account) => <option key={account.id} value={account.id}>{account.name} · {account.currency_code}</option>)}
+                </select>
+              </label>
+
+              <label className="block space-y-2 text-sm font-medium">
+                <span>Categoria <span className="font-normal text-[hsl(var(--muted-foreground))]">(opcional)</span></span>
+                <select name="categoryId" defaultValue="" className="min-h-11 w-full rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 outline-none">
+                  <option value="">Sem categoria</option>
+                  {categories?.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
                 </select>
               </label>
 
