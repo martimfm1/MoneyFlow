@@ -24,16 +24,18 @@ Phase 3 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 - Wishlist with price, priority, notes, target date, URL and status
 - Wishlist state management: want, saving, ready and purchased
 - Savings goals with priorities and target dates
+- Goal detail pages with progress and contribution history
 - Goal contributions with automatic progress synchronization
+- Wishlist-to-goal conversion while preserving the item relationship
 - Database guard preventing goal contributions from exceeding the target, including concurrent writes
 - Row Level Security with cross-table ownership checks
 - Mobile-first dashboard shell
+- Dashboard overview with recent activity and active goal summary
 - Reusable button and link-button primitives
 
 ## Planned core features
 
-- Wishlist-to-goal conversion flow
-- Account management and archival
+- Account archival and richer account management
 - Transaction editing and deletion
 - Budgets and financial overview
 - Financial insights with transparent calculations
