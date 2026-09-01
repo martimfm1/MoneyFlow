@@ -6,14 +6,28 @@ The product follows the flow **Track → Understand → Prioritize → Decide**.
 
 ## Status
 
-Early foundation. The repository is being built iteratively, with architecture, security and UX decisions established before feature expansion.
+Phase 1 is in progress. Authentication, the initial PostgreSQL schema/RLS layer, account creation, transaction creation and the first authenticated dashboard are implemented.
+
+## Implemented
+
+- Supabase SSR authentication with Next.js 16 proxy session refresh
+- Sign in / sign up flow
+- User profiles with locale and currency defaults
+- Accounts and balances
+- Fast income and expense tracking
+- Database trigger to keep account balances synchronized with transactions
+- Savings goals data model and goal creation
+- Row Level Security with cross-table ownership checks
+- Mobile-first dashboard shell
+- Reusable button and link-button primitives
 
 ## Planned core features
 
-- Accounts and balances
-- Fast income and expense tracking
+- Onboarding flow with currency/account setup
+- Categories and category management
+- Transaction history and filtering
 - Budgets and financial overview
-- Savings goals and contributions
+- Goals and contribution history
 - Wishlist with priorities
 - Financial insights with transparent calculations
 - Portuguese (Portugal) and English localization
@@ -22,10 +36,9 @@ Early foundation. The repository is being built iteratively, with architecture, 
 
 ## Stack
 
-- Next.js App Router
+- Next.js App Router 16
 - React + TypeScript
-- Tailwind CSS
-- shadcn/ui
+- Tailwind CSS 4
 - Supabase + PostgreSQL
 - React Hook Form + Zod
 - Recharts
@@ -50,9 +63,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 
 Never commit service-role keys or private credentials.
 
+## Supabase
+
+Apply migrations in `supabase/migrations` to the project in order. Authentication is handled through Supabase Auth and user-owned data is protected by PostgreSQL Row Level Security.
+
 ## Product architecture
 
-See [`docs/architecture.md`](docs/architecture.md) for the initial information architecture, user flows, database direction, component boundaries and delivery phases.
+See [`docs/architecture.md`](docs/architecture.md) for the information architecture, user flows, database direction, component boundaries and delivery phases.
 
 ## Roadmap
 
