@@ -11,11 +11,15 @@ const STORAGE_KEY = 'moneyflow-theme'
 function getStoredTheme(): Theme {
   if (typeof window === 'undefined') return 'system'
   const value = window.localStorage.getItem(STORAGE_KEY)
-  return value === 'light' || value === 'dark' || value === 'system' ? value : 'system'
+  return value === 'light' || value === 'dark' || value === 'system'
+    ? value
+    : 'system'
 }
 
 function getSystemTheme(): 'light' | 'dark' {
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light'
 }
 
 function applyTheme(theme: Theme) {

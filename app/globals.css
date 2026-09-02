@@ -74,7 +74,9 @@ body {
   color: hsl(var(--foreground));
   font-family: Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
-  transition: background-color 160ms ease, color 160ms ease;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
 }
 
 button,

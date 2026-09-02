@@ -18,7 +18,8 @@ export default function OfflinePage() {
           Estás offline
         </h1>
         <p className="mt-3 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-          Não foi possível carregar esta página agora. Volta a ligar-te à internet e tenta novamente.
+          Não foi possível carregar esta página agora. Volta a ligar-te à
+          internet e tenta novamente.
         </p>
         <Button asChild className="mt-6">
           <Link href="/dashboard">Tentar novamente</Link>
