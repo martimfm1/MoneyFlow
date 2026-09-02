@@ -191,7 +191,9 @@ export default async function DashboardPage() {
                 <p className="text-sm text-[hsl(var(--muted-foreground))]">
                   O que aconteceu
                 </p>
-                <h2 className="mt-1 text-lg font-semibold">Movimentos recentes</h2>
+                <h2 className="mt-1 text-lg font-semibold">
+                  Movimentos recentes
+                </h2>
               </div>
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/dashboard/transactions">
@@ -205,7 +207,8 @@ export default async function DashboardPage() {
               <div className="mt-4 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-6 text-center">
                 <p className="font-medium">Ainda não há movimentos</p>
                 <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-                  Regista uma despesa ou receita para começares a ver atividade aqui.
+                  Regista uma despesa ou receita para começares a ver atividade
+                  aqui.
                 </p>
               </div>
             ) : (
@@ -276,7 +279,8 @@ export default async function DashboardPage() {
                 <Target className="mx-auto size-5" />
                 <p className="mt-3 font-medium">Ainda sem objetivos</p>
                 <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-                  Cria uma meta para dar propósito ao dinheiro que estás a guardar.
+                  Cria uma meta para dar propósito ao dinheiro que estás a
+                  guardar.
                 </p>
                 <Button asChild className="mt-4">
                   <Link href="/dashboard/goals/new">Criar objetivo</Link>
@@ -287,7 +291,10 @@ export default async function DashboardPage() {
                 {goals.map((goal) => {
                   const current = Number(goal.current_amount)
                   const target = Number(goal.target_amount)
-                  const progress = Math.min(100, Math.round((current / target) * 100))
+                  const progress = Math.min(
+                    100,
+                    Math.round((current / target) * 100),
+                  )
                   return (
                     <Link
                       key={goal.id}
@@ -322,12 +329,35 @@ export default async function DashboardPage() {
           </section>
         </div>
 
-        <section id="add" className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <section
+          id="add"
+          className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+        >
           {[
-            ['Despesa', 'Regista dinheiro que saiu.', '/dashboard/transactions/new', Plus],
-            ['Receita', 'Regista dinheiro que entrou.', '/dashboard/transactions/new', ArrowDownLeft],
-            ['Objetivo', 'Começa a dar um propósito ao teu dinheiro.', '/dashboard/goals/new', Target],
-            ['Orçamento', 'Define limites mensais por categoria.', '/dashboard/budgets', CircleDollarSign],
+            [
+              'Despesa',
+              'Regista dinheiro que saiu.',
+              '/dashboard/transactions/new',
+              Plus,
+            ],
+            [
+              'Receita',
+              'Regista dinheiro que entrou.',
+              '/dashboard/transactions/new',
+              ArrowDownLeft,
+            ],
+            [
+              'Objetivo',
+              'Começa a dar um propósito ao teu dinheiro.',
+              '/dashboard/goals/new',
+              Target,
+            ],
+            [
+              'Orçamento',
+              'Define limites mensais por categoria.',
+              '/dashboard/budgets',
+              CircleDollarSign,
+            ],
           ].map(([title, description, href, Icon]) => (
             <Link
               key={title as string}

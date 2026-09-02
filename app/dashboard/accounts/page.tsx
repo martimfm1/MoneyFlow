@@ -53,7 +53,9 @@ export default async function AccountsPage({
     <main className="moneyflow-shell py-6 sm:py-10">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">MoneyFlow</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            MoneyFlow
+          </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight">Contas</h1>
         </div>
         <Button asChild size="sm">
@@ -74,7 +76,8 @@ export default async function AccountsPage({
           <Wallet className="mx-auto size-6" />
           <h2 className="mt-4 font-medium">Ainda não tens contas</h2>
           <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-            Cria uma conta e indica o saldo atual. Depois, cada movimento mantém o saldo sincronizado.
+            Cria uma conta e indica o saldo atual. Depois, cada movimento mantém
+            o saldo sincronizado.
           </p>
           <Button asChild className="mt-5">
             <Link href="/dashboard/accounts/new">Criar primeira conta</Link>
@@ -101,7 +104,10 @@ export default async function AccountsPage({
                   </div>
                 </div>
                 <p className="shrink-0 text-lg font-semibold tabular-nums">
-                  {formatMoney(Number(account.balance), account.currency_code || currency)}
+                  {formatMoney(
+                    Number(account.balance),
+                    account.currency_code || currency,
+                  )}
                 </p>
               </div>
 

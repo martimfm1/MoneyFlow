@@ -225,8 +225,15 @@ export default async function TransactionsPage({
                       account?.currency_code || currency,
                     )}
                   </p>
-                  <Button asChild size="icon" variant="ghost" aria-label={`Editar ${transaction.description || 'movimento'}`}>
-                    <Link href={`/dashboard/transactions/${transaction.id}/edit`}>
+                  <Button
+                    asChild
+                    size="icon"
+                    variant="ghost"
+                    aria-label={`Editar ${transaction.description || 'movimento'}`}
+                  >
+                    <Link
+                      href={`/dashboard/transactions/${transaction.id}/edit`}
+                    >
                       <Pencil className="size-4" />
                     </Link>
                   </Button>

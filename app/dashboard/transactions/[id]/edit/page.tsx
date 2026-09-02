@@ -21,10 +21,17 @@ export default async function EditTransactionPage({
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: transaction }, { data: accounts }, { data: categories }, { data: profile }] = await Promise.all([
+  const [
+    { data: transaction },
+    { data: accounts },
+    { data: categories },
+    { data: profile },
+  ] = await Promise.all([
     supabase
       .from('transactions')
-      .select('id, transaction_type, amount, account_id, category_id, description, occurred_at')
+      .select(
+        'id, transaction_type, amount, account_id, category_id, description, occurred_at',
+      )
       .eq('id', id)
       .eq('user_id', user.id)
       .maybeSingle(),
@@ -39,7 +46,11 @@ export default async function EditTransactionPage({
       .eq('user_id', user.id)
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true }),
-    supabase.from('profiles').select('currency_code').eq('id', user.id).maybeSingle(),
+    supabase
+      .from('profiles')
+      .select('currency_code')
+      .eq('id', user.id)
+      .maybeSingle(),
   ])
 
   if (!transaction) notFound()
@@ -47,7 +58,9 @@ export default async function EditTransactionPage({
   const currency = profile?.currency_code ?? 'EUR'
   const dateValue = transaction.occurred_at.slice(0, 10)
   const activeAccounts =
-    accounts?.filter((account) => account.is_active || account.id === transaction.account_id) ?? []
+    accounts?.filter(
+      (account) => account.is_active || account.id === transaction.account_id,
+    ) ?? []
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
@@ -61,7 +74,9 @@ export default async function EditTransactionPage({
 
       <header className="mt-5">
         <p className="text-sm text-[hsl(var(--muted-foreground))]">Movimento</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Editar movimento</h1>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+          Editar movimento
+        </h1>
       </header>
 
       {query.error ? (
@@ -116,7 +131,8 @@ export default async function EditTransactionPage({
               >
                 {activeAccounts.map((account) => (
                   <option key={account.id} value={account.id}>
-                    {account.name}{account.is_active ? '' : ' · Arquivada'}
+                    {account.name}
+                    {account.is_active ? '' : ' · Arquivada'}
                   </option>
                 ))}
               </select>

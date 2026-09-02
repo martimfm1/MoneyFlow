@@ -50,19 +50,31 @@ export function FinancialCharts({
     <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
       <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
         <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Últimos 6 meses</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Últimos 6 meses
+          </p>
           <h2 className="mt-1 text-lg font-semibold">Receitas vs despesas</h2>
         </div>
         <div className="mt-6 h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthly} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+            <BarChart
+              data={monthly}
+              margin={{ top: 8, right: 8, left: -12, bottom: 0 }}
+            >
               <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+              <XAxis
+                dataKey="label"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fontSize: 12 }}
+              />
               <YAxis
                 axisLine={false}
                 tickLine={false}
                 tick={{ fontSize: 12 }}
-                tickFormatter={(value) => formatCurrency(Number(value), currency)}
+                tickFormatter={(value) =>
+                  formatCurrency(Number(value), currency)
+                }
               />
               <Tooltip
                 formatter={(value, name) => [
@@ -79,7 +91,9 @@ export function FinancialCharts({
 
       <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
         <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Período atual</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Período atual
+          </p>
           <h2 className="mt-1 text-lg font-semibold">Despesas por categoria</h2>
         </div>
         {categories.length ? (
@@ -101,7 +115,9 @@ export function FinancialCharts({
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value) => tooltipFormatter(Number(value), currency)}
+                  formatter={(value) =>
+                    tooltipFormatter(Number(value), currency)
+                  }
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -116,7 +132,10 @@ export function FinancialCharts({
         {categories.length ? (
           <div className="mt-4 grid gap-2">
             {categories.slice(0, 6).map((category) => (
-              <div key={category.name} className="flex items-center justify-between gap-3 text-sm">
+              <div
+                key={category.name}
+                className="flex items-center justify-between gap-3 text-sm"
+              >
                 <span className="truncate">{category.name}</span>
                 <span className="shrink-0 font-medium tabular-nums">
                   {formatCurrency(category.value, currency)}

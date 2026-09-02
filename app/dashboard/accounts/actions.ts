@@ -35,7 +35,9 @@ export async function toggleAccountStatus(formData: FormData) {
     .eq('user_id', user.id)
 
   if (error)
-    redirect('/dashboard/accounts?error=Não%20foi%20possível%20atualizar%20a%20conta.')
+    redirect(
+      '/dashboard/accounts?error=Não%20foi%20possível%20atualizar%20a%20conta.',
+    )
 
   redirect('/dashboard/accounts')
 }
@@ -47,7 +49,9 @@ export async function updateAccount(formData: FormData) {
     accountType: formData.get('accountType'),
   })
   if (!parsed.success)
-    redirect(`/dashboard/accounts/${formData.get('id')}/edit?error=Dados%20inválidos.`)
+    redirect(
+      `/dashboard/accounts/${formData.get('id')}/edit?error=Dados%20inválidos.`,
+    )
 
   const supabase = await createClient()
   const {

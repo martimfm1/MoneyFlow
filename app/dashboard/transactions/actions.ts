@@ -37,7 +37,9 @@ export async function updateTransaction(formData: FormData) {
   })
 
   if (!parsed.success)
-    redirect(`/dashboard/transactions/${formData.get('id')}/edit?error=Dados%20inválidos.`)
+    redirect(
+      `/dashboard/transactions/${formData.get('id')}/edit?error=Dados%20inválidos.`,
+    )
 
   const { supabase, user } = await getUser()
 
@@ -59,7 +61,9 @@ export async function updateTransaction(formData: FormData) {
   if (!transaction)
     redirect('/dashboard/transactions?error=Movimento%20inválido.')
   if (!account)
-    redirect(`/dashboard/transactions/${parsed.data.id}/edit?error=Conta%20inválida.`)
+    redirect(
+      `/dashboard/transactions/${parsed.data.id}/edit?error=Conta%20inválida.`,
+    )
 
   const categoryId = parsed.data.categoryId || null
   if (categoryId) {
@@ -71,7 +75,9 @@ export async function updateTransaction(formData: FormData) {
       .maybeSingle()
 
     if (!category)
-      redirect(`/dashboard/transactions/${parsed.data.id}/edit?error=Categoria%20inválida.`)
+      redirect(
+        `/dashboard/transactions/${parsed.data.id}/edit?error=Categoria%20inválida.`,
+      )
   }
 
   const { error } = await supabase
@@ -109,7 +115,9 @@ export async function deleteTransaction(formData: FormData) {
     .eq('user_id', user.id)
 
   if (error)
-    redirect('/dashboard/transactions?error=Não%20foi%20possível%20eliminar%20o%20movimento.')
+    redirect(
+      '/dashboard/transactions?error=Não%20foi%20possível%20eliminar%20o%20movimento.',
+    )
 
   redirect('/dashboard/transactions')
 }

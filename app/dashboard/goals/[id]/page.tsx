@@ -92,7 +92,8 @@ export default async function GoalDetailPage({
           </div>
           <div>
             <p className="text-sm text-[hsl(var(--muted-foreground))]">
-              Objetivo · Prioridade {priorityLabels[goal.priority] ?? goal.priority}
+              Objetivo · Prioridade{' '}
+              {priorityLabels[goal.priority] ?? goal.priority}
             </p>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight">
               {goal.name}
@@ -120,8 +121,12 @@ export default async function GoalDetailPage({
       <section className="mt-6 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">Progresso</p>
-            <p className="mt-1 text-3xl font-semibold tabular-nums">{progress}%</p>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Progresso
+            </p>
+            <p className="mt-1 text-3xl font-semibold tabular-nums">
+              {progress}%
+            </p>
           </div>
           <div className="text-right">
             <p className="text-lg font-semibold tabular-nums">
@@ -148,17 +153,25 @@ export default async function GoalDetailPage({
 
         <div className="mt-5 grid gap-3 sm:grid-cols-3">
           <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">Em falta</p>
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
+              Em falta
+            </p>
             <p className="mt-1 font-semibold tabular-nums">
               {formatMoney(remaining, currency)}
             </p>
           </div>
           <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">Contribuições</p>
-            <p className="mt-1 font-semibold tabular-nums">{contributions?.length ?? 0}</p>
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
+              Contribuições
+            </p>
+            <p className="mt-1 font-semibold tabular-nums">
+              {contributions?.length ?? 0}
+            </p>
           </div>
           <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">Guardado</p>
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
+              Guardado
+            </p>
             <p className="mt-1 font-semibold tabular-nums">
               {formatMoney(totalContributed, currency)}
             </p>
@@ -178,10 +191,14 @@ export default async function GoalDetailPage({
           <div>
             <h2 className="font-semibold">Adicionar contribuição</h2>
             <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-              Até {formatMoney(remaining, currency)} para completar este objetivo.
+              Até {formatMoney(remaining, currency)} para completar este
+              objetivo.
             </p>
           </div>
-          <form action={addGoalContribution} className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+          <form
+            action={addGoalContribution}
+            className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]"
+          >
             <input type="hidden" name="goalId" value={goal.id} />
             <label className="sr-only" htmlFor="detail-contribution-amount">
               Valor da contribuição
@@ -239,7 +256,8 @@ export default async function GoalDetailPage({
           <div className="mt-4 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center">
             <p className="font-medium">Ainda sem contribuições</p>
             <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-              A primeira contribuição aparece aqui assim que começares a guardar.
+              A primeira contribuição aparece aqui assim que começares a
+              guardar.
             </p>
           </div>
         ) : (

@@ -23,7 +23,8 @@ export async function upsertBudget(formData: FormData) {
     month: formData.get('month'),
   })
 
-  if (!parsed.success) redirectWithError('current', 'Dados do orçamento inválidos.')
+  if (!parsed.success)
+    redirectWithError('current', 'Dados do orçamento inválidos.')
 
   const [year, monthNumber] = parsed.data.month.split('-').map(Number)
   const monthStart = new Date(Date.UTC(year, monthNumber - 1, 1))
@@ -65,7 +66,8 @@ export async function upsertBudget(formData: FormData) {
     { onConflict: 'user_id,category_id,month_start' },
   )
 
-  if (error) redirectWithError(normalizedMonth, 'Não foi possível guardar o orçamento.')
+  if (error)
+    redirectWithError(normalizedMonth, 'Não foi possível guardar o orçamento.')
 
   redirect(`/dashboard/budgets?month=${encodeURIComponent(normalizedMonth)}`)
 }

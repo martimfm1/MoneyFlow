@@ -32,7 +32,11 @@ export default async function GoalsPage({
   if (!user) redirect('/login')
 
   const [{ data: profile }, { data: goals }] = await Promise.all([
-    supabase.from('profiles').select('currency_code').eq('id', user.id).maybeSingle(),
+    supabase
+      .from('profiles')
+      .select('currency_code')
+      .eq('id', user.id)
+      .maybeSingle(),
     supabase
       .from('goals')
       .select('id, name, target_amount, current_amount, target_date, priority')
@@ -47,8 +51,12 @@ export default async function GoalsPage({
     <main className="moneyflow-shell py-6 sm:py-10">
       <header className="flex items-center justify-between gap-4">
         <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Planeamento</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">Objetivos</h1>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Planeamento
+          </p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+            Objetivos
+          </h1>
         </div>
         <Button asChild size="sm">
           <Link href="/dashboard/goals/new">
@@ -68,7 +76,8 @@ export default async function GoalsPage({
           <Target className="mx-auto size-6" />
           <h2 className="mt-4 font-medium">Ainda não tens objetivos</h2>
           <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-            Cria um objetivo para começar a dar um propósito concreto ao dinheiro que queres guardar.
+            Cria um objetivo para começar a dar um propósito concreto ao
+            dinheiro que queres guardar.
           </p>
           <Button asChild className="mt-5">
             <Link href="/dashboard/goals/new">Criar objetivo</Link>
@@ -90,7 +99,8 @@ export default async function GoalsPage({
                   <div>
                     <h2 className="font-medium">{goal.name}</h2>
                     <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                      Prioridade {priorityLabels[goal.priority] ?? goal.priority}
+                      Prioridade{' '}
+                      {priorityLabels[goal.priority] ?? goal.priority}
                     </p>
                   </div>
                   <p className="text-sm font-semibold">{progress}%</p>
@@ -102,23 +112,38 @@ export default async function GoalsPage({
                   />
                 </div>
                 <div className="mt-3 flex items-center justify-between text-sm">
-                  <span className="tabular-nums">{formatMoney(current, currency)}</span>
-                  <span className="text-[hsl(var(--muted-foreground))]">de {formatMoney(target, currency)}</span>
+                  <span className="tabular-nums">
+                    {formatMoney(current, currency)}
+                  </span>
+                  <span className="text-[hsl(var(--muted-foreground))]">
+                    de {formatMoney(target, currency)}
+                  </span>
                 </div>
                 {goal.target_date ? (
                   <p className="mt-3 text-xs text-[hsl(var(--muted-foreground))]">
-                    Data alvo: {new Intl.DateTimeFormat('pt-PT').format(new Date(`${goal.target_date}T00:00:00`))}
+                    Data alvo:{' '}
+                    {new Intl.DateTimeFormat('pt-PT').format(
+                      new Date(`${goal.target_date}T00:00:00`),
+                    )}
                   </p>
                 ) : null}
 
                 <div className="mt-5 flex flex-wrap items-center gap-2">
                   <Button asChild size="sm" variant="outline">
-                    <Link href={`/dashboard/goals/${goal.id}`}>Ver objetivo</Link>
+                    <Link href={`/dashboard/goals/${goal.id}`}>
+                      Ver objetivo
+                    </Link>
                   </Button>
                   {remaining > 0 ? (
-                    <form action={addGoalContribution} className="flex min-w-0 flex-1 gap-2 sm:max-w-sm">
+                    <form
+                      action={addGoalContribution}
+                      className="flex min-w-0 flex-1 gap-2 sm:max-w-sm"
+                    >
                       <input type="hidden" name="goalId" value={goal.id} />
-                      <label className="sr-only" htmlFor={`contribution-${goal.id}`}>
+                      <label
+                        className="sr-only"
+                        htmlFor={`contribution-${goal.id}`}
+                      >
                         Valor da contribuição
                       </label>
                       <input
@@ -132,7 +157,9 @@ export default async function GoalsPage({
                         placeholder={`Até ${formatMoney(remaining, currency)}`}
                         className="min-h-10 min-w-0 flex-1 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
                       />
-                      <Button type="submit" size="sm">Guardar</Button>
+                      <Button type="submit" size="sm">
+                        Guardar
+                      </Button>
                     </form>
                   ) : null}
                 </div>

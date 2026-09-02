@@ -41,7 +41,9 @@ export async function createTransaction(formData: FormData) {
 
   if (!account) redirect('/dashboard/transactions/new?error=Conta%20inválida.')
   if (!account.is_active)
-    redirect('/dashboard/transactions/new?error=Essa%20conta%20está%20arquivada.')
+    redirect(
+      '/dashboard/transactions/new?error=Essa%20conta%20está%20arquivada.',
+    )
 
   const categoryId = parsed.data.categoryId || null
   if (categoryId) {

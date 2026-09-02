@@ -48,9 +48,12 @@ export default async function EditAccountPage({
 
       <header className="mt-5">
         <p className="text-sm text-[hsl(var(--muted-foreground))]">Conta</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight">Gerir conta</h1>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+          Gerir conta
+        </h1>
         <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-          {labels[account.account_type] ?? account.account_type} · {account.currency_code}
+          {labels[account.account_type] ?? account.account_type} ·{' '}
+          {account.currency_code}
         </p>
       </header>
 
@@ -91,7 +94,9 @@ export default async function EditAccountPage({
           </label>
 
           <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-4">
-            <p className="text-xs text-[hsl(var(--muted-foreground))]">Saldo atual</p>
+            <p className="text-xs text-[hsl(var(--muted-foreground))]">
+              Saldo atual
+            </p>
             <p className="mt-1 text-xl font-semibold tabular-nums">
               {new Intl.NumberFormat('pt-PT', {
                 style: 'currency',
