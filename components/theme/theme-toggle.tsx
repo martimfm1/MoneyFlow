@@ -37,11 +37,7 @@ const labels: Record<Theme, string> = {
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('system')
-
-  useEffect(() => {
-    setTheme(getStoredTheme())
-  }, [])
+  const [theme, setTheme] = useState<Theme>(() => getStoredTheme())
 
   useEffect(() => {
     applyTheme(theme)
