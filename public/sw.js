@@ -1,3 +1,5 @@
+/* global caches, fetch, self, URL */
+
 const CACHE_NAME = 'moneyflow-static-v1'
 const PRECACHE_URLS = ['/offline']
 
