@@ -40,24 +40,25 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>('system')
 
   useEffect(() => {
-    const stored = getStoredTheme()
-    setTheme(stored)
-    applyTheme(stored)
+    setTheme(getStoredTheme())
+  }, [])
+
+  useEffect(() => {
+    applyTheme(theme)
 
     const media = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => {
-      if (stored === 'system') applyTheme('system')
+      if (theme === 'system') applyTheme('system')
     }
 
     media.addEventListener('change', handleChange)
     return () => media.removeEventListener('change', handleChange)
-  }, [])
+  }, [theme])
 
   function handleToggle() {
     const next = nextTheme[theme]
     setTheme(next)
     window.localStorage.setItem(STORAGE_KEY, next)
-    applyTheme(next)
   }
 
   const Icon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor
