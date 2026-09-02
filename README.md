@@ -6,7 +6,7 @@ The product follows the flow **Track → Understand → Prioritize → Decide**.
 
 ## Status
 
-Phase 4 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accounts, transactions, categories, transaction filtering/search, wishlist planning, goal contributions, account management, monthly budgets and financial analytics are implemented.
+Phase 4 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accounts, transactions, categories, transaction filtering/search, wishlist planning, goal contributions, account management, monthly budgets, financial analytics, dark mode and PWA foundations are implemented.
 
 ## Implemented
 
@@ -36,6 +36,10 @@ Phase 4 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 - Financial analytics with six-month income/expense trends
 - Current-period spending breakdown by category
 - Transparent net balance and savings-rate calculations
+- User-selectable light, dark and system theme with persistence
+- Installable PWA manifest and application icon
+- Safe service worker caching for static assets with offline navigation fallback
+- Offline fallback screen for unavailable pages
 - Row Level Security with cross-table ownership checks
 - Mobile-first dashboard shell
 - Dashboard overview with recent activity and active goal summary
@@ -45,8 +49,6 @@ Phase 4 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accou
 
 - More advanced financial insights and comparisons
 - Portuguese (Portugal) and English localization
-- Light and dark mode
-- PWA support
 - Accessibility, performance and automated tests
 
 ## Stack
