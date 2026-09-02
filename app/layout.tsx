@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
+import { RegisterServiceWorker } from '@/components/pwa/register-sw'
 
 export const metadata: Metadata = {
   title: {
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
   description:
     'Track, understand, prioritize and decide what to do with your money.',
   applicationName: 'MoneyFlow',
+  manifest: '/manifest.webmanifest',
 }
 
 export const viewport: Viewport = {
@@ -28,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="pt-PT" suppressHydrationWarning>
       <body>
+        <RegisterServiceWorker />
         <div className="fixed right-4 top-4 z-50">
           <ThemeToggle />
         </div>
