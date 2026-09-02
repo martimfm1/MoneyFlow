@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import { ThemeToggle } from '@/components/theme/theme-toggle'
 
 export const metadata: Metadata = {
   title: {
@@ -25,8 +26,13 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="pt-PT">
-      <body>{children}</body>
+    <html lang="pt-PT" suppressHydrationWarning>
+      <body>
+        <div className="fixed right-4 top-4 z-50">
+          <ThemeToggle />
+        </div>
+        {children}
+      </body>
     </html>
   )
 }

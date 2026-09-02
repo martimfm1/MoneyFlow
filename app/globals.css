@@ -18,8 +18,30 @@
   --radius-lg: 1.25rem;
 }
 
+[data-theme='light'] {
+  --background: 0 0% 98%;
+  --foreground: 240 10% 8%;
+  --surface: 0 0% 100%;
+  --surface-muted: 240 5% 96%;
+  --border: 240 6% 90%;
+  --muted-foreground: 240 4% 46%;
+  --primary: 240 6% 10%;
+  --primary-foreground: 0 0% 100%;
+}
+
+[data-theme='dark'] {
+  --background: 240 10% 4%;
+  --foreground: 0 0% 96%;
+  --surface: 240 7% 8%;
+  --surface-muted: 240 6% 12%;
+  --border: 240 5% 18%;
+  --muted-foreground: 240 5% 65%;
+  --primary: 0 0% 96%;
+  --primary-foreground: 240 10% 4%;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --background: 240 10% 4%;
     --foreground: 0 0% 96%;
     --surface: 240 7% 8%;
@@ -38,6 +60,11 @@
 
 html {
   background: hsl(var(--background));
+  color-scheme: light;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 body {
@@ -47,6 +74,7 @@ body {
   color: hsl(var(--foreground));
   font-family: Arial, Helvetica, sans-serif;
   text-rendering: optimizeLegibility;
+  transition: background-color 160ms ease, color 160ms ease;
 }
 
 button,
