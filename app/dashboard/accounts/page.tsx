@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Archive, ArchiveRestore, Pencil, Plus, Wallet } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
+import { formatCurrency } from '@/lib/format'
 import { redirect } from 'next/navigation'
 import { toggleAccountStatus } from './actions'
 
@@ -13,12 +14,6 @@ const labels: Record<string, string> = {
   card: 'Cartão',
   savings: 'Poupança',
   other: 'Outro',
-}
-
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat('pt-PT', { style: 'currency', currency }).format(
-    amount,
-  )
 }
 
 export default async function AccountsPage({
@@ -104,7 +99,7 @@ export default async function AccountsPage({
                   </div>
                 </div>
                 <p className="shrink-0 text-lg font-semibold tabular-nums">
-                  {formatMoney(
+                  {formatCurrency(
                     Number(account.balance),
                     account.currency_code || currency,
                   )}
