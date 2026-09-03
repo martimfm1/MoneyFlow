@@ -69,7 +69,9 @@ export function QuickAdd() {
                   onClick={() => setOpen(false)}
                   className="flex min-h-14 items-center gap-3 rounded-xl px-3 font-medium transition-colors active:bg-[hsl(var(--surface-muted))]"
                 >
-                  <span className={`flex size-10 items-center justify-center rounded-full ${tone}`}>
+                  <span
+                    className={`flex size-10 items-center justify-center rounded-full ${tone}`}
+                  >
                     <Icon className="size-4" aria-hidden="true" />
                   </span>
                   <span>{label}</span>
@@ -87,7 +89,11 @@ export function QuickAdd() {
         aria-label={open ? 'Fechar adicionar' : 'Adicionar'}
         className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-40 inline-flex size-14 items-center justify-center rounded-full bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-lg transition-transform active:scale-95 lg:hidden"
       >
-        {open ? <X className="size-5" aria-hidden="true" /> : <Plus className="size-5" aria-hidden="true" />}
+        {open ? (
+          <X className="size-5" aria-hidden="true" />
+        ) : (
+          <Plus className="size-5" aria-hidden="true" />
+        )}
       </button>
     </>
   )

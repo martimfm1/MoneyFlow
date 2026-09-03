@@ -27,7 +27,9 @@ export async function createTransaction(formData: FormData) {
     redirect('/dashboard/transactions/new?error=Dados%20inválidos.')
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const { data: account } = await supabase
@@ -38,7 +40,10 @@ export async function createTransaction(formData: FormData) {
     .maybeSingle()
 
   if (!account) redirect('/dashboard/transactions/new?error=Conta%20inválida.')
-  if (!account.is_active) redirect('/dashboard/transactions/new?error=Essa%20conta%20está%20arquivada.')
+  if (!account.is_active)
+    redirect(
+      '/dashboard/transactions/new?error=Essa%20conta%20está%20arquivada.',
+    )
 
   const categoryId = parsed.data.categoryId || null
   if (categoryId) {
@@ -48,7 +53,8 @@ export async function createTransaction(formData: FormData) {
       .eq('id', categoryId)
       .eq('user_id', user.id)
       .maybeSingle()
-    if (!category) redirect('/dashboard/transactions/new?error=Categoria%20inválida.')
+    if (!category)
+      redirect('/dashboard/transactions/new?error=Categoria%20inválida.')
   }
 
   const { error } = await supabase.from('transactions').insert({
@@ -62,6 +68,8 @@ export async function createTransaction(formData: FormData) {
   })
 
   if (error)
-    redirect('/dashboard/transactions/new?error=Não%20foi%20possível%20guardar%20o%20movimento.')
+    redirect(
+      '/dashboard/transactions/new?error=Não%20foi%20possível%20guardar%20o%20movimento.',
+    )
   redirect('/dashboard/transactions?toast=Movimento%20guardado.')
 }

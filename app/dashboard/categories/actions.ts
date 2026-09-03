@@ -43,13 +43,11 @@ export async function createCategory(formData: FormData) {
     .order('sort_order', { ascending: false })
     .limit(1)
     .maybeSingle()
-  const { error } = await supabase
-    .from('categories')
-    .insert({
-      user_id: user.id,
-      name: parsed.data.name,
-      sort_order: (lastCategory?.sort_order ?? -1) + 1,
-    })
+  const { error } = await supabase.from('categories').insert({
+    user_id: user.id,
+    name: parsed.data.name,
+    sort_order: (lastCategory?.sort_order ?? -1) + 1,
+  })
   if (error)
     redirect(
       '/dashboard/categories?error=Não%20foi%20possível%20criar%20a%20categoria.',

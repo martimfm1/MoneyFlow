@@ -16,7 +16,7 @@ export function ToastViewport() {
     if (!message && !error) return null
 
     return {
-      type: message ? 'success' as const : 'error' as const,
+      type: message ? ('success' as const) : ('error' as const),
       message: message ?? error ?? '',
       key: `${pathname}:${message ?? ''}:${error ?? ''}`,
     }
@@ -40,10 +40,32 @@ export function ToastViewport() {
 
   return (
     <div className="pointer-events-none fixed inset-x-3 top-3 z-[100] flex justify-center sm:inset-x-auto sm:right-4 sm:top-4 sm:max-w-sm">
-      <div role={visibleToast.type === 'error' ? 'alert' : 'status'} className="pointer-events-auto flex w-full items-center gap-3 rounded-2xl border bg-[hsl(var(--surface)/0.98)] px-3 py-3 shadow-xl backdrop-blur-xl animate-in slide-in-from-top-2">
-        {visibleToast.type === 'success' ? <CheckCircle2 className="size-5 shrink-0 text-[hsl(var(--success))]" aria-hidden="true" /> : <XCircle className="size-5 shrink-0 text-[hsl(var(--danger))]" aria-hidden="true" />}
-        <p className="min-w-0 flex-1 text-sm font-medium leading-5">{visibleToast.message}</p>
-        <button type="button" aria-label="Fechar" onClick={() => setDismissedKey(visibleToast.key)} className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--surface-muted))]"><X className="size-4" /></button>
+      <div
+        role={visibleToast.type === 'error' ? 'alert' : 'status'}
+        className="pointer-events-auto flex w-full items-center gap-3 rounded-2xl border bg-[hsl(var(--surface)/0.98)] px-3 py-3 shadow-xl backdrop-blur-xl animate-in slide-in-from-top-2"
+      >
+        {visibleToast.type === 'success' ? (
+          <CheckCircle2
+            className="size-5 shrink-0 text-[hsl(var(--success))]"
+            aria-hidden="true"
+          />
+        ) : (
+          <XCircle
+            className="size-5 shrink-0 text-[hsl(var(--danger))]"
+            aria-hidden="true"
+          />
+        )}
+        <p className="min-w-0 flex-1 text-sm font-medium leading-5">
+          {visibleToast.message}
+        </p>
+        <button
+          type="button"
+          aria-label="Fechar"
+          onClick={() => setDismissedKey(visibleToast.key)}
+          className="inline-flex size-8 shrink-0 items-center justify-center rounded-full text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--surface-muted))]"
+        >
+          <X className="size-4" />
+        </button>
       </div>
     </div>
   )
