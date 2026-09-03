@@ -34,6 +34,10 @@ export default async function SettingsPage({
 
   const locale = normalizeLocale(profile?.locale)
   const t = createTranslator(locale)
+  const errorMessage =
+    params.error === 'invalid_locale' || params.error === 'save_failed'
+      ? t('settings.saveError')
+      : null
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
@@ -65,12 +69,12 @@ export default async function SettingsPage({
         </p>
       ) : null}
 
-      {params.error ? (
+      {errorMessage ? (
         <p
           role="alert"
           className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
         >
-          {params.error}
+          {errorMessage}
         </p>
       ) : null}
 
