@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowDownLeft, CalendarClock, ChevronLeft } from 'lucide-react'
+import { ArrowDownLeft, CalendarClock, ChevronLeft, Plus } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
@@ -124,13 +124,7 @@ export default async function RecurringIncomePage() {
         {!items.length ? (
           <div className="mt-4 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center">
             <ArrowDownLeft className="mx-auto size-6" />
-            <h3 className="mt-4 font-medium">
-              Ainda não tens ganhos recorrentes
-            </h3>
-            <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-              Adiciona o teu salário, recibos ou outros rendimentos previsíveis
-              e passa a ter uma estimativa mensal mais completa.
-            </p>
+            <h3 className="mt-4 font-medium">Ainda não tens ganhos recorrentes</h3>
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -143,8 +137,7 @@ export default async function RecurringIncomePage() {
                     <div className="min-w-0">
                       <h3 className="truncate font-semibold">{item.name}</h3>
                       <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
-                        {item.source || 'Sem origem'} ·{' '}
-                        {frequencyLabels[item.frequency]}
+                        {item.source || 'Sem origem'} · {frequencyLabels[item.frequency]}
                       </p>
                     </div>
                     <RecurringIncomeActionMenu id={item.id} name={item.name} isActive={item.is_active} />
@@ -169,109 +162,6 @@ export default async function RecurringIncomePage() {
             })}
           </div>
         )}
-      </section>
-
-      <section
-        id="novo-ganho"
-        className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
-      >
-        <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            Novo rendimento
-          </p>
-          <h2 className="mt-1 text-lg font-semibold">
-            Adicionar ganho recorrente
-          </h2>
-          <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-            Usa a periodicidade real da entrada. O MoneyFlow converte-a para um
-            equivalente mensal e anual para facilitar o planeamento.
-          </p>
-        </div>
-
-        <form
-          action={createRecurringIncome}
-          className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-        >
-          <label className="grid gap-2 text-sm font-medium">
-            Nome
-            <input
-              name="name"
-              required
-              maxLength={120}
-              placeholder="Ex.: Salário"
-              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-            />
-          </label>
-          <label className="grid gap-2 text-sm font-medium">
-            Origem
-            <input
-              name="source"
-              maxLength={120}
-              placeholder="Ex.: Empresa · Cliente X"
-              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-            />
-          </label>
-          <label className="grid gap-2 text-sm font-medium">
-            Valor da entrada
-            <input
-              name="amount"
-              type="number"
-              inputMode="decimal"
-              min="0.01"
-              step="0.01"
-              required
-              placeholder="0,00"
-              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-            />
-          </label>
-          <label className="grid gap-2 text-sm font-medium">
-            Frequência
-            <select
-              name="frequency"
-              defaultValue="monthly"
-              className="min-h-11 rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-            >
-              <option value="monthly">Mensal</option>
-              <option value="quarterly">Trimestral</option>
-              <option value="yearly">Anual</option>
-            </select>
-          </label>
-          <label className="grid gap-2 text-sm font-medium">
-            Próxima entrada
-            <input
-              name="nextIncomeDate"
-              type="date"
-              defaultValue={new Date().toISOString().slice(0, 10)}
-              required
-              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-            />
-          </label>
-          <label className="grid gap-2 text-sm font-medium">
-            Moeda
-            <input
-              name="currencyCode"
-              required
-              maxLength={3}
-              defaultValue={currency}
-              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal uppercase outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-            />
-          </label>
-          <label className="grid gap-2 text-sm font-medium sm:col-span-2 lg:col-span-3">
-            Notas
-            <textarea
-              name="notes"
-              maxLength={500}
-              rows={3}
-              placeholder="Ex.: vencimento no último dia útil do mês"
-              className="rounded-[var(--radius-md)] border bg-transparent px-3 py-2 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-            />
-          </label>
-          <div className="sm:col-span-2 lg:col-span-3">
-            <Button type="submit" className="w-full sm:w-auto">
-              <Plus className="size-4" /> Guardar ganho recorrente
-            </Button>
-          </div>
-        </form>
       </section>
     </main>
   )
