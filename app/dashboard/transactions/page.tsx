@@ -10,23 +10,10 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
+import { formatCurrency, formatDate } from '@/lib/format'
 import { redirect } from 'next/navigation'
 
 export const dynamic = 'force-dynamic'
-
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat('pt-PT', { style: 'currency', currency }).format(
-    amount,
-  )
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('pt-PT', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(value))
-}
 
 type SearchParams = {
   q?: string
@@ -109,11 +96,11 @@ export default async function TransactionsPage({
               name="q"
               defaultValue={q}
               placeholder="Pesquisar por descrição"
-              className="min-h-11 w-full rounded-[var(--radius-md)] border bg-transparent pl-9 pr-3 outline-none"
+              className="min-h-11 w-full rounded-[var(--radius-md)] border bg-transparent pl-9 pr-3 outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
             />
           </label>
           <div className="grid gap-3 sm:grid-cols-2">
-            <label className="flex min-h-11 items-center gap-2 rounded-[var(--radius-md)] border px-3 text-sm">
+            <label className="flex min-h-11 items-center gap-2 rounded-[var(--radius-md)] border px-3 text-sm focus-within:ring-2 focus-within:ring-[hsl(var(--ring))]">
               <SlidersHorizontal className="size-4 shrink-0 text-[hsl(var(--muted-foreground))]" />
               <span className="sr-only">Tipo</span>
               <select
@@ -126,7 +113,7 @@ export default async function TransactionsPage({
                 <option value="income">Receitas</option>
               </select>
             </label>
-            <label className="flex min-h-11 items-center gap-2 rounded-[var(--radius-md)] border px-3 text-sm">
+            <label className="flex min-h-11 items-center gap-2 rounded-[var(--radius-md)] border px-3 text-sm focus-within:ring-2 focus-within:ring-[hsl(var(--ring))]">
               <Tags className="size-4 shrink-0 text-[hsl(var(--muted-foreground))]" />
               <span className="sr-only">Categoria</span>
               <select
@@ -220,7 +207,7 @@ export default async function TransactionsPage({
                     className={`shrink-0 font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}
                   >
                     {isIncome ? '+' : '-'}
-                    {formatMoney(
+                    {formatCurrency(
                       Number(transaction.amount),
                       account?.currency_code || currency,
                     )}
