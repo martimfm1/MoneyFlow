@@ -1,14 +1,16 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { createClient } from '@/lib/supabase/server'
 import { normalizeDecimalInput } from '@/lib/number'
+import { logger } from '@/lib/logger'
 
 const schema = z.object({
   name: z.string().trim().min(1).max(80),
   accountType: z.enum(['cash', 'bank', 'card', 'savings', 'other']),
-  balance: z.coerce.number().finite().safe(),
+  balance: z.coerce.number().finite().safe().gte(0),
 })
 
 export async function createAccount(formData: FormData) {
@@ -19,7 +21,7 @@ export async function createAccount(formData: FormData) {
   })
 
   if (!parsed.success)
-    redirect('/dashboard/accounts/new?error=Dados%20inválidos.')
+    redirect('/dashboard/accounts/new?error=Confirma%20os%20dados%20da%20conta.')
 
   const supabase = await createClient()
   const {
@@ -32,6 +34,7 @@ export async function createAccount(formData: FormData) {
     .select('currency_code')
     .eq('id', user.id)
     .maybeSingle()
+
   const { error } = await supabase.from('accounts').insert({
     user_id: user.id,
     name: parsed.data.name,
@@ -40,9 +43,20 @@ export async function createAccount(formData: FormData) {
     currency_code: profile?.currency_code ?? 'EUR',
   })
 
-  if (error)
+  if (error) {
+    logger.error('account_create_failed', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    })
     redirect(
-      '/dashboard/accounts/new?error=Não%20foi%20possível%20criar%20a%20conta.',
+      '/dashboard/accounts/new?error=Não%20foi%20possível%20criar%20a%20conta.%20Verifica%20os%20dados%20e%20tenta%20novamente.',
     )
-  redirect('/dashboard')
+  }
+
+  revalidatePath('/dashboard')
+  revalidatePath('/dashboard/accounts')
+  revalidatePath('/dashboard/transactions')
+  redirect('/dashboard/accounts')
 }
