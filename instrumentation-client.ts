@@ -1,55 +1,44 @@
-if (process.env.NODE_ENV === 'production') {
-  const clientLog = (message: string, meta?: Record<string, unknown>) => {
-    console.info(
-      JSON.stringify({
-        timestamp: new Date().toISOString(),
-        service: 'moneyflow-client',
-        level: 'info',
-        message,
-        ...(meta ? { meta } : {}),
-      }),
-    )
-  }
+const enabled = process.env.NODE_ENV === 'production'
 
+function clientLog(level: 'info' | 'error', message: string, meta?: Record<string, unknown>) {
+  if (!enabled) return
+
+  const payload = JSON.stringify({
+    timestamp: new Date().toISOString(),
+    service: 'moneyflow-client',
+    level,
+    message,
+    ...(meta ? { meta } : {}),
+  })
+
+  if (level === 'error') console.error(payload)
+  else console.info(payload)
+}
+
+if (enabled) {
   window.addEventListener('error', (event) => {
-    console.error(
-      JSON.stringify({
-        timestamp: new Date().toISOString(),
-        service: 'moneyflow-client',
-        level: 'error',
-        message: 'client_error',
-        meta: {
-          message: event.message,
-          source: event.filename?.split('/').pop(),
-          line: event.lineno,
-          column: event.colno,
-        },
-      }),
-    )
+    clientLog('error', 'client_error', {
+      message: event.message,
+      source: event.filename?.split('/').pop(),
+      line: event.lineno,
+      column: event.colno,
+    })
   })
 
   window.addEventListener('unhandledrejection', (event) => {
-    console.error(
-      JSON.stringify({
-        timestamp: new Date().toISOString(),
-        service: 'moneyflow-client',
-        level: 'error',
-        message: 'unhandled_rejection',
-        meta: {
-          reason:
-            event.reason instanceof Error ? event.reason.message : String(event.reason),
-        },
-      }),
-    )
-  })
-
-  export function onRouterTransitionStart(
-    url: string,
-    navigationType: 'push' | 'replace' | 'traverse',
-  ) {
-    clientLog('navigation_started', {
-      navigationType,
-      path: url.split('?')[0].split('#')[0],
+    clientLog('error', 'unhandled_rejection', {
+      reason:
+        event.reason instanceof Error ? event.reason.message : String(event.reason),
     })
-  }
+  })
+}
+
+export function onRouterTransitionStart(
+  url: string,
+  navigationType: 'push' | 'replace' | 'traverse',
+) {
+  clientLog('info', 'navigation_started', {
+    navigationType,
+    path: url.split('?')[0].split('#')[0],
+  })
 }
