@@ -21,6 +21,13 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-[hsl(var(--background))]">
+      <a
+        href="#main-content"
+        className="sr-only fixed left-4 top-4 z-[100] rounded-[var(--radius-md)] bg-[hsl(var(--foreground))] px-4 py-2 text-sm font-medium text-[hsl(var(--background))] focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] focus:ring-offset-2 focus:ring-offset-[hsl(var(--background))]"
+      >
+        {locale === 'en' ? 'Skip to main content' : 'Saltar para o conteúdo principal'}
+      </a>
+
       <div className="mx-auto max-w-7xl md:flex md:gap-6 md:px-6">
         <aside className="hidden w-60 shrink-0 py-6 md:block">
           <div className="sticky top-6 space-y-4">
@@ -51,6 +58,17 @@ export default async function DashboardLayout({
         >
           {children}
         </main>
+      </div>
+      <div className="fixed bottom-[5.5rem] right-4 z-30 md:hidden">
+        {user ? (
+          <Link
+            href="/dashboard/settings"
+            aria-label={t('nav.settings')}
+            className="inline-flex size-11 items-center justify-center rounded-full border bg-[hsl(var(--surface))] text-[hsl(var(--muted-foreground))] shadow-sm transition-colors hover:text-[hsl(var(--foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+          >
+            <Settings className="size-4" aria-hidden="true" />
+          </Link>
+        ) : null}
       </div>
       <div className="md:hidden">
         <DashboardNavigation locale={locale} />
