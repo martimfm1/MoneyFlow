@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { ExternalLink, Heart, Pencil, Plus, Target } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -134,12 +135,15 @@ export default async function WishlistPage({
                   className="flex min-h-full flex-col overflow-hidden rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 >
                   {item.image_url ? (
-                    <div className="aspect-[16/9] overflow-hidden bg-[hsl(var(--surface-muted))]">
-                      <img
+                    <div className="relative aspect-[16/9] overflow-hidden bg-[hsl(var(--surface-muted))]">
+                      <Image
                         src={item.image_url}
                         alt=""
-                        className="size-full object-cover"
+                        fill
+                        sizes="(min-width: 1280px) 33vw, (min-width: 640px) 50vw, 100vw"
+                        className="object-cover"
                         loading="lazy"
+                        unoptimized
                       />
                     </div>
                   ) : null}
