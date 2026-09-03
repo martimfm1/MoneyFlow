@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { addGoalContribution } from './actions'
+import { DeleteGoalButton } from './delete-goal-button'
 import { formatCurrency, formatDate } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
@@ -43,13 +44,13 @@ export default async function GoalsPage({
   const currency = profile?.currency_code ?? 'EUR'
 
   return (
-    <main className="moneyflow-shell py-6 sm:py-10">
+    <main className="moneyflow-shell py-6 sm:py-10 lg:py-12">
       <header className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
             Planeamento
           </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight lg:text-3xl">
             Objetivos
           </h1>
         </div>
@@ -70,7 +71,7 @@ export default async function GoalsPage({
       ) : null}
 
       {!goals?.length ? (
-        <section className="mt-8 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center">
+        <section className="mt-8 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center lg:p-12">
           <Target className="mx-auto size-6" />
           <h2 className="mt-4 font-medium">Ainda não tens objetivos</h2>
           <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-[hsl(var(--muted-foreground))]">
@@ -82,7 +83,7 @@ export default async function GoalsPage({
           </Button>
         </section>
       ) : (
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {goals.map((goal) => {
             const current = Number(goal.current_amount)
             const target = Number(goal.target_amount)
@@ -92,16 +93,16 @@ export default async function GoalsPage({
             return (
               <article
                 key={goal.id}
-                className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm"
+                className="flex min-h-full flex-col rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2 className="font-medium">{goal.name}</h2>
+                  <div className="min-w-0">
+                    <h2 className="truncate font-medium">{goal.name}</h2>
                     <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
                       Prioridade {priorityLabels[goal.priority] ?? goal.priority}
                     </p>
                   </div>
-                  <p className="text-sm font-semibold tabular-nums">
+                  <p className="shrink-0 text-sm font-semibold tabular-nums">
                     {progress}%
                   </p>
                 </div>
@@ -111,11 +112,11 @@ export default async function GoalsPage({
                     style={{ width: `${progress}%` }}
                   />
                 </div>
-                <div className="mt-3 flex items-center justify-between text-sm">
+                <div className="mt-3 flex items-center justify-between gap-3 text-sm">
                   <span className="tabular-nums">
                     {formatCurrency(current, currency)}
                   </span>
-                  <span className="text-[hsl(var(--muted-foreground))]">
+                  <span className="text-right text-[hsl(var(--muted-foreground))]">
                     de {formatCurrency(target, currency)}
                   </span>
                 </div>
@@ -125,17 +126,9 @@ export default async function GoalsPage({
                   </p>
                 ) : null}
 
-                <div className="mt-5 flex flex-wrap items-center gap-2">
-                  <Button asChild size="sm" variant="outline">
-                    <Link href={`/dashboard/goals/${goal.id}`}>
-                      Ver objetivo
-                    </Link>
-                  </Button>
+                <div className="mt-auto pt-5">
                   {remaining > 0 ? (
-                    <form
-                      action={addGoalContribution}
-                      className="flex min-w-0 flex-1 gap-2 sm:max-w-sm"
-                    >
+                    <form action={addGoalContribution} className="flex min-w-0 gap-2">
                       <input type="hidden" name="goalId" value={goal.id} />
                       <label
                         className="sr-only"
@@ -159,6 +152,15 @@ export default async function GoalsPage({
                       </Button>
                     </form>
                   ) : null}
+
+                  <div className="mt-3 flex items-center justify-between gap-2 border-t pt-3">
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/dashboard/goals/${goal.id}`}>
+                        Ver objetivo
+                      </Link>
+                    </Button>
+                    <DeleteGoalButton goalId={goal.id} />
+                  </div>
                 </div>
               </article>
             )
