@@ -10,7 +10,12 @@ import {
   ComboboxList,
   ComboboxValue,
 } from '@/components/ui/combobox'
-import { Item, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item'
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemTitle,
+} from '@/components/ui/item'
 
 export type AccountOption = {
   id: string
@@ -33,7 +38,9 @@ export function AccountCombobox({
   required = true,
 }: Props) {
   const initialAccount =
-    accounts.find((account) => account.id === defaultValue) ?? accounts[0] ?? null
+    accounts.find((account) => account.id === defaultValue) ??
+    accounts[0] ??
+    null
   const [value, setValue] = useState<AccountOption | null>(initialAccount)
 
   return (
@@ -51,7 +58,11 @@ export function AccountCombobox({
         onValueChange={(nextValue) => setValue(nextValue)}
         itemToStringLabel={(account: AccountOption) => account.name}
       >
-        <ComboboxInput placeholder="Escolher conta" aria-label="Conta" showClear={false} />
+        <ComboboxInput
+          placeholder="Escolher conta"
+          aria-label="Conta"
+          showClear={false}
+        />
         <ComboboxContent>
           <ComboboxEmpty>Nenhuma conta encontrada.</ComboboxEmpty>
           <ComboboxList>
@@ -62,7 +73,9 @@ export function AccountCombobox({
                     <ItemTitle>{account.name}</ItemTitle>
                     <ItemDescription>
                       {account.currencyCode ?? ''}
-                      {account.balance != null ? ` · ${Number(account.balance).toFixed(2)}` : ''}
+                      {account.balance != null
+                        ? ` · ${Number(account.balance).toFixed(2)}`
+                        : ''}
                     </ItemDescription>
                   </ItemContent>
                 </Item>

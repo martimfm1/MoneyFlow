@@ -62,7 +62,11 @@ export async function createRecurringExpense(formData: FormData) {
   if (!parsed.success) errorRedirect('Verifica os dados da despesa.')
 
   const { supabase, user } = await getUser()
-  const account = await getActiveAccount(supabase, user.id, parsed.data.accountId)
+  const account = await getActiveAccount(
+    supabase,
+    user.id,
+    parsed.data.accountId,
+  )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
 
@@ -99,7 +103,11 @@ export async function updateRecurringExpense(formData: FormData) {
     errorRedirect('Verifica os dados da despesa.')
 
   const { supabase, user } = await getUser()
-  const account = await getActiveAccount(supabase, user.id, parsed.data.accountId)
+  const account = await getActiveAccount(
+    supabase,
+    user.id,
+    parsed.data.accountId,
+  )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
 
@@ -158,5 +166,7 @@ export async function toggleRecurringExpense(formData: FormData) {
   if (error) errorRedirect('Não foi possível atualizar a despesa.')
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
-  redirect(`/dashboard/recurring?toast=${parsed.data.isActive === 'true' ? 'Despesa%20ativada.' : 'Despesa%20pausada.'}`)
+  redirect(
+    `/dashboard/recurring?toast=${parsed.data.isActive === 'true' ? 'Despesa%20ativada.' : 'Despesa%20pausada.'}`,
+  )
 }
