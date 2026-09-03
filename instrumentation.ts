@@ -1,12 +1,7 @@
 import type { Instrumentation } from 'next'
 import { logger } from '@/lib/logger'
 
-export function register() {
-  logger.info('server_started', {
-    runtime: process.env.NEXT_RUNTIME,
-    nodeEnv: process.env.NODE_ENV,
-  })
-}
+export function register() {}
 
 export const onRequestError: Instrumentation.onRequestError = async (
   error,
