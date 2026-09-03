@@ -7,22 +7,27 @@ import { createClient } from '@/lib/supabase/server'
 import { normalizeDecimalInput } from '@/lib/number'
 import { logger } from '@/lib/logger'
 
+export type AccountActionState = {
+  error?: string
+}
+
 const schema = z.object({
   name: z.string().trim().min(1).max(80),
   accountType: z.enum(['cash', 'bank', 'card', 'savings', 'other']),
   balance: z.coerce.number().finite().safe().gte(0),
 })
 
-export async function createAccount(formData: FormData) {
+export async function createAccount(
+  _previousState: AccountActionState,
+  formData: FormData,
+): Promise<AccountActionState> {
   const parsed = schema.safeParse({
     name: formData.get('name'),
     accountType: formData.get('accountType'),
     balance: normalizeDecimalInput(formData.get('balance')),
   })
 
-  if (!parsed.success) {
-    redirect('/dashboard/accounts/new?error=Confirma%20os%20dados%20da%20conta.')
-  }
+  if (!parsed.success) return { error: 'Confirma os dados da conta.' }
 
   const supabase = await createClient()
   const {
@@ -43,9 +48,7 @@ export async function createAccount(formData: FormData) {
       details: profileError.details,
       hint: profileError.hint,
     })
-    redirect(
-      '/dashboard/accounts/new?error=Não%20foi%20possível%20ler%20a%20moeda%20da%20conta.%20Tenta%20novamente.',
-    )
+    return { error: 'Não foi possível ler a moeda da conta.' }
   }
 
   const { error } = await supabase.from('accounts').insert({
@@ -63,9 +66,7 @@ export async function createAccount(formData: FormData) {
       details: error.details,
       hint: error.hint,
     })
-    redirect(
-      `/dashboard/accounts/new?error=${encodeURIComponent(error.message || 'Não foi possível criar a conta.')}`,
-    )
+    return { error: error.message || 'Não foi possível criar a conta.' }
   }
 
   revalidatePath('/dashboard')
