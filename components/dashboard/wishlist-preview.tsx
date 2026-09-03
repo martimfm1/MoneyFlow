@@ -4,14 +4,11 @@ import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { Button } from '@/components/ui/button'
 
-const priorityLabels = { high: 'Alta', medium: 'Média', low: 'Baixa' } as const
 const priorityRank = { high: 0, medium: 1, low: 2 } as const
 
 export async function WishlistPreview({ currency }: { currency: string }) {
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
   if (!user) return null
 
   const { data: items } = await supabase
@@ -23,12 +20,9 @@ export async function WishlistPreview({ currency }: { currency: string }) {
 
   const relevant = (items ?? [])
     .sort((a, b) => {
-      const priorityDiff =
-        priorityRank[a.priority as keyof typeof priorityRank] -
-        priorityRank[b.priority as keyof typeof priorityRank]
+      const priorityDiff = priorityRank[a.priority as keyof typeof priorityRank] - priorityRank[b.priority as keyof typeof priorityRank]
       if (priorityDiff !== 0) return priorityDiff
-      if (a.desired_date && b.desired_date)
-        return a.desired_date.localeCompare(b.desired_date)
+      if (a.desired_date && b.desired_date) return a.desired_date.localeCompare(b.desired_date)
       if (a.desired_date) return -1
       if (b.desired_date) return 1
       return Number(a.price) - Number(b.price)
@@ -37,78 +31,31 @@ export async function WishlistPreview({ currency }: { currency: string }) {
 
   return (
     <section className="mt-8 lg:mt-10" aria-labelledby="wishlist-preview-title">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            O que queres comprar
-          </p>
-          <h2
-            id="wishlist-preview-title"
-            className="mt-1 text-lg font-semibold"
-          >
-            Próximas compras
-          </h2>
-        </div>
+      <div className="flex items-center justify-between gap-3">
+        <h2 id="wishlist-preview-title" className="text-base font-semibold">Wishlist</h2>
         <Button variant="ghost" size="sm" asChild>
-          <Link href="/dashboard/wishlist">
-            Ver wishlist
-            <ChevronRight className="size-4" />
-          </Link>
+          <Link href="/dashboard/wishlist">Ver tudo <ChevronRight className="size-4" aria-hidden="true" /></Link>
         </Button>
       </div>
 
       {!relevant.length ? (
-        <div className="mt-4 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-6 text-center">
-          <p className="font-medium">Ainda não tens compras planeadas</p>
-          <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-            Adiciona algo à wishlist para começares a priorizar decisões.
-          </p>
-          <Button asChild className="mt-4">
-            <Link href="/dashboard/wishlist/new">Adicionar item</Link>
-          </Button>
-        </div>
+        <Link href="/dashboard/wishlist/new" className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4">
+          <span className="font-medium">Adicionar à wishlist</span>
+          <ChevronRight className="size-4" aria-hidden="true" />
+        </Link>
       ) : (
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <div className="mt-3 -mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 md:grid md:grid-cols-3 md:overflow-visible">
           {relevant.map((item) => (
-            <article
-              key={item.id}
-              className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm"
-            >
+            <Link key={item.id} href={`/dashboard/wishlist/${item.id}/edit`} className="min-w-[15.5rem] snap-start rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm transition-colors active:bg-[hsl(var(--surface-muted))] md:min-w-0">
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <Link
-                    href={`/dashboard/wishlist/${item.id}/edit`}
-                    className="truncate font-medium hover:underline"
-                  >
-                    {item.name}
-                  </Link>
-                  <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                    Prioridade{' '}
-                    {priorityLabels[
-                      item.priority as keyof typeof priorityLabels
-                    ] ?? item.priority}
-                  </p>
-                </div>
-                <p className="shrink-0 font-semibold tabular-nums">
-                  {formatCurrency(Number(item.price), currency)}
-                </p>
+                <p className="min-w-0 truncate font-medium">{item.name}</p>
+                <p className="shrink-0 font-semibold tabular-nums">{formatCurrency(Number(item.price), currency)}</p>
               </div>
-              {item.desired_date ? (
-                <p className="mt-3 text-xs text-[hsl(var(--muted-foreground))]">
-                  Até {formatDate(`${item.desired_date}T00:00:00`)}
-                </p>
-              ) : null}
-              {item.url ? (
-                <a
-                  href={item.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mt-3 inline-flex min-h-9 items-center gap-1 text-xs font-medium hover:underline"
-                >
-                  <ExternalLink className="size-3.5" /> Abrir produto
-                </a>
-              ) : null}
-            </article>
+              <div className="mt-3 flex items-center justify-between gap-3 text-xs text-[hsl(var(--muted-foreground))]">
+                <span>{item.desired_date ? `Até ${formatDate(`${item.desired_date}T00:00:00`)}` : item.status === 'saving' ? 'A poupar' : 'Em espera'}</span>
+                {item.url ? <a href={item.url} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} aria-label={`Abrir ${item.name}`} className="inline-flex size-8 shrink-0 items-center justify-center rounded-full hover:bg-[hsl(var(--surface-muted))]"><ExternalLink className="size-3.5" aria-hidden="true" /></a> : null}
+              </div>
+            </Link>
           ))}
         </div>
       )}
