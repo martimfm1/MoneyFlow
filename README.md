@@ -1,76 +1,115 @@
 # MoneyFlow
 
-MoneyFlow is a mobile-first personal finance and wishlist application designed to answer three questions quickly: **what do I have, what can I spend, and what should I spend it on?**
+MoneyFlow is an open-source, mobile-first personal finance and wishlist application built to help people understand their money and make better spending decisions.
 
-The product follows **Track → Understand → Prioritize → Decide**. It is intentionally more than an expense tracker.
+**Track → Understand → Prioritize → Decide**
 
-## Status
+MoneyFlow combines everyday money tracking, account management, recurring income and expenses, budgets, goals, wishlist planning and financial insights in one focused interface.
 
-MoneyFlow is in active product-quality development. The core money flow, planning tools, recurring-expense simulator, PWA foundations, responsive desktop experience and security baseline are implemented. The next focus is automated testing, deeper accessibility verification, performance work and additional financial insights.
+## Project status
+
+**Production-ready foundation / active development**
+
+The application currently includes the core personal-finance workflows, responsive desktop and mobile experiences, Supabase-backed data protection, PWA foundations, recurring income and expense management, planning tools and a unified dark/minimal UI system built with shadcn components.
 
 ## Features
 
-### Money
+### Money management
 
-- Supabase SSR authentication with Next.js 16
-- Guided onboarding with name, currency and first account
-- Accounts, balances, editing, archiving and reactivation
-- Fast income and expense tracking
-- Transaction editing and secure deletion
-- Transaction filtering by type/category and description search
+- Supabase SSR authentication with Next.js App Router
+- Guided onboarding with profile, currency and first account
+- Multiple financial accounts with balances and active/inactive state
+- Income and expense transactions
+- Account selection when creating transactions
+- Transaction editing, filtering and secure deletion
+- Category-based transaction organization
 - Automatic account-balance synchronization through PostgreSQL triggers
-- Protection against transactions on archived accounts
-- Locale-aware EUR formatting through shared formatting helpers
+- Archived-account protection for new transactions
+- Locale-aware currency and date formatting
+
+### Recurring income & expenses
+
+- Recurring income management
+- Recurring expense management
+- Account selection for recurring income and expenses
+- Frequency and next-due-date tracking
+- Active / paused recurring items
+- Editing and secure deletion
+- Recurring-cost projections and annualized spending context
+- Dedicated navigation between recurring expenses and recurring income
 
 ### Planning
 
-- Custom categories with create, rename, delete and ordering controls
-- Deletion protection for categories containing existing transactions
+- Custom categories with ordering and deletion safeguards
+- Monthly budgets by category
+- Overspending detection
+- Savings and financial-goal tracking
+- Goal contributions with server-side validation
+- Target-date and priority management
 - Wishlist with price, category, priority, status, URL, image URL, desired date and notes
-- Wishlist editing and secure deletion
+- Wishlist item editing and secure deletion
 - Wishlist-to-goal conversion
-- Goals with target amount, current amount, priority and target date
-- Goal contributions with server validation and target protection
-- Monthly budgets by category with overspend detection
-- Recurring-expense simulator for domains, subscriptions, hosting and other commitments
-- Monthly reserve and annualized cost calculations for recurring expenses
-- Next-renewal tracking, due-soon indicators, pause/reactivate and editing
 
 ### Dashboard & insights
 
-- Desktop sidebar with progressive mobile navigation
-- Five-item mobile navigation with a dedicated More menu
-- Current balance overview
-- Current-month income, expenses and saved amount
-- Transparent financial-health indicator based on recorded cash flow, savings rate and recurring commitments
-- Recent transactions
-- Active goals
-- Responsive desktop layouts for accounts, transactions, budgets, analytics, wishlist and settings
-- Six-month income/expense analytics and category spending breakdown
+- Personal financial overview dashboard
+- Total balance across active accounts
+- Monthly income, expenses and savings overview
+- Recent transactions with account context
+- Active goal progress
+- Wishlist preview
+- Six-month income and expense analytics
+- Category spending breakdown
+- Decision-oriented financial health indicators
+- Responsive desktop layouts with persistent sidebar navigation
+- Mobile-first bottom navigation with expandable More menu
+- Quick-add flow for faster transaction entry
 
-### Platform
+### UI / UX
 
-- Light, dark and system themes
-- Installable PWA manifest and application icon
-- Service-worker static-asset caching
+- Dark-first visual system with restrained neutral tones
+- Minimal, consistent spacing and typography
+- shadcn/ui primitives for core interactive components
+- Glassmorphism for navigation, overlays and transient UI where appropriate
+- Responsive layouts designed mobile-first and expanded for desktop
+- Touch-friendly controls and safe-area support on mobile
+- Consistent cards, dialogs, popovers, buttons, badges, tables, empty states, skeletons and loading indicators
+- Toast notifications positioned at the top of the viewport
+- Keyboard-visible focus states and reduced-motion support
+
+### Platform & security
+
+- Next.js 16 + React 19 + TypeScript
+- Installable PWA manifest and application icons
+- Service-worker static asset caching
 - Offline navigation fallback
-- Safe-area-aware mobile navigation
-- Server-side Zod validation
-- Supabase Row Level Security and cross-table ownership checks
-- No service-role credentials in client code
+- Server-side validation with Zod
+- Supabase Row Level Security
+- Server-side ownership checks across related records
+- No service-role credentials exposed to the client
+- Protected account and transaction relationships
 
-## Stack
+## Tech stack
 
-- Next.js App Router 16
-- React 19 + TypeScript
-- Tailwind CSS 4
-- Supabase + PostgreSQL
-- React Hook Form + Zod
-- Recharts
-- Lucide Icons
+- **Framework:** Next.js 16 App Router
+- **UI:** React 19, Tailwind CSS 4, shadcn/ui, Base UI
+- **Language:** TypeScript
+- **Backend & database:** Supabase / PostgreSQL
+- **Validation:** Zod
+- **Forms:** React Hook Form
+- **Charts:** Recharts + shadcn chart primitives
+- **Icons:** Lucide React
+- **Package manager:** pnpm
+
+## Getting started
+
+### Requirements
+
+- Node.js compatible with the project toolchain
 - pnpm
+- A Supabase project
 
-## Local development
+### Installation
 
 ```bash
 pnpm install
@@ -78,53 +117,66 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-Then open `http://localhost:3000`.
+Open `http://localhost:3000`.
 
-## Quality checks
-
-Run the complete local quality pipeline before submitting changes:
-
-```bash
-pnpm qa
-```
-
-The CI workflow runs linting, typechecking, production build and formatting checks.
-
-## Environment variables
+### Environment variables
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-Only public client configuration belongs in these variables. Never commit service-role keys, private credentials or tokens.
+Only public Supabase client configuration belongs in these variables. Never commit service-role keys, private credentials or access tokens.
 
 ## Supabase
 
-Apply the files in `supabase/migrations` in ascending order. Migration numbers must never be reused. User-owned records use Row Level Security and server-side ownership checks.
+Apply migrations from `supabase/migrations` in ascending order. Migration numbers must never be reused.
 
-For the current schema, the recurring-expense simulator is introduced by `0011_recurring_expenses.sql`.
+The database uses Row Level Security and user ownership checks for user-owned resources. Account relationships are also validated server-side before transactions or recurring records are created or updated.
 
-## Product architecture
+## Quality
+
+Run the complete local quality pipeline before opening or merging changes:
+
+```bash
+pnpm qa
+```
+
+The quality pipeline runs:
+
+1. ESLint
+2. TypeScript typecheck
+3. Next.js production build
+4. Formatting checks
+
+CI runs the same production quality workflow on GitHub Actions.
+
+## Architecture
+
+The project is organized around clear application boundaries:
+
+- `app/` — routes, server actions and page-level application logic
+- `components/` — reusable UI and feature components
+- `components/ui/` — shadcn/ui primitives
+- `lib/` — shared formatting, i18n, Supabase and application utilities
+- `supabase/migrations/` — database schema and security migrations
+- `docs/` — architecture and product documentation
 
 See [`docs/architecture.md`](docs/architecture.md) for information architecture, user flows, database boundaries, UI architecture, design tokens and security principles.
 
 ## Contributing
 
+Contributions should preserve the existing product principles: simple financial workflows, strong ownership boundaries, responsive mobile-first UX, accessible interactions and a consistent design system.
+
 See [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Security
 
-See [`SECURITY.md`](SECURITY.md) for the security baseline and private vulnerability-reporting guidance.
+See [`SECURITY.md`](SECURITY.md) for the security baseline and vulnerability-reporting guidance.
 
 ## Roadmap
 
-1. Automated business-logic and permission tests
-2. Deeper accessibility verification and keyboard/screen-reader QA
-3. Performance optimization and large-transaction pagination
-4. Richer financial comparisons and decision-oriented insights
-5. More resilient offline form persistence
-6. Public release preparation and screenshot/documentation refresh
+The core product foundation is in place. Future work can focus on deeper automated testing, accessibility verification, performance optimization, richer financial insights and stronger offline form persistence.
 
 ## License
 
