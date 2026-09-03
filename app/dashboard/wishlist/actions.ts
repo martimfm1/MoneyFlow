@@ -48,7 +48,7 @@ function errorRedirect(path: string, message: string): never {
 
 function itemInput(formData: FormData) {
   return {
-    id: formData.get('id'),
+    id: formData.get('id') || undefined,
     name: formData.get('name'),
     price: normalizeNumber(formData.get('price')),
     category: formData.get('category') || '',
@@ -64,7 +64,8 @@ export async function createWishlistItem(formData: FormData) {
   const parsed = itemSchema.safeParse(itemInput(formData))
   if (!parsed.success) {
     logger.error('wishlist_create_validation_failed', {
-      fieldCount: parsed.error.issues.length,
+      fields: parsed.error.issues.map((issue) => issue.path.join('.')),
+      issueCodes: parsed.error.issues.map((issue) => issue.code),
     })
     errorRedirect('/dashboard/wishlist/new', 'Confirma os dados.')
   }
@@ -98,7 +99,8 @@ export async function updateWishlistItem(formData: FormData) {
   const parsed = itemSchema.safeParse(itemInput(formData))
   if (!parsed.success || !parsed.data.id) {
     logger.error('wishlist_update_validation_failed', {
-      fieldCount: parsed.success ? 1 : parsed.error.issues.length,
+      fields: parsed.success ? ['id'] : parsed.error.issues.map((issue) => issue.path.join('.')),
+      issueCodes: parsed.success ? ['custom'] : parsed.error.issues.map((issue) => issue.code),
     })
     errorRedirect('/dashboard/wishlist', 'Confirma os dados.')
   }
