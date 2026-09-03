@@ -14,6 +14,7 @@ const recurringExpenseSchema = z.object({
   frequency: z.enum(['monthly', 'quarterly', 'yearly']),
   nextDueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   currencyCode: z.string().regex(/^[A-Z]{3}$/),
+  accountId: z.uuid(),
   notes: z.string().trim().max(500).optional(),
 })
 
@@ -32,6 +33,20 @@ async function getUser() {
   return { supabase, user }
 }
 
+async function getActiveAccount(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  accountId: string,
+) {
+  const { data } = await supabase
+    .from('accounts')
+    .select('id, is_active')
+    .eq('id', accountId)
+    .eq('user_id', userId)
+    .maybeSingle()
+  return data
+}
+
 export async function createRecurringExpense(formData: FormData) {
   const parsed = recurringExpenseSchema.safeParse({
     name: formData.get('name'),
@@ -40,14 +55,20 @@ export async function createRecurringExpense(formData: FormData) {
     frequency: formData.get('frequency'),
     nextDueDate: formData.get('nextDueDate'),
     currencyCode: String(formData.get('currencyCode') || '').toUpperCase(),
+    accountId: formData.get('accountId'),
     notes: formData.get('notes') || undefined,
   })
 
   if (!parsed.success) errorRedirect('Verifica os dados da despesa.')
 
   const { supabase, user } = await getUser()
+  const account = await getActiveAccount(supabase, user.id, parsed.data.accountId)
+  if (!account) errorRedirect('Conta inválida.')
+  if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
+
   const { error } = await supabase.from('recurring_expenses').insert({
     user_id: user.id,
+    account_id: parsed.data.accountId,
     name: parsed.data.name,
     provider: parsed.data.provider || null,
     amount: parsed.data.amount,
@@ -59,7 +80,7 @@ export async function createRecurringExpense(formData: FormData) {
   if (error) errorRedirect('Não foi possível guardar a despesa.')
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
-  redirect('/dashboard/recurring')
+  redirect('/dashboard/recurring?toast=Despesa%20recorrente%20adicionada.')
 }
 
 export async function updateRecurringExpense(formData: FormData) {
@@ -71,15 +92,21 @@ export async function updateRecurringExpense(formData: FormData) {
     frequency: formData.get('frequency'),
     nextDueDate: formData.get('nextDueDate'),
     currencyCode: String(formData.get('currencyCode') || '').toUpperCase(),
+    accountId: formData.get('accountId'),
     notes: formData.get('notes') || undefined,
   })
   if (!parsed.success || !parsed.data.id)
     errorRedirect('Verifica os dados da despesa.')
 
   const { supabase, user } = await getUser()
+  const account = await getActiveAccount(supabase, user.id, parsed.data.accountId)
+  if (!account) errorRedirect('Conta inválida.')
+  if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
+
   const { error } = await supabase
     .from('recurring_expenses')
     .update({
+      account_id: parsed.data.accountId,
       name: parsed.data.name,
       provider: parsed.data.provider || null,
       amount: parsed.data.amount,
@@ -99,7 +126,7 @@ export async function updateRecurringExpense(formData: FormData) {
   revalidatePath('/dashboard/recurring')
   revalidatePath(`/dashboard/recurring/${parsed.data.id}/edit`)
   revalidatePath('/dashboard')
-  redirect('/dashboard/recurring')
+  redirect('/dashboard/recurring?toast=Despesa%20recorrente%20atualizada.')
 }
 
 export async function deleteRecurringExpense(formData: FormData) {
@@ -114,16 +141,13 @@ export async function deleteRecurringExpense(formData: FormData) {
   if (error) errorRedirect('Não foi possível apagar a despesa.')
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
-  redirect('/dashboard/recurring')
+  redirect('/dashboard/recurring?toast=Despesa%20recorrente%20apagada.')
 }
 
 export async function toggleRecurringExpense(formData: FormData) {
   const parsed = z
     .object({ id: z.uuid(), isActive: z.enum(['true', 'false']) })
-    .safeParse({
-      id: formData.get('id'),
-      isActive: formData.get('isActive'),
-    })
+    .safeParse({ id: formData.get('id'), isActive: formData.get('isActive') })
   if (!parsed.success) errorRedirect('Despesa inválida.')
   const { supabase, user } = await getUser()
   const { error } = await supabase
@@ -134,5 +158,5 @@ export async function toggleRecurringExpense(formData: FormData) {
   if (error) errorRedirect('Não foi possível atualizar a despesa.')
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
-  redirect('/dashboard/recurring')
+  redirect(`/dashboard/recurring?toast=${parsed.data.isActive === 'true' ? 'Despesa%20ativada.' : 'Despesa%20pausada.'}`)
 }
