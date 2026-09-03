@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
-import { updateRecurringExpense } from '../actions'
+import { updateRecurringExpense } from '../../actions'
 
 export const dynamic = 'force-dynamic'
 
