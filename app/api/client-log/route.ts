@@ -16,7 +16,10 @@ export async function POST(request: Request) {
       meta?: unknown
     }
 
-    const level = body.level === 'error' ? 'error' : 'info'
+    if (body.level !== 'error') {
+      return new Response(null, { status: 400 })
+    }
+
     const message =
       typeof body.message === 'string'
         ? body.message.slice(0, MAX_MESSAGE_LENGTH)
@@ -26,10 +29,10 @@ export async function POST(request: Request) {
         ? (body.meta as Record<string, unknown>)
         : undefined
 
-    logger[level](`client_${message}`, meta)
+    logger.error(`client_${message}`, meta)
     return new Response(null, { status: 204 })
   } catch (error) {
-    logger.warn('client_log_rejected', { error })
+    logger.error('client_log_rejected', { error })
     return new Response(null, { status: 400 })
   }
 }
