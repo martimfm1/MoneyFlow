@@ -12,24 +12,10 @@ import {
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
+import { formatCurrency, formatShortDate } from '@/lib/format'
 import { signOut } from './actions'
 
 export const dynamic = 'force-dynamic'
-
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat('pt-PT', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-  }).format(amount)
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('pt-PT', {
-    day: '2-digit',
-    month: 'short',
-  }).format(new Date(value))
-}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -111,7 +97,7 @@ export default async function DashboardPage() {
             Saldo total
           </p>
           <p className="mt-2 text-4xl font-semibold tracking-tight tabular-nums sm:text-5xl">
-            {formatMoney(totalBalance, currency)}
+            {formatCurrency(totalBalance, currency)}
           </p>
           <div className="mt-6 flex flex-wrap gap-2">
             <Button asChild>
@@ -162,7 +148,7 @@ export default async function DashboardPage() {
                       </div>
                     </div>
                     <p className="font-semibold tabular-nums">
-                      {formatMoney(
+                      {formatCurrency(
                         Number(account.balance),
                         account.currency_code || currency,
                       )}
@@ -238,14 +224,14 @@ export default async function DashboardPage() {
                           </p>
                           <p className="mt-0.5 truncate text-xs text-[hsl(var(--muted-foreground))]">
                             {account?.name ?? 'Conta'} ·{' '}
-                            {formatDate(transaction.occurred_at)}
+                            {formatShortDate(transaction.occurred_at)}
                           </p>
                         </div>
                         <p
                           className={`shrink-0 text-sm font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}
                         >
                           {isIncome ? '+' : '-'}
-                          {formatMoney(
+                          {formatCurrency(
                             Number(transaction.amount),
                             account?.currency_code || currency,
                           )}
@@ -315,10 +301,10 @@ export default async function DashboardPage() {
                       </div>
                       <div className="mt-2 flex items-center justify-between text-xs">
                         <span className="tabular-nums">
-                          {formatMoney(current, currency)}
+                          {formatCurrency(current, currency)}
                         </span>
                         <span className="text-[hsl(var(--muted-foreground))]">
-                          {formatMoney(target, currency)}
+                          {formatCurrency(target, currency)}
                         </span>
                       </div>
                     </Link>
