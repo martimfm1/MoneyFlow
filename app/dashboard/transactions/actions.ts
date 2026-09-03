@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { normalizeDecimalInput } from '@/lib/number'
 
 const updateSchema = z.object({
   id: z.uuid(),
@@ -29,7 +30,7 @@ export async function updateTransaction(formData: FormData) {
   const parsed = updateSchema.safeParse({
     id: formData.get('id'),
     transactionType: formData.get('transactionType'),
-    amount: formData.get('amount'),
+    amount: normalizeDecimalInput(formData.get('amount')),
     accountId: formData.get('accountId'),
     categoryId: formData.get('categoryId'),
     description: formData.get('description') || '',
