@@ -15,7 +15,11 @@ export function DeleteAccountButton({
     <form
       action={deleteAccount}
       onSubmit={(event) => {
-        if (!window.confirm(`Apagar a conta “${name}”? Esta ação não pode ser anulada.`))
+        if (
+          !window.confirm(
+            `Apagar a conta “${name}”? Esta ação não pode ser anulada.`,
+          )
+        )
           event.preventDefault()
       }}
     >

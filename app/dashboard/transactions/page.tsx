@@ -78,10 +78,7 @@ export default async function TransactionsPage({
   const { data: transactions } = await query
   const currency = profile?.currency_code ?? 'EUR'
   const hasFilters =
-    Boolean(q) ||
-    type !== 'all' ||
-    categoryId !== 'all' ||
-    accountId !== 'all'
+    Boolean(q) || type !== 'all' || categoryId !== 'all' || accountId !== 'all'
   const incomeTotal = (transactions ?? [])
     .filter((t) => t.transaction_type === 'income')
     .reduce((sum, t) => sum + Number(t.amount), 0)
@@ -112,19 +109,25 @@ export default async function TransactionsPage({
 
       <section className="mt-6 grid gap-3 sm:grid-cols-3">
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Movimentos visíveis</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Movimentos visíveis
+          </p>
           <p className="mt-2 text-2xl font-semibold tabular-nums">
             {transactions?.length ?? 0}
           </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Receitas visíveis</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Receitas visíveis
+          </p>
           <p className="mt-2 text-2xl font-semibold tabular-nums text-[hsl(var(--success))]">
             +{formatCurrency(incomeTotal, currency)}
           </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Despesas visíveis</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Despesas visíveis
+          </p>
           <p className="mt-2 text-2xl font-semibold tabular-nums text-[hsl(var(--danger))]">
             -{formatCurrency(expenseTotal, currency)}
           </p>
@@ -157,7 +160,8 @@ export default async function TransactionsPage({
               <option value="all">Todas as contas</option>
               {accounts?.map((account) => (
                 <option key={account.id} value={account.id}>
-                  {account.name}{account.is_active ? '' : ' · Arquivada'}
+                  {account.name}
+                  {account.is_active ? '' : ' · Arquivada'}
                 </option>
               ))}
             </select>
@@ -213,7 +217,9 @@ export default async function TransactionsPage({
       {!transactions?.length ? (
         <section className="mt-6 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center">
           <h2 className="font-medium">
-            {hasFilters ? 'Nenhum movimento encontrado' : 'Ainda não há movimentos'}
+            {hasFilters
+              ? 'Nenhum movimento encontrado'
+              : 'Ainda não há movimentos'}
           </h2>
           <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-[hsl(var(--muted-foreground))]">
             {hasFilters
@@ -222,7 +228,9 @@ export default async function TransactionsPage({
           </p>
           {!hasFilters ? (
             <Button asChild className="mt-5">
-              <Link href="/dashboard/transactions/new">Adicionar movimento</Link>
+              <Link href="/dashboard/transactions/new">
+                Adicionar movimento
+              </Link>
             </Button>
           ) : null}
         </section>
@@ -244,7 +252,8 @@ export default async function TransactionsPage({
               const category = Array.isArray(transaction.categories)
                 ? transaction.categories[0]
                 : transaction.categories
-              const label = transaction.description || (isIncome ? 'Receita' : 'Despesa')
+              const label =
+                transaction.description || (isIncome ? 'Receita' : 'Despesa')
               return (
                 <article
                   key={transaction.id}
@@ -265,7 +274,8 @@ export default async function TransactionsPage({
                     <div className="min-w-0">
                       <p className="truncate font-medium">{label}</p>
                       <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
-                        {account?.name ?? 'Conta'} · {category?.name ?? 'Sem categoria'}
+                        {account?.name ?? 'Conta'} ·{' '}
+                        {category?.name ?? 'Sem categoria'}
                       </p>
                       <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))] lg:hidden">
                         {formatDate(transaction.occurred_at)}
@@ -291,7 +301,9 @@ export default async function TransactionsPage({
                     aria-label={`Editar ${label}`}
                     title="Editar movimento"
                   >
-                    <Link href={`/dashboard/transactions/${transaction.id}/edit`}>
+                    <Link
+                      href={`/dashboard/transactions/${transaction.id}/edit`}
+                    >
                       <Pencil className="size-4" />
                     </Link>
                   </Button>

@@ -1,5 +1,11 @@
 import Link from 'next/link'
-import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Pencil, Wallet } from 'lucide-react'
+import {
+  ArrowDownLeft,
+  ArrowLeft,
+  ArrowUpRight,
+  Pencil,
+  Wallet,
+} from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
@@ -35,7 +41,11 @@ export default async function TransactionDetailPage({
       .eq('id', id)
       .eq('user_id', user.id)
       .maybeSingle(),
-    supabase.from('profiles').select('currency_code').eq('id', user.id).maybeSingle(),
+    supabase
+      .from('profiles')
+      .select('currency_code')
+      .eq('id', user.id)
+      .maybeSingle(),
   ])
 
   if (!transaction) notFound()
@@ -107,26 +117,34 @@ export default async function TransactionDetailPage({
 
         <dl className="divide-y">
           <div className="flex items-start justify-between gap-5 px-5 py-4 sm:px-7">
-            <dt className="text-sm text-[hsl(var(--muted-foreground))]">Data</dt>
+            <dt className="text-sm text-[hsl(var(--muted-foreground))]">
+              Data
+            </dt>
             <dd className="text-right text-sm font-medium">
               {formatDate(transaction.occurred_at)}
             </dd>
           </div>
           <div className="flex items-start justify-between gap-5 px-5 py-4 sm:px-7">
-            <dt className="text-sm text-[hsl(var(--muted-foreground))]">Conta</dt>
+            <dt className="text-sm text-[hsl(var(--muted-foreground))]">
+              Conta
+            </dt>
             <dd className="flex items-center gap-2 text-right text-sm font-medium">
               <Wallet className="size-4 shrink-0" aria-hidden="true" />
               <span>{account?.name ?? 'Conta'}</span>
             </dd>
           </div>
           <div className="flex items-start justify-between gap-5 px-5 py-4 sm:px-7">
-            <dt className="text-sm text-[hsl(var(--muted-foreground))]">Categoria</dt>
+            <dt className="text-sm text-[hsl(var(--muted-foreground))]">
+              Categoria
+            </dt>
             <dd className="text-right text-sm font-medium">
               {category?.name ?? 'Sem categoria'}
             </dd>
           </div>
           <div className="flex items-start justify-between gap-5 px-5 py-4 sm:px-7">
-            <dt className="text-sm text-[hsl(var(--muted-foreground))]">Tipo</dt>
+            <dt className="text-sm text-[hsl(var(--muted-foreground))]">
+              Tipo
+            </dt>
             <dd className="text-right text-sm font-medium">
               {isIncome ? 'Receita' : 'Despesa'}
             </dd>

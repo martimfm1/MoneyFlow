@@ -1,11 +1,5 @@
 import Link from 'next/link'
-import {
-  Archive,
-  ArchiveRestore,
-  Pencil,
-  Plus,
-  Wallet,
-} from 'lucide-react'
+import { Archive, ArchiveRestore, Pencil, Plus, Wallet } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency } from '@/lib/format'
@@ -60,7 +54,9 @@ export default async function AccountsPage({
     <main className="moneyflow-shell py-6 sm:py-10">
       <header className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">MoneyFlow</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            MoneyFlow
+          </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
             Contas
           </h1>
@@ -88,21 +84,28 @@ export default async function AccountsPage({
         <>
           <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Saldo total</p>
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                Saldo total
+              </p>
               <p className="mt-2 text-2xl font-semibold tabular-nums">
                 {formatCurrency(totalBalance, currency)}
               </p>
             </article>
             <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Contas ativas</p>
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                Contas ativas
+              </p>
               <p className="mt-2 text-2xl font-semibold tabular-nums">
                 {activeAccounts.length}
               </p>
             </article>
             <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:col-span-2">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Gestão</p>
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                Gestão
+              </p>
               <p className="mt-2 text-sm leading-6">
-                Podes editar, arquivar ou apagar uma conta. Contas com movimentos são preservadas e podem ser arquivadas.
+                Podes editar, arquivar ou apagar uma conta. Contas com
+                movimentos são preservadas e podem ser arquivadas.
               </p>
             </article>
           </section>
@@ -177,7 +180,8 @@ export default async function AccountsPage({
           <Wallet className="mx-auto size-6" />
           <h2 className="mt-4 font-medium">Ainda não tens contas</h2>
           <p className="mx-auto mt-1 max-w-sm text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-            Cria uma conta e indica o saldo atual. Depois, cada movimento mantém o saldo sincronizado.
+            Cria uma conta e indica o saldo atual. Depois, cada movimento mantém
+            o saldo sincronizado.
           </p>
           <Button asChild className="mt-5">
             <Link href="/dashboard/accounts/new">Criar primeira conta</Link>
