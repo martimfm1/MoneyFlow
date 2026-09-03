@@ -4,16 +4,9 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { FinancialCharts } from '@/components/analytics/financial-charts'
+import { formatCurrency, formatMonth } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
-
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat('pt-PT', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-  }).format(amount)
-}
 
 function monthKey(date: Date) {
   return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`
@@ -62,13 +55,10 @@ export default async function AnalyticsPage() {
   for (let offset = -5; offset <= 0; offset += 1) {
     const date = monthStart(now, offset)
     const key = monthKey(date)
-    monthlyMap.set(key, {
-      label: new Intl.DateTimeFormat('pt-PT', { month: 'short' })
-        .format(date)
-        .replace('.', ''),
-      income: 0,
-      expense: 0,
-    })
+    const label = new Intl.DateTimeFormat('pt-PT', { month: 'short' })
+      .format(date)
+      .replace('.', '')
+    monthlyMap.set(key, { label, income: 0, expense: 0 })
   }
 
   const categoryMap = new Map<string, number>()
@@ -127,18 +117,18 @@ export default async function AnalyticsPage() {
       <section className="mt-6 grid gap-3 sm:grid-cols-3">
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
           <div className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]">
-            <TrendingUp className="size-4" /> Receitas
+            <TrendingUp className="size-4" aria-hidden="true" /> Receitas
           </div>
           <p className="mt-2 text-xl font-semibold tabular-nums">
-            {formatMoney(incomeTotal, currency)}
+            {formatCurrency(incomeTotal, currency)}
           </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
           <div className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]">
-            <TrendingDown className="size-4" /> Despesas
+            <TrendingDown className="size-4" aria-hidden="true" /> Despesas
           </div>
           <p className="mt-2 text-xl font-semibold tabular-nums">
-            {formatMoney(expenseTotal, currency)}
+            {formatCurrency(expenseTotal, currency)}
           </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
@@ -149,7 +139,7 @@ export default async function AnalyticsPage() {
             className={`mt-2 text-xl font-semibold tabular-nums ${net < 0 ? 'text-[hsl(var(--danger))]' : 'text-[hsl(var(--success))]'}`}
           >
             {net >= 0 ? '+' : ''}
-            {formatMoney(net, currency)}
+            {formatCurrency(net, currency)}
           </p>
         </article>
       </section>
@@ -174,7 +164,7 @@ export default async function AnalyticsPage() {
             <p className="text-sm font-medium">Maior categoria de despesa</p>
             <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
               {categories[0]
-                ? `${categories[0].name}: ${formatMoney(categories[0].value, currency)}`
+                ? `${categories[0].name}: ${formatCurrency(categories[0].value, currency)}`
                 : 'Ainda não existem despesas categorizadas.'}
             </p>
           </div>
