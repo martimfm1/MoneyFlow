@@ -4,7 +4,6 @@ import {
   ArrowUpRight,
   CalendarClock,
   ChevronRight,
-  CircleDollarSign,
   LogOut,
   Plus,
   Target,
