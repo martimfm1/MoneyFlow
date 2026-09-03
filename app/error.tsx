@@ -13,7 +13,19 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('MoneyFlow application error', error)
+    void fetch('/api/client-log', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        level: 'error',
+        message: 'react_error_boundary',
+        meta: {
+          error: error.message,
+          digest: error.digest,
+        },
+      }),
+      keepalive: true,
+    }).catch(() => undefined)
   }, [error])
 
   return (
