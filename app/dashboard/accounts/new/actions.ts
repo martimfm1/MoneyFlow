@@ -7,20 +7,13 @@ import { createClient } from '@/lib/supabase/server'
 import { normalizeDecimalInput } from '@/lib/number'
 import { logger } from '@/lib/logger'
 
-type AccountFormState = {
-  error?: string
-}
-
 const schema = z.object({
   name: z.string().trim().min(1).max(80),
   accountType: z.enum(['cash', 'bank', 'card', 'savings', 'other']),
   balance: z.coerce.number().finite().safe().gte(0),
 })
 
-export async function createAccount(
-  _previousState: AccountFormState,
-  formData: FormData,
-): Promise<AccountFormState> {
+export async function createAccount(formData: FormData) {
   const parsed = schema.safeParse({
     name: formData.get('name'),
     accountType: formData.get('accountType'),
@@ -28,14 +21,13 @@ export async function createAccount(
   })
 
   if (!parsed.success) {
-    return { error: 'Confirma os dados da conta.' }
+    redirect('/dashboard/accounts/new?error=Confirma%20os%20dados%20da%20conta.')
   }
 
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
-
   if (!user) redirect('/login')
 
   const { data: profile, error: profileError } = await supabase
@@ -45,13 +37,15 @@ export async function createAccount(
     .maybeSingle()
 
   if (profileError) {
-    logger.error('account_profile_lookup_failed', {
+    logger.error('account_create_profile_failed', {
       code: profileError.code,
       message: profileError.message,
       details: profileError.details,
       hint: profileError.hint,
     })
-    return { error: 'Não foi possível preparar a conta. Tenta novamente.' }
+    redirect(
+      '/dashboard/accounts/new?error=Não%20foi%20possível%20ler%20a%20moeda%20da%20conta.%20Tenta%20novamente.',
+    )
   }
 
   const { error } = await supabase.from('accounts').insert({
@@ -69,13 +63,13 @@ export async function createAccount(
       details: error.details,
       hint: error.hint,
     })
-    return {
-      error: 'Não foi possível criar a conta. Verifica os dados e tenta novamente.',
-    }
+    redirect(
+      `/dashboard/accounts/new?error=${encodeURIComponent(error.message || 'Não foi possível criar a conta.')}`,
+    )
   }
 
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/accounts')
   revalidatePath('/dashboard/transactions')
-  redirect('/dashboard/accounts')
+  redirect('/dashboard/accounts?toast=Conta%20criada.')
 }
