@@ -45,7 +45,7 @@ export async function createRecurringIncome(formData: FormData) {
     notes: formData.get('notes') || undefined,
   })
 
-  if (!parsed.success) errorRedirect('Verifica os dados do ganho recorrente.')
+  if (!parsed.success) errorRedirect('Dados inválidos.')
 
   const { supabase, user } = await getUser()
   const { error } = await supabase.from('recurring_incomes').insert({
@@ -59,11 +59,11 @@ export async function createRecurringIncome(formData: FormData) {
     notes: parsed.data.notes || null,
   })
 
-  if (error) errorRedirect('Não foi possível guardar o ganho recorrente.')
+  if (error) errorRedirect('Não foi possível guardar.')
 
   revalidatePath('/dashboard/recurring/income')
   revalidatePath('/dashboard')
-  redirect('/dashboard/recurring/income')
+  redirect('/dashboard/recurring/income?toast=Ganho%20adicionado.')
 }
 
 export async function toggleRecurringIncome(formData: FormData) {
@@ -71,7 +71,7 @@ export async function toggleRecurringIncome(formData: FormData) {
     id: formData.get('id'),
     isActive: formData.get('isActive'),
   })
-  if (!parsed.success) errorRedirect('Ganho recorrente inválido.')
+  if (!parsed.success) errorRedirect('Ganho inválido.')
 
   const { supabase, user } = await getUser()
   const { error } = await supabase
@@ -83,16 +83,16 @@ export async function toggleRecurringIncome(formData: FormData) {
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
 
-  if (error) errorRedirect('Não foi possível atualizar o ganho recorrente.')
+  if (error) errorRedirect('Não foi possível atualizar.')
 
   revalidatePath('/dashboard/recurring/income')
   revalidatePath('/dashboard')
-  redirect('/dashboard/recurring/income')
+  redirect(`/dashboard/recurring/income?toast=${parsed.data.isActive === 'true' ? 'Ganho%20ativado.' : 'Ganho%20pausado.'}`)
 }
 
 export async function deleteRecurringIncome(formData: FormData) {
   const id = z.uuid().safeParse(formData.get('id'))
-  if (!id.success) errorRedirect('Ganho recorrente inválido.')
+  if (!id.success) errorRedirect('Ganho inválido.')
 
   const { supabase, user } = await getUser()
   const { error } = await supabase
@@ -101,9 +101,9 @@ export async function deleteRecurringIncome(formData: FormData) {
     .eq('id', id.data)
     .eq('user_id', user.id)
 
-  if (error) errorRedirect('Não foi possível apagar o ganho recorrente.')
+  if (error) errorRedirect('Não foi possível apagar.')
 
   revalidatePath('/dashboard/recurring/income')
   revalidatePath('/dashboard')
-  redirect('/dashboard/recurring/income')
+  redirect('/dashboard/recurring/income?toast=Ganho%20apagado.')
 }
