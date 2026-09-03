@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { normalizeDecimalInput } from '@/lib/number'
 
 const contributionSchema = z.object({
   goalId: z.uuid(),
@@ -18,7 +19,7 @@ const deleteGoalSchema = z.object({
 export async function addGoalContribution(formData: FormData) {
   const parsed = contributionSchema.safeParse({
     goalId: formData.get('goalId'),
-    amount: formData.get('amount'),
+    amount: normalizeDecimalInput(formData.get('amount')),
     note: formData.get('note') || undefined,
   })
 
