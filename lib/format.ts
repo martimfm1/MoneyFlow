@@ -54,3 +54,14 @@ export function formatMonth(
     year: 'numeric',
   }).format(new Date(value))
 }
+
+export function formatShortMonth(
+  value: string | number | Date,
+  locale?: MoneyFlowLocale,
+) {
+  return new Intl.DateTimeFormat(resolveLocale(locale), {
+    month: 'short',
+  })
+    .format(new Date(value))
+    .replace('.', '')
+}
