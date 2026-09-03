@@ -53,10 +53,9 @@ export default async function NewWishlistItemPage({
               Preço
               <input
                 name="price"
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
-                min="0"
+                autoComplete="off"
                 required
                 placeholder="199,99"
                 className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 text-lg font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
