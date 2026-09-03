@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const itemSchema = z.object({
@@ -32,6 +33,15 @@ async function getUser() {
   return { supabase, user }
 }
 
+function normalizeNumber(value: FormDataEntryValue | null) {
+  if (typeof value !== 'string') return value
+  const normalized = value.trim()
+  if (normalized.includes(',')) {
+    return normalized.replace(/\./g, '').replace(',', '.')
+  }
+  return normalized
+}
+
 function errorRedirect(path: string, message: string): never {
   redirect(`${path}?error=${encodeURIComponent(message)}`)
 }
@@ -40,7 +50,7 @@ function itemInput(formData: FormData) {
   return {
     id: formData.get('id'),
     name: formData.get('name'),
-    price: formData.get('price'),
+    price: normalizeNumber(formData.get('price')),
     category: formData.get('category') || '',
     priority: formData.get('priority'),
     url: formData.get('url') || '',
@@ -52,8 +62,12 @@ function itemInput(formData: FormData) {
 
 export async function createWishlistItem(formData: FormData) {
   const parsed = itemSchema.safeParse(itemInput(formData))
-  if (!parsed.success)
+  if (!parsed.success) {
+    logger.error('wishlist_create_validation_failed', {
+      fieldCount: parsed.error.issues.length,
+    })
     errorRedirect('/dashboard/wishlist/new', 'Confirma os dados.')
+  }
   const { supabase, user } = await getUser()
   const { error } = await supabase.from('wishlist_items').insert({
     user_id: user.id,
@@ -66,8 +80,15 @@ export async function createWishlistItem(formData: FormData) {
     desired_date: parsed.data.desiredDate || null,
     notes: parsed.data.notes || null,
   })
-  if (error)
+  if (error) {
+    logger.error('wishlist_create_db_failed', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    })
     errorRedirect('/dashboard/wishlist/new', 'Não foi possível guardar o item.')
+  }
   revalidatePath('/dashboard/wishlist')
   revalidatePath('/dashboard')
   redirect('/dashboard/wishlist')
@@ -75,8 +96,12 @@ export async function createWishlistItem(formData: FormData) {
 
 export async function updateWishlistItem(formData: FormData) {
   const parsed = itemSchema.safeParse(itemInput(formData))
-  if (!parsed.success || !parsed.data.id)
+  if (!parsed.success || !parsed.data.id) {
+    logger.error('wishlist_update_validation_failed', {
+      fieldCount: parsed.success ? 1 : parsed.error.issues.length,
+    })
     errorRedirect('/dashboard/wishlist', 'Confirma os dados.')
+  }
   const { supabase, user } = await getUser()
   const { error } = await supabase
     .from('wishlist_items')
@@ -93,11 +118,18 @@ export async function updateWishlistItem(formData: FormData) {
     })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
-  if (error)
+  if (error) {
+    logger.error('wishlist_update_db_failed', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    })
     errorRedirect(
       `/dashboard/wishlist/${parsed.data.id}/edit`,
       'Não foi possível atualizar o item.',
     )
+  }
   revalidatePath('/dashboard/wishlist')
   revalidatePath(`/dashboard/wishlist/${parsed.data.id}/edit`)
   revalidatePath('/dashboard')
@@ -183,13 +215,28 @@ export async function createGoalFromWishlist(formData: FormData) {
     })
     .select('id')
     .single()
-  if (error || !goal)
+  if (error || !goal) {
+    logger.error('wishlist_goal_create_db_failed', {
+      code: error?.code,
+      message: error?.message,
+      details: error?.details,
+      hint: error?.hint,
+    })
     errorRedirect('/dashboard/wishlist', 'Não foi possível criar o objetivo.')
-  await supabase
+  }
+  const { error: statusError } = await supabase
     .from('wishlist_items')
     .update({ status: 'saving' })
     .eq('id', item.id)
     .eq('user_id', user.id)
+  if (statusError) {
+    logger.error('wishlist_status_sync_db_failed', {
+      code: statusError.code,
+      message: statusError.message,
+      details: statusError.details,
+      hint: statusError.hint,
+    })
+  }
   revalidatePath('/dashboard/wishlist')
   revalidatePath('/dashboard')
   redirect(`/dashboard/goals/${goal.id}`)
