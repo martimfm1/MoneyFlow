@@ -4,6 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { addGoalContribution } from '../actions'
+import { DeleteGoalButton } from '../delete-goal-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -76,13 +77,14 @@ export default async function GoalDetailPage({
   )
 
   return (
-    <main className="moneyflow-shell py-6 sm:py-10">
-      <div className="flex items-center gap-2">
+    <main className="moneyflow-shell py-6 sm:py-10 lg:py-12">
+      <div className="flex items-center justify-between gap-2">
         <Button asChild size="sm" variant="ghost">
           <Link href="/dashboard/goals">
             <ArrowLeft className="size-4" /> Objetivos
           </Link>
         </Button>
+        <DeleteGoalButton goalId={goal.id} />
       </div>
 
       <header className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -95,7 +97,7 @@ export default async function GoalDetailPage({
               Objetivo · Prioridade{' '}
               {priorityLabels[goal.priority] ?? goal.priority}
             </p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight">
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight lg:text-3xl">
               {goal.name}
             </h1>
             {goal.category ? (
