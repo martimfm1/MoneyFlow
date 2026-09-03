@@ -3,9 +3,9 @@
 import { Trash2 } from 'lucide-react'
 import { useActionState } from 'react'
 import { Button } from '@/components/ui/button'
-import { deleteAccount } from './actions'
+import { deleteAccount, type AccountActionState } from './actions'
 
-const initialState = {}
+const initialState: AccountActionState = {}
 
 export function DeleteAccountButton({
   id,
@@ -48,7 +48,11 @@ export function DeleteAccountButton({
         </Button>
       </form>
       {state.error ? (
-        <p role="alert" aria-live="assertive" className="max-w-xs text-xs text-[hsl(var(--danger))]">
+        <p
+          role="alert"
+          aria-live="assertive"
+          className="max-w-xs text-xs text-[hsl(var(--danger))]"
+        >
           {state.error}
         </p>
       ) : null}
