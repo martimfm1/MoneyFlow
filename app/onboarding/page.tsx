@@ -113,10 +113,9 @@ export default async function OnboardingPage({
               <span>Saldo atual</span>
               <input
                 name="balance"
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
-                min="0"
+                autoComplete="off"
                 required
                 placeholder="0,00"
                 className="min-h-12 w-full rounded-[var(--radius-md)] border bg-transparent px-3 text-xl outline-none"
