@@ -49,34 +49,7 @@
 }
 
 .dark {
-  --background: 240 8% 4.5%;
-  --foreground: 0 0% 96%;
-  --surface: 240 7% 7.5%;
-  --surface-muted: 240 6% 11%;
-  --border: 240 5% 17%;
-  --muted-foreground: 240 5% 63%;
-  --primary: 0 0% 96%;
-  --primary-foreground: 240 8% 5%;
-  --card: 240 7% 7.5%;
-  --card-foreground: 0 0% 96%;
-  --popover: 240 7% 8.5%;
-  --popover-foreground: 0 0% 96%;
-  --secondary: 240 6% 12%;
-  --secondary-foreground: 0 0% 95%;
-  --muted: 240 6% 12%;
-  --accent: 240 6% 13%;
-  --accent-foreground: 0 0% 96%;
-  --destructive: oklch(0.704 0.191 22.216);
-  --input: 240 5% 18%;
-  --ring: 0 0% 72%;
-  --sidebar: 240 7% 6.5%;
-  --sidebar-foreground: 0 0% 96%;
-  --sidebar-primary: 0 0% 96%;
-  --sidebar-primary-foreground: 240 8% 5%;
-  --sidebar-accent: 240 6% 11%;
-  --sidebar-accent-foreground: 0 0% 96%;
-  --sidebar-border: 240 5% 17%;
-  --sidebar-ring: 0 0% 50%;
+  color-scheme: dark;
 }
 
 [data-theme='light'] {
@@ -108,10 +81,6 @@
   --sidebar-accent-foreground: 240 6% 12%;
   --sidebar-border: 240 6% 90%;
   --sidebar-ring: 240 4% 60%;
-}
-
-[data-theme='dark'] {
-  color-scheme: dark;
 }
 
 * {
@@ -340,6 +309,7 @@ select {
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-foreground: var(--foreground);
   --color-background: var(--background);
   --radius-sm: calc(var(--radius) * 0.7);
   --radius-md: calc(var(--radius) * 0.85);
@@ -352,14 +322,15 @@ select {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: hsl(var(--border));
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 
   html {
-    @apply font-sans;
+    font-family: var(--font-sans);
   }
 }
