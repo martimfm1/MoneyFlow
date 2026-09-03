@@ -19,18 +19,33 @@ function isItemActive(pathname: string, href: string) {
 
 type DashboardNavigationProps = {
   locale: MoneyFlowLocale
+  variant?: 'mobile' | 'sidebar'
 }
 
-export function DashboardNavigation({ locale }: DashboardNavigationProps) {
+export function DashboardNavigation({
+  locale,
+  variant = 'mobile',
+}: DashboardNavigationProps) {
   const pathname = usePathname()
   const t = createTranslator(locale)
+  const isSidebar = variant === 'sidebar'
 
   return (
     <nav
       aria-label={t('nav.label')}
-      className="fixed inset-x-0 bottom-0 z-40 border-t bg-[hsl(var(--surface)/0.94)] backdrop-blur-xl md:sticky md:top-4 md:bottom-auto md:rounded-[var(--radius-lg)] md:border md:border-[hsl(var(--border)/0.9)] md:bg-[hsl(var(--surface))] md:backdrop-blur-none"
+      className={
+        isSidebar
+          ? 'rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-2 shadow-sm'
+          : 'fixed inset-x-0 bottom-0 z-40 border-t bg-[hsl(var(--surface)/0.94)] backdrop-blur-xl'
+      }
     >
-      <div className="mx-auto grid max-w-3xl grid-cols-5 px-2 safe-bottom md:flex md:max-w-none md:items-center md:justify-center md:gap-1 md:p-1 md:safe-bottom-0">
+      <div
+        className={
+          isSidebar
+            ? 'flex flex-col gap-1'
+            : 'mx-auto grid max-w-3xl grid-cols-5 px-2 safe-bottom'
+        }
+      >
         {items.map(({ href, key, icon: Icon }) => {
           const active = isItemActive(pathname, href)
           const label = t(key)
@@ -40,14 +55,18 @@ export function DashboardNavigation({ locale }: DashboardNavigationProps) {
               key={href}
               href={href}
               aria-current={active ? 'page' : undefined}
-              className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-md)] px-2 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))] md:min-h-10 md:flex-row md:gap-2 md:px-3 md:text-xs ${
+              className={`flex font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))] ${
+                isSidebar
+                  ? 'min-h-11 items-center gap-3 rounded-[var(--radius-md)] px-3 text-sm'
+                  : 'min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-md)] px-2 text-[11px]'
+              } ${
                 active
                   ? 'bg-[hsl(var(--surface-muted))] text-[hsl(var(--foreground))]'
                   : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--surface-muted))] hover:text-[hsl(var(--foreground))]'
               }`}
             >
-              <Icon aria-hidden="true" className="size-4" />
-              {label}
+              <Icon aria-hidden="true" className="size-4 shrink-0" />
+              <span className={isSidebar ? 'truncate' : undefined}>{label}</span>
             </Link>
           )
         })}
