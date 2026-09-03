@@ -104,7 +104,9 @@ export default async function AccountsPage({
                 Gestão
               </p>
               <p className="mt-2 text-sm leading-6">
-                Podes abrir uma conta para ver os movimentos, editar, arquivar ou apagar quando permitido. Contas com movimentos são preservadas e podem ser arquivadas.
+                Podes abrir uma conta para ver os movimentos, editar, arquivar
+                ou apagar quando permitido. Contas com movimentos são
+                preservadas e podem ser arquivadas.
               </p>
             </article>
           </section>
@@ -133,9 +135,12 @@ export default async function AccountsPage({
                           <Wallet className="size-4" />
                         </span>
                         <div className="min-w-0">
-                          <h3 className="truncate font-medium">{account.name}</h3>
+                          <h3 className="truncate font-medium">
+                            {account.name}
+                          </h3>
                           <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                            {labels[account.account_type] ?? account.account_type}
+                            {labels[account.account_type] ??
+                              account.account_type}
                             {account.is_active ? '' : ' · Arquivada'}
                           </p>
                         </div>

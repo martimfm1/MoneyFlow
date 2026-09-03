@@ -207,10 +207,12 @@ export default async function RecurringIncomePage({
         {!items.length ? (
           <div className="mt-4 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center">
             <ArrowDownLeft className="mx-auto size-6" />
-            <h3 className="mt-4 font-medium">Ainda não tens ganhos recorrentes</h3>
+            <h3 className="mt-4 font-medium">
+              Ainda não tens ganhos recorrentes
+            </h3>
             <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-              Adiciona o teu salário, recibos ou outros rendimentos previsíveis e
-              passa a ter uma estimativa mensal mais completa.
+              Adiciona o teu salário, recibos ou outros rendimentos previsíveis
+              e passa a ter uma estimativa mensal mais completa.
             </p>
           </div>
         ) : (
@@ -227,7 +229,8 @@ export default async function RecurringIncomePage({
                     <div className="min-w-0">
                       <h3 className="truncate font-semibold">{item.name}</h3>
                       <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
-                        {item.source || 'Sem origem'} · {frequencyLabels[item.frequency]}
+                        {item.source || 'Sem origem'} ·{' '}
+                        {frequencyLabels[item.frequency]}
                       </p>
                     </div>
                     <span className="shrink-0 rounded-full bg-[hsl(var(--surface-muted))] px-2 py-1 text-xs font-medium">
@@ -323,8 +326,12 @@ export default async function RecurringIncomePage({
         className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
       >
         <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Novo rendimento</p>
-          <h2 className="mt-1 text-lg font-semibold">Adicionar ganho recorrente</h2>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Novo rendimento
+          </p>
+          <h2 className="mt-1 text-lg font-semibold">
+            Adicionar ganho recorrente
+          </h2>
           <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
             Usa a periodicidade real da entrada. O MoneyFlow converte-a para um
             equivalente mensal e anual para facilitar o planeamento.

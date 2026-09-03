@@ -21,7 +21,9 @@ export async function createAccount(formData: FormData) {
   })
 
   if (!parsed.success)
-    redirect('/dashboard/accounts/new?error=Confirma%20os%20dados%20da%20conta.')
+    redirect(
+      '/dashboard/accounts/new?error=Confirma%20os%20dados%20da%20conta.',
+    )
 
   const supabase = await createClient()
   const {

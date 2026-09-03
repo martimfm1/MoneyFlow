@@ -1,5 +1,11 @@
 import Link from 'next/link'
-import { ArrowDownLeft, ArrowLeft, ArrowUpRight, Pencil, Wallet } from 'lucide-react'
+import {
+  ArrowDownLeft,
+  ArrowLeft,
+  ArrowUpRight,
+  Pencil,
+  Wallet,
+} from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
@@ -37,13 +43,17 @@ export default async function AccountDetailPage({
   const [{ data: account }, { data: transactions }] = await Promise.all([
     supabase
       .from('accounts')
-      .select('id, name, account_type, balance, currency_code, is_active, created_at, updated_at')
+      .select(
+        'id, name, account_type, balance, currency_code, is_active, created_at, updated_at',
+      )
       .eq('id', id)
       .eq('user_id', user.id)
       .maybeSingle(),
     supabase
       .from('transactions')
-      .select('id, transaction_type, amount, description, occurred_at, categories(name)')
+      .select(
+        'id, transaction_type, amount, description, occurred_at, categories(name)',
+      )
       .eq('account_id', id)
       .eq('user_id', user.id)
       .order('occurred_at', { ascending: false })
@@ -95,12 +105,15 @@ export default async function AccountDetailPage({
               <Wallet className="size-5" aria-hidden="true" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Conta</p>
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                Conta
+              </p>
               <h1 className="mt-1 break-words text-2xl font-semibold tracking-tight sm:text-3xl">
                 {account.name}
               </h1>
               <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-                {labels[account.account_type] ?? account.account_type} · {currency}
+                {labels[account.account_type] ?? account.account_type} ·{' '}
+                {currency}
                 {account.is_active ? '' : ' · Arquivada'}
               </p>
             </div>
@@ -112,13 +125,17 @@ export default async function AccountDetailPage({
 
         <div className="grid gap-3 border-b p-5 sm:grid-cols-2 sm:p-7">
           <article className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-4">
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">Receitas nos últimos 50 movimentos</p>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Receitas nos últimos 50 movimentos
+            </p>
             <p className="mt-2 text-xl font-semibold tabular-nums text-[hsl(var(--success))]">
               +{formatCurrency(incomeTotal, currency)}
             </p>
           </article>
           <article className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-4">
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">Despesas nos últimos 50 movimentos</p>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Despesas nos últimos 50 movimentos
+            </p>
             <p className="mt-2 text-xl font-semibold tabular-nums text-[hsl(var(--danger))]">
               -{formatCurrency(expenseTotal, currency)}
             </p>
@@ -128,8 +145,12 @@ export default async function AccountDetailPage({
         <div className="p-5 sm:p-7">
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm text-[hsl(var(--muted-foreground))]">Histórico</p>
-              <h2 className="mt-1 text-lg font-semibold">Movimentos desta conta</h2>
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                Histórico
+              </p>
+              <h2 className="mt-1 text-lg font-semibold">
+                Movimentos desta conta
+              </h2>
             </div>
             <Link
               href={`/dashboard/transactions?account=${account.id}`}
@@ -153,7 +174,8 @@ export default async function AccountDetailPage({
                 const category = Array.isArray(transaction.categories)
                   ? transaction.categories[0]
                   : transaction.categories
-                const label = transaction.description || (isIncome ? 'Receita' : 'Despesa')
+                const label =
+                  transaction.description || (isIncome ? 'Receita' : 'Despesa')
                 return (
                   <Link
                     key={transaction.id}
@@ -168,15 +190,19 @@ export default async function AccountDetailPage({
                       )}
                     </span>
                     <span className="min-w-0">
-                      <span className="block truncate text-sm font-medium">{label}</span>
+                      <span className="block truncate text-sm font-medium">
+                        {label}
+                      </span>
                       <span className="mt-1 block truncate text-xs text-[hsl(var(--muted-foreground))]">
-                        {category?.name ?? 'Sem categoria'} · {formatDate(transaction.occurred_at)}
+                        {category?.name ?? 'Sem categoria'} ·{' '}
+                        {formatDate(transaction.occurred_at)}
                       </span>
                     </span>
                     <span
                       className={`text-sm font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}
                     >
-                      {isIncome ? '+' : '-'}{formatCurrency(Number(transaction.amount), currency)}
+                      {isIncome ? '+' : '-'}
+                      {formatCurrency(Number(transaction.amount), currency)}
                     </span>
                   </Link>
                 )
