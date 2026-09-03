@@ -145,11 +145,10 @@ export default async function GoalsPage({
                       <input
                         id={`contribution-${goal.id}`}
                         name="amount"
-                        type="number"
+                        type="text"
                         inputMode="decimal"
-                        step="0.01"
-                        min="0.01"
-                        max={remaining.toFixed(2)}
+                        autoComplete="off"
+                        minLength={1}
                         placeholder={`Até ${formatCurrency(remaining, currency)}`}
                         className="min-h-10 min-w-0 flex-1 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
                       />
