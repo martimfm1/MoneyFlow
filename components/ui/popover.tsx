@@ -2,7 +2,6 @@
 
 import {
   createContext,
-  createPortal,
   type HTMLAttributes,
   type MutableRefObject,
   type ReactNode,
@@ -11,6 +10,7 @@ import {
   useRef,
   useState,
 } from 'react'
+import { createPortal } from 'react-dom'
 import { cn } from '@/lib/utils'
 
 type PopoverContextValue = {
