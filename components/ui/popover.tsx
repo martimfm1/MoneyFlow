@@ -4,6 +4,7 @@ import {
   createContext,
   createPortal,
   type HTMLAttributes,
+  type MutableRefObject,
   type ReactNode,
   useContext,
   useEffect,
@@ -15,7 +16,7 @@ import { cn } from '@/lib/utils'
 type PopoverContextValue = {
   open: boolean
   setOpen: (open: boolean) => void
-  triggerRef: React.MutableRefObject<HTMLButtonElement | null>
+  triggerRef: MutableRefObject<HTMLButtonElement | null>
 }
 
 const PopoverContext = createContext<PopoverContextValue | null>(null)
@@ -77,6 +78,7 @@ export function PopoverContent({
   className,
   children,
   align = 'end',
+  ...props
 }: HTMLAttributes<HTMLDivElement> & { align?: 'start' | 'center' | 'end' }) {
   const { open, setOpen, triggerRef } = usePopoverContext()
   const ref = useRef<HTMLDivElement | null>(null)
@@ -130,7 +132,7 @@ export function PopoverContent({
         className,
       )}
       style={{ top: position.top, left: position.left }}
-      {...Object.fromEntries(Object.entries({}))}
+      {...props}
     >
       {children}
     </div>,
