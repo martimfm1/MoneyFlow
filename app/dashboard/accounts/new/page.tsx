@@ -69,9 +69,9 @@ export default async function NewAccountPage({
               <span>Saldo atual</span>
               <input
                 name="balance"
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
+                autoComplete="off"
                 required
                 placeholder="0,00"
                 className="min-h-11 w-full rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
