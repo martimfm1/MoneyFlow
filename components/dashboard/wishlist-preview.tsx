@@ -58,39 +58,45 @@ export async function WishlistPreview({ currency }: { currency: string }) {
       ) : (
         <div className="mt-3 -mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 md:grid md:grid-cols-3 md:overflow-visible">
           {relevant.map((item) => (
-            <Link
+            <article
               key={item.id}
-              href={`/dashboard/wishlist/${item.id}/edit`}
-              className="min-w-[15.5rem] snap-start rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm transition-colors active:bg-[hsl(var(--surface-muted))] md:min-w-0"
+              className="min-w-[15.5rem] snap-start overflow-hidden rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] shadow-sm transition-colors md:min-w-0"
             >
-              <div className="flex items-start justify-between gap-3">
-                <p className="min-w-0 truncate font-medium">{item.name}</p>
-                <p className="shrink-0 font-semibold tabular-nums">
-                  {formatCurrency(Number(item.price), currency)}
-                </p>
-              </div>
-              <div className="mt-3 flex items-center justify-between gap-3 text-xs text-[hsl(var(--muted-foreground))]">
-                <span>
-                  {item.desired_date
-                    ? `Até ${formatDate(`${item.desired_date}T00:00:00`)}`
-                    : item.status === 'saving'
-                      ? 'A poupar'
-                      : 'Em espera'}
-                </span>
-                {item.url ? (
+              <Link
+                href={`/dashboard/wishlist/${item.id}/edit`}
+                className="block p-4 active:bg-[hsl(var(--surface-muted))]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <p className="min-w-0 truncate font-medium">{item.name}</p>
+                  <p className="shrink-0 font-semibold tabular-nums">
+                    {formatCurrency(Number(item.price), currency)}
+                  </p>
+                </div>
+                <div className="mt-3 flex items-center justify-between gap-3 text-xs text-[hsl(var(--muted-foreground))]">
+                  <span>
+                    {item.desired_date
+                      ? `Até ${formatDate(`${item.desired_date}T00:00:00`)}`
+                      : item.status === 'saving'
+                        ? 'A poupar'
+                        : 'Em espera'}
+                  </span>
+                </div>
+              </Link>
+              {item.url ? (
+                <div className="border-t px-4 py-2">
                   <a
                     href={item.url}
                     target="_blank"
                     rel="noreferrer"
-                    onClick={(event) => event.stopPropagation()}
                     aria-label={`Abrir ${item.name}`}
-                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-full hover:bg-[hsl(var(--surface-muted))]"
+                    className="inline-flex min-h-8 items-center gap-1.5 text-xs font-medium text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"
                   >
                     <ExternalLink className="size-3.5" aria-hidden="true" />
+                    Abrir link
                   </a>
-                ) : null}
-              </div>
-            </Link>
+                </div>
+              ) : null}
+            </article>
           ))}
         </div>
       )}
