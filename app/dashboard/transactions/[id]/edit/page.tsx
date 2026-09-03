@@ -109,7 +109,9 @@ export default async function EditTransactionPage({
                 type="text"
                 inputMode="decimal"
                 autoComplete="off"
-                defaultValue={Number(transaction.amount).toFixed(2).replace('.', ',')}
+                defaultValue={Number(transaction.amount)
+                  .toFixed(2)
+                  .replace('.', ',')}
                 required
                 className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
               />
