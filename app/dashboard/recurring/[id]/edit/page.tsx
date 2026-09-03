@@ -95,10 +95,9 @@ export default async function EditRecurringExpensePage({
             Valor
             <input
               name="amount"
-              type="number"
+              type="text"
               inputMode="decimal"
-              min="0.01"
-              step="0.01"
+              autoComplete="off"
               required
               defaultValue={expense.amount}
               className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
