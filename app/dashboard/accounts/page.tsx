@@ -104,8 +104,12 @@ export default async function AccountsPage({
                 Gestão
               </p>
               <p className="mt-2 text-sm leading-6">
+<<<<<<< HEAD
                 Podes editar, arquivar ou apagar uma conta. Contas com
                 movimentos são preservadas e podem ser arquivadas.
+=======
+                Podes abrir uma conta para ver os movimentos, editar, arquivar ou apagar quando permitido.
+>>>>>>> 2f06c0dcc90fa756136367b41cf137e82a69d911
               </p>
             </article>
           </section>
@@ -123,26 +127,32 @@ export default async function AccountsPage({
                   key={account.id}
                   className={`flex min-h-full flex-col rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md ${account.is_active ? '' : 'opacity-75'}`}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
-                        <Wallet className="size-4" />
-                      </span>
-                      <div className="min-w-0">
-                        <h3 className="truncate font-medium">{account.name}</h3>
-                        <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                          {labels[account.account_type] ?? account.account_type}
-                          {account.is_active ? '' : ' · Arquivada'}
-                        </p>
+                  <Link
+                    href={`/dashboard/accounts/${account.id}`}
+                    className="block rounded-[var(--radius-md)] outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+                    aria-label={`Ver detalhes de ${account.name}`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
+                          <Wallet className="size-4" />
+                        </span>
+                        <div className="min-w-0">
+                          <h3 className="truncate font-medium">{account.name}</h3>
+                          <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
+                            {labels[account.account_type] ?? account.account_type}
+                            {account.is_active ? '' : ' · Arquivada'}
+                          </p>
+                        </div>
                       </div>
+                      <p className="shrink-0 text-lg font-semibold tabular-nums">
+                        {formatCurrency(
+                          Number(account.balance),
+                          account.currency_code || currency,
+                        )}
+                      </p>
                     </div>
-                    <p className="shrink-0 text-lg font-semibold tabular-nums">
-                      {formatCurrency(
-                        Number(account.balance),
-                        account.currency_code || currency,
-                      )}
-                    </p>
-                  </div>
+                  </Link>
                   <div className="mt-auto flex flex-wrap gap-2 pt-6">
                     <Button asChild size="sm" variant="outline">
                       <Link href={`/dashboard/accounts/${account.id}/edit`}>
