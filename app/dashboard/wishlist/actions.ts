@@ -99,8 +99,12 @@ export async function updateWishlistItem(formData: FormData) {
   const parsed = itemSchema.safeParse(itemInput(formData))
   if (!parsed.success || !parsed.data.id) {
     logger.error('wishlist_update_validation_failed', {
-      fields: parsed.success ? ['id'] : parsed.error.issues.map((issue) => issue.path.join('.')),
-      issueCodes: parsed.success ? ['custom'] : parsed.error.issues.map((issue) => issue.code),
+      fields: parsed.success
+        ? ['id']
+        : parsed.error.issues.map((issue) => issue.path.join('.')),
+      issueCodes: parsed.success
+        ? ['custom']
+        : parsed.error.issues.map((issue) => issue.code),
     })
     errorRedirect('/dashboard/wishlist', 'Confirma os dados.')
   }
