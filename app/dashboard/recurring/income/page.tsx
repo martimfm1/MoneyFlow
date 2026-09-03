@@ -1,25 +1,13 @@
 import Link from 'next/link'
-import {
-  ArrowDownLeft,
-  CalendarClock,
-  Pause,
-  Play,
-  Plus,
-  Trash2,
-} from 'lucide-react'
+import { ArrowDownLeft, CalendarClock, ChevronLeft } from 'lucide-react'
 import { redirect } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
-import {
-  createRecurringIncome,
-  deleteRecurringIncome,
-  toggleRecurringIncome,
-} from './actions'
+import { Button } from '@/components/ui/button'
+import { RecurringIncomeCreateDialog } from './create-dialog'
+import { RecurringIncomeActionMenu } from './action-menu'
 
 export const dynamic = 'force-dynamic'
-
-type SearchParams = { error?: string }
 
 type RecurringIncome = {
   id: string
@@ -30,7 +18,6 @@ type RecurringIncome = {
   next_income_date: string
   currency_code: string
   is_active: boolean
-  notes: string | null
 }
 
 const frequencyLabels = {
@@ -39,17 +26,8 @@ const frequencyLabels = {
   yearly: 'Anual',
 } as const
 
-const yearlyMultipliers = {
-  monthly: 12,
-  quarterly: 4,
-  yearly: 1,
-} as const
-
-const monthlyDivisors = {
-  monthly: 1,
-  quarterly: 3,
-  yearly: 12,
-} as const
+const yearlyMultipliers = { monthly: 12, quarterly: 4, yearly: 1 } as const
+const monthlyDivisors = { monthly: 1, quarterly: 3, yearly: 12 } as const
 
 function monthlyIncome(income: RecurringIncome) {
   return Number(income.amount) / monthlyDivisors[income.frequency]
@@ -68,12 +46,7 @@ function daysUntil(dateString: string) {
   return Math.ceil((due.getTime() - todayUtc.getTime()) / 86400000)
 }
 
-export default async function RecurringIncomePage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>
-}) {
-  const params = await searchParams
+export default async function RecurringIncomePage() {
   const supabase = await createClient()
   const {
     data: { user },
@@ -88,9 +61,7 @@ export default async function RecurringIncomePage({
       .maybeSingle(),
     supabase
       .from('recurring_incomes')
-      .select(
-        'id, name, source, amount, frequency, next_income_date, currency_code, is_active, notes',
-      )
+      .select('id, name, source, amount, frequency, next_income_date, currency_code, is_active')
       .eq('user_id', user.id)
       .order('is_active', { ascending: false })
       .order('next_income_date', { ascending: true }),
@@ -99,14 +70,8 @@ export default async function RecurringIncomePage({
   const currency = profile?.currency_code ?? 'EUR'
   const items = (incomes ?? []) as RecurringIncome[]
   const activeItems = items.filter((item) => item.is_active)
-  const monthlyTotal = activeItems.reduce(
-    (sum, item) => sum + monthlyIncome(item),
-    0,
-  )
-  const yearlyTotal = activeItems.reduce(
-    (sum, item) => sum + yearlyIncome(item),
-    0,
-  )
+  const monthlyTotal = activeItems.reduce((sum, item) => sum + monthlyIncome(item), 0)
+  const yearlyTotal = activeItems.reduce((sum, item) => sum + yearlyIncome(item), 0)
   const nextIncome = activeItems[0]
   const dueSoon = activeItems.filter((item) => {
     const days = daysUntil(item.next_income_date)
@@ -115,93 +80,45 @@ export default async function RecurringIncomePage({
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
-      <header className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <Link
-            href="/dashboard/recurring"
-            className="text-sm text-[hsl(var(--muted-foreground))] hover:underline"
-          >
-            ← Recorrentes
-          </Link>
-          <p className="mt-4 text-sm text-[hsl(var(--muted-foreground))]">
-            Planeamento financeiro
-          </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
+      <header className="flex items-center justify-between gap-4">
+        <div className="flex min-w-0 items-center gap-2">
+          <Button asChild size="icon" variant="ghost" aria-label="Voltar">
+            <Link href="/dashboard/recurring">
+              <ChevronLeft className="size-4" />
+            </Link>
+          </Button>
+          <h1 className="truncate text-2xl font-semibold tracking-tight sm:text-3xl">
             Ganhos recorrentes
           </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-            Regista salários, trabalhos, rendimentos e outras entradas que se
-            repetem para teres uma previsão mensal mais realista.
-          </p>
         </div>
-        <Button asChild>
-          <Link href="#novo-ganho">
-            <Plus className="size-4" /> Novo ganho
-          </Link>
-        </Button>
+        <RecurringIncomeCreateDialog currency={currency} />
       </header>
 
-      {params.error ? (
-        <p
-          role="alert"
-          className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
-        >
-          {params.error}
-        </p>
-      ) : null}
-
-      <section className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:p-5">
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            Ganho mensal previsto
-          </p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums">
-            {formatCurrency(monthlyTotal, currency)}
-          </p>
+      <section className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
+          <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">Mensal</p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums">{formatCurrency(monthlyTotal, currency)}</p>
         </article>
-        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:p-5">
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            Ganho anual previsto
-          </p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums">
-            {formatCurrency(yearlyTotal, currency)}
-          </p>
+        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
+          <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">Anual</p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums">{formatCurrency(yearlyTotal, currency)}</p>
         </article>
-        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:p-5">
-          <div className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]">
-            <CalendarClock className="size-4" /> Próximo ganho
+        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
+          <div className="flex items-center gap-2 text-xs font-medium text-[hsl(var(--muted-foreground))]">
+            <CalendarClock className="size-4" /> Próximo
           </div>
-          <p className="mt-2 font-semibold">
-            {nextIncome
-              ? formatDate(`${nextIncome.next_income_date}T00:00:00`)
-              : '—'}
-          </p>
-          <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-            {nextIncome?.name ?? 'Sem ganhos ativos'}
-          </p>
+          <p className="mt-2 font-semibold">{nextIncome ? formatDate(`${nextIncome.next_income_date}T00:00:00`) : '—'}</p>
         </article>
-        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:p-5">
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            A receber em 30 dias
-          </p>
+        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
+          <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">30 dias</p>
           <p className="mt-2 text-2xl font-semibold tabular-nums">{dueSoon}</p>
-          <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-            entradas previstas
-          </p>
         </article>
       </section>
 
       <section className="mt-8">
-        <div className="flex items-end justify-between gap-4">
-          <div>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">
-              Os teus rendimentos
-            </p>
-            <h2 className="mt-1 text-lg font-semibold">Ganhos recorrentes</h2>
-          </div>
-          <span className="text-sm text-[hsl(var(--muted-foreground))]">
-            {items.length} {items.length === 1 ? 'item' : 'itens'}
-          </span>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold">Rendimentos</h2>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">{items.length}</span>
         </div>
 
         {!items.length ? (
@@ -216,15 +133,12 @@ export default async function RecurringIncomePage({
             </p>
           </div>
         ) : (
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {items.map((item) => {
-              const days = daysUntil(item.next_income_date)
               const itemCurrency = item.currency_code || currency
+              const days = daysUntil(item.next_income_date)
               return (
-                <article
-                  key={item.id}
-                  className={`flex min-h-full flex-col rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm ${item.is_active ? '' : 'opacity-70'}`}
-                >
+                <article key={item.id} className={`rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm ${item.is_active ? '' : 'opacity-60'}`}>
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h3 className="truncate font-semibold">{item.name}</h3>
@@ -233,86 +147,22 @@ export default async function RecurringIncomePage({
                         {frequencyLabels[item.frequency]}
                       </p>
                     </div>
-                    <span className="shrink-0 rounded-full bg-[hsl(var(--surface-muted))] px-2 py-1 text-xs font-medium">
-                      {item.is_active ? 'Ativo' : 'Pausado'}
-                    </span>
+                    <RecurringIncomeActionMenu id={item.id} name={item.name} isActive={item.is_active} />
                   </div>
-
-                  <div className="mt-5 grid grid-cols-2 gap-3">
-                    <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                        Por entrada
-                      </p>
-                      <p className="mt-1 font-semibold tabular-nums">
-                        {formatCurrency(Number(item.amount), itemCurrency)}
-                      </p>
-                    </div>
-                    <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                        Equiv. mensal
-                      </p>
-                      <p className="mt-1 font-semibold tabular-nums">
-                        {formatCurrency(monthlyIncome(item), itemCurrency)}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                  <div className="mt-5 flex items-end justify-between gap-4">
                     <div>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                        Equiv. anual
-                      </p>
-                      <p className="mt-1 font-medium tabular-nums">
-                        {formatCurrency(yearlyIncome(item), itemCurrency)}
+                      <p className="text-2xl font-semibold tabular-nums">{formatCurrency(Number(item.amount), itemCurrency)}</p>
+                      <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
+                        {formatCurrency(monthlyIncome(item), itemCurrency)}/mês
                       </p>
                     </div>
-                    <div>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                        Próxima entrada
-                      </p>
-                      <p className="mt-1 font-medium">
-                        {formatDate(`${item.next_income_date}T00:00:00`)}
-                      </p>
+                    <div className="text-right text-xs">
+                      <p className="text-[hsl(var(--muted-foreground))]">Próximo</p>
+                      <p className="mt-1 font-medium">{formatDate(`${item.next_income_date}T00:00:00`)}</p>
                       {item.is_active && days >= 0 && days <= 30 ? (
-                        <p className="mt-0.5 text-xs text-[hsl(var(--success))]">
-                          {days === 0 ? 'Hoje' : `Em ${days} dias`}
-                        </p>
+                        <p className="mt-1 text-[hsl(var(--success))]">{days === 0 ? 'Hoje' : `${days}d`}</p>
                       ) : null}
                     </div>
-                  </div>
-
-                  {item.notes ? (
-                    <p className="mt-4 line-clamp-2 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-                      {item.notes}
-                    </p>
-                  ) : null}
-
-                  <div className="mt-auto flex flex-wrap items-center gap-2 pt-5">
-                    <form action={toggleRecurringIncome}>
-                      <input type="hidden" name="id" value={item.id} />
-                      <input
-                        type="hidden"
-                        name="isActive"
-                        value={item.is_active ? 'false' : 'true'}
-                      />
-                      <Button type="submit" size="sm" variant="outline">
-                        {item.is_active ? (
-                          <>
-                            <Pause className="size-4" /> Pausar
-                          </>
-                        ) : (
-                          <>
-                            <Play className="size-4" /> Ativar
-                          </>
-                        )}
-                      </Button>
-                    </form>
-                    <form action={deleteRecurringIncome}>
-                      <input type="hidden" name="id" value={item.id} />
-                      <Button type="submit" size="sm" variant="ghost">
-                        <Trash2 className="size-4" /> Apagar
-                      </Button>
-                    </form>
                   </div>
                 </article>
               )
