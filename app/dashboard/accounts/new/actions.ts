@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { normalizeDecimalInput } from '@/lib/number'
 
 const schema = z.object({
   name: z.string().trim().min(1).max(80),
@@ -14,7 +15,7 @@ export async function createAccount(formData: FormData) {
   const parsed = schema.safeParse({
     name: formData.get('name'),
     accountType: formData.get('accountType'),
-    balance: formData.get('balance'),
+    balance: normalizeDecimalInput(formData.get('balance')),
   })
 
   if (!parsed.success)
