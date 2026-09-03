@@ -23,7 +23,7 @@ export function FormDatePicker({ name, defaultValue, label }: { name: string; de
           {date.toLocaleDateString('pt-PT')}
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
-          <Calendar mode="single" selected={date} onSelect={(next) => { if (next) { setDate(next); setOpen(false) } }} initialFocus />
+          <Calendar mode="single" selected={date} onSelect={(next) => { if (next) { setDate(next); setOpen(false) } }} />
         </PopoverContent>
       </Popover>
       <input type="hidden" name={name} value={date.toISOString().slice(0, 10)} />
