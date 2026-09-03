@@ -107,10 +107,9 @@ export default async function NewTransactionPage({
                 <input
                   autoFocus
                   name="amount"
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  step="0.01"
-                  min="0.01"
+                  autoComplete="off"
                   required
                   placeholder="0,00"
                   className="min-h-14 w-full rounded-2xl border bg-transparent px-4 text-2xl font-semibold tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
