@@ -32,16 +32,23 @@ export function AccountCombobox({
   defaultValue,
   required = true,
 }: Props) {
-  const [value, setValue] = useState(defaultValue ?? accounts[0]?.id ?? '')
+  const initialAccount =
+    accounts.find((account) => account.id === defaultValue) ?? accounts[0] ?? null
+  const [value, setValue] = useState<AccountOption | null>(initialAccount)
 
   return (
     <div className="grid gap-2 text-sm font-medium">
       <span>Conta</span>
-      <input type="hidden" name={name} value={value} required={required} />
+      <input
+        type="hidden"
+        name={name}
+        value={value?.id ?? ''}
+        required={required}
+      />
       <Combobox
         items={accounts}
         value={value}
-        onValueChange={(nextValue) => setValue(nextValue ?? '')}
+        onValueChange={(nextValue) => setValue(nextValue)}
         itemToStringLabel={(account: AccountOption) => account.name}
       >
         <ComboboxInput placeholder="Escolher conta" aria-label="Conta" showClear={false} />
@@ -49,7 +56,7 @@ export function AccountCombobox({
           <ComboboxEmpty>Nenhuma conta encontrada.</ComboboxEmpty>
           <ComboboxList>
             {accounts.map((account) => (
-              <ComboboxItem key={account.id} value={account.id}>
+              <ComboboxItem key={account.id} value={account}>
                 <Item size="sm" className="w-full border-0 p-0 shadow-none">
                   <ItemContent>
                     <ItemTitle>{account.name}</ItemTitle>
