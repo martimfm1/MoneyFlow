@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { createGoalFromWishlist, updateWishlistStatus } from './actions'
+import { formatCurrency, formatDate } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,12 +18,6 @@ const statusLabels: Record<string, string> = {
   saving: 'A guardar',
   ready: 'Pronto',
   purchased: 'Comprado',
-}
-
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat('pt-PT', { style: 'currency', currency }).format(
-    amount,
-  )
 }
 
 export default async function WishlistPage({
@@ -77,7 +72,10 @@ export default async function WishlistPage({
       </header>
 
       {params.error ? (
-        <p className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm">
+        <p
+          role="alert"
+          className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
+        >
           {params.error}
         </p>
       ) : null}
@@ -110,7 +108,7 @@ export default async function WishlistPage({
                   </p>
                 </div>
                 <p className="shrink-0 text-lg font-semibold tabular-nums">
-                  {formatMoney(Number(item.price), currency)}
+                  {formatCurrency(Number(item.price), currency)}
                 </p>
               </div>
 
@@ -121,10 +119,7 @@ export default async function WishlistPage({
               ) : null}
               {item.desired_date ? (
                 <p className="mt-3 text-xs text-[hsl(var(--muted-foreground))]">
-                  Idealmente até{' '}
-                  {new Intl.DateTimeFormat('pt-PT').format(
-                    new Date(`${item.desired_date}T00:00:00`),
-                  )}
+                  Idealmente até {formatDate(`${item.desired_date}T00:00:00`)}
                 </p>
               ) : null}
 
