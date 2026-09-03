@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next'
+import { Suspense } from 'react'
 import './globals.css'
 import { RegisterServiceWorker } from '@/components/pwa/register-sw'
 import { ToastViewport } from '@/components/toast-viewport'
@@ -48,7 +49,9 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body>
         <RegisterServiceWorker />
-        <ToastViewport />
+        <Suspense fallback={null}>
+          <ToastViewport />
+        </Suspense>
         {children}
       </body>
     </html>
