@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { normalizeDecimalInput } from '@/lib/number'
 
 const schema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -14,7 +15,7 @@ const schema = z.object({
 export async function createGoal(formData: FormData) {
   const parsed = schema.safeParse({
     name: formData.get('name'),
-    targetAmount: formData.get('targetAmount'),
+    targetAmount: normalizeDecimalInput(formData.get('targetAmount')),
     priority: formData.get('priority'),
     targetDate: formData.get('targetDate') || undefined,
   })
