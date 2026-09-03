@@ -30,7 +30,7 @@
   --input: 240 5% 18%;
   --ring: 0 0% 72%;
   --chart-1: oklch(0.78 0 0);
-  --chart-2: oklch(0.60 0 0);
+  --chart-2: oklch(0.6 0 0);
   --chart-3: oklch(0.47 0 0);
   --chart-4: oklch(0.36 0 0);
   --chart-5: oklch(0.27 0 0);
@@ -136,7 +136,9 @@ body {
   color: hsl(var(--foreground));
   text-rendering: optimizeLegibility;
   overscroll-behavior-y: none;
-  transition: background-color 160ms ease, color 160ms ease;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
 }
 
 button,
@@ -206,7 +208,10 @@ select {
 }
 
 .mf-interactive {
-  transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 150ms ease;
 }
 
 .mf-interactive:hover {
