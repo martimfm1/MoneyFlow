@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { formatCurrency } from '@/lib/format'
 
 type MonthlyPoint = {
   label: string
@@ -28,14 +29,6 @@ type FinancialChartsProps = {
   monthly: MonthlyPoint[]
   categories: CategoryPoint[]
   currency: string
-}
-
-function formatCurrency(value: number, currency: string) {
-  return new Intl.NumberFormat('pt-PT', {
-    style: 'currency',
-    currency,
-    maximumFractionDigits: 0,
-  }).format(value)
 }
 
 const tooltipFormatter = (value: number | undefined, currency: string) =>
