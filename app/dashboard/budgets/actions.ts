@@ -43,6 +43,7 @@ export async function upsertBudget(formData: FormData) {
   const [year, monthNumber] = parsed.data.month.split('-').map(Number)
   const monthStart = new Date(Date.UTC(year, monthNumber - 1, 1))
   const normalizedMonth = `${year.toString().padStart(4, '0')}-${monthNumber.toString().padStart(2, '0')}`
+  const monthStartDate = `${normalizedMonth}-01`
 
   if (
     !Number.isInteger(year) ||
@@ -78,7 +79,7 @@ export async function upsertBudget(formData: FormData) {
     {
       user_id: user.id,
       category_id: parsed.data.categoryId,
-      month_start: normalizedMonth,
+      month_start: monthStartDate,
       amount: parsed.data.amount,
     },
     { onConflict: 'user_id,category_id,month_start' },
