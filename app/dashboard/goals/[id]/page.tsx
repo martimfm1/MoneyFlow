@@ -208,11 +208,9 @@ export default async function GoalDetailPage({
             <input
               id="detail-contribution-amount"
               name="amount"
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
-              min="0.01"
-              max={remaining.toFixed(2)}
+              autoComplete="off"
               placeholder={`Até ${formatMoney(remaining, currency)}`}
               className="min-h-10 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
               required
