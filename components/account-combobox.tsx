@@ -42,15 +42,9 @@ export function AccountCombobox({
         items={accounts}
         value={value}
         onValueChange={(nextValue) => setValue(nextValue ?? '')}
-        itemToStringLabel={(account) =>
-          typeof account === 'string' ? account : account?.name ?? ''
-        }
+        itemToStringLabel={(account: AccountOption) => account.name}
       >
-        <ComboboxInput
-          placeholder="Escolher conta"
-          aria-label="Conta"
-          showClear={false}
-        />
+        <ComboboxInput placeholder="Escolher conta" aria-label="Conta" showClear={false} />
         <ComboboxContent>
           <ComboboxEmpty>Nenhuma conta encontrada.</ComboboxEmpty>
           <ComboboxList>
@@ -61,9 +55,7 @@ export function AccountCombobox({
                     <ItemTitle>{account.name}</ItemTitle>
                     <ItemDescription>
                       {account.currencyCode ?? ''}
-                      {account.balance != null
-                        ? ` · ${Number(account.balance).toFixed(2)}`
-                        : ''}
+                      {account.balance != null ? ` · ${Number(account.balance).toFixed(2)}` : ''}
                     </ItemDescription>
                   </ItemContent>
                 </Item>
@@ -71,7 +63,7 @@ export function AccountCombobox({
             ))}
           </ComboboxList>
         </ComboboxContent>
-        <ComboboxValue className="sr-only" />
+        <ComboboxValue />
       </Combobox>
     </div>
   )
