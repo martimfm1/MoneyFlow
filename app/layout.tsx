@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { RegisterServiceWorker } from '@/components/pwa/register-sw'
+import { ToastViewport } from '@/components/toast-viewport'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeLocale } from '@/lib/i18n'
 
@@ -48,9 +48,7 @@ export default async function RootLayout({
     <html lang={locale} suppressHydrationWarning>
       <body>
         <RegisterServiceWorker />
-        <div className="fixed right-4 top-4 z-50">
-          <ThemeToggle />
-        </div>
+        <ToastViewport />
         {children}
       </body>
     </html>
