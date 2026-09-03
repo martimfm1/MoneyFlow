@@ -33,8 +33,7 @@ export async function createClient() {
               : isRequest
                 ? input.url
                 : input.toString()
-          const method =
-            init?.method ?? (isRequest ? input.method : 'GET')
+          const method = init?.method ?? (isRequest ? input.method : 'GET')
           let path = 'unknown'
 
           try {
@@ -45,15 +44,17 @@ export async function createClient() {
 
           try {
             const response = await fetch(input, init)
-            logger.info('supabase_request', {
-              method,
-              path,
-              status: response.status,
-              durationMs: Math.round(performance.now() - startedAt),
-            })
+            if (response.status >= 400) {
+              logger.error('database_request_failed', {
+                method,
+                path,
+                status: response.status,
+                durationMs: Math.round(performance.now() - startedAt),
+              })
+            }
             return response
           } catch (error) {
-            logger.error('supabase_request_failed', {
+            logger.error('database_request_failed', {
               method,
               path,
               durationMs: Math.round(performance.now() - startedAt),
