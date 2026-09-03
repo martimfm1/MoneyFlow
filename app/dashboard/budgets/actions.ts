@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
 const budgetSchema = z.object({
@@ -9,6 +10,15 @@ const budgetSchema = z.object({
   amount: z.coerce.number().finite().positive(),
   month: z.string().regex(/^\d{4}-\d{2}$/),
 })
+
+function normalizeNumber(value: FormDataEntryValue | null) {
+  if (typeof value !== 'string') return value
+  const normalized = value.trim()
+  if (normalized.includes(',')) {
+    return normalized.replace(/\./g, '').replace(',', '.')
+  }
+  return normalized
+}
 
 function redirectWithError(month: string, message: string): never {
   redirect(
@@ -19,12 +29,16 @@ function redirectWithError(month: string, message: string): never {
 export async function upsertBudget(formData: FormData) {
   const parsed = budgetSchema.safeParse({
     categoryId: formData.get('categoryId'),
-    amount: formData.get('amount'),
+    amount: normalizeNumber(formData.get('amount')),
     month: formData.get('month'),
   })
 
-  if (!parsed.success)
+  if (!parsed.success) {
+    logger.error('budget_create_validation_failed', {
+      fieldCount: parsed.error.issues.length,
+    })
     redirectWithError('current', 'Dados do orçamento inválidos.')
+  }
 
   const [year, monthNumber] = parsed.data.month.split('-').map(Number)
   const monthStart = new Date(Date.UTC(year, monthNumber - 1, 1))
@@ -38,6 +52,7 @@ export async function upsertBudget(formData: FormData) {
     monthStart.getUTCFullYear() !== year ||
     monthStart.getUTCMonth() !== monthNumber - 1
   ) {
+    logger.error('budget_create_invalid_month', { month: normalizedMonth })
     redirectWithError(normalizedMonth, 'Mês inválido.')
   }
 
@@ -54,7 +69,10 @@ export async function upsertBudget(formData: FormData) {
     .eq('user_id', user.id)
     .maybeSingle()
 
-  if (!category) redirectWithError(normalizedMonth, 'Categoria inválida.')
+  if (!category) {
+    logger.error('budget_create_category_not_found')
+    redirectWithError(normalizedMonth, 'Categoria inválida.')
+  }
 
   const { error } = await supabase.from('budgets').upsert(
     {
@@ -66,8 +84,15 @@ export async function upsertBudget(formData: FormData) {
     { onConflict: 'user_id,category_id,month_start' },
   )
 
-  if (error)
+  if (error) {
+    logger.error('budget_create_db_failed', {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    })
     redirectWithError(normalizedMonth, 'Não foi possível guardar o orçamento.')
+  }
 
   redirect(`/dashboard/budgets?month=${encodeURIComponent(normalizedMonth)}`)
 }
