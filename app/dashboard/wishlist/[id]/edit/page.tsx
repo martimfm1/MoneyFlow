@@ -80,12 +80,11 @@ export default async function EditWishlistItemPage({
             Preço
             <input
               name="price"
-              type="number"
+              type="text"
               inputMode="decimal"
-              step="0.01"
-              min="0"
+              autoComplete="off"
               required
-              defaultValue={item.price}
+              defaultValue={Number(item.price).toFixed(2).replace('.', ',')}
               className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
             />
           </label>
