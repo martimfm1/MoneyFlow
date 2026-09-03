@@ -1,5 +1,12 @@
 const enabled = process.env.NODE_ENV === 'production'
 
+function normalizePath(url: string) {
+  return url
+    .split('?')[0]
+    .split('#')[0]
+    .replace(/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/gi, '[id]')
+}
+
 function sendClientLog(level: 'info' | 'error', message: string, meta?: Record<string, unknown>) {
   if (!enabled || typeof navigator === 'undefined') return
 
@@ -47,6 +54,6 @@ export function onRouterTransitionStart(
 ) {
   sendClientLog('info', 'navigation_started', {
     navigationType,
-    path: url.split('?')[0].split('#')[0],
+    path: normalizePath(url),
   })
 }
