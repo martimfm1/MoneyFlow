@@ -1,7 +1,14 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowDownLeft, ArrowUpRight, Plus, Target, X } from 'lucide-react'
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  CalendarClock,
+  Plus,
+  Target,
+  X,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 const actions = [
@@ -15,6 +22,12 @@ const actions = [
     href: '/dashboard/transactions/new?type=income',
     label: 'Receita',
     icon: ArrowDownLeft,
+    tone: 'bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))]',
+  },
+  {
+    href: '/dashboard/recurring/income#novo-ganho',
+    label: 'Ganho recorrente',
+    icon: CalendarClock,
     tone: 'bg-[hsl(var(--success)/0.1)] text-[hsl(var(--success))]',
   },
   {
