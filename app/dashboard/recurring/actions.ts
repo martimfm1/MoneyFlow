@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { normalizeDecimalInput } from '@/lib/number'
 
 const recurringExpenseSchema = z.object({
   id: z.uuid().optional(),
@@ -35,7 +36,7 @@ export async function createRecurringExpense(formData: FormData) {
   const parsed = recurringExpenseSchema.safeParse({
     name: formData.get('name'),
     provider: formData.get('provider') || undefined,
-    amount: formData.get('amount'),
+    amount: normalizeDecimalInput(formData.get('amount')),
     frequency: formData.get('frequency'),
     nextDueDate: formData.get('nextDueDate'),
     currencyCode: String(formData.get('currencyCode') || '').toUpperCase(),
@@ -66,7 +67,7 @@ export async function updateRecurringExpense(formData: FormData) {
     id: formData.get('id'),
     name: formData.get('name'),
     provider: formData.get('provider') || undefined,
-    amount: formData.get('amount'),
+    amount: normalizeDecimalInput(formData.get('amount')),
     frequency: formData.get('frequency'),
     nextDueDate: formData.get('nextDueDate'),
     currencyCode: String(formData.get('currencyCode') || '').toUpperCase(),
