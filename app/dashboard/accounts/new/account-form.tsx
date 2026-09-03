@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import { createAccount, type AccountActionState } from '../actions'
+import { createAccount, type AccountActionState } from './actions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
