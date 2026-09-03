@@ -35,6 +35,16 @@ export function formatDate(
   }).format(new Date(value))
 }
 
+export function formatShortDate(
+  value: string | number | Date,
+  locale?: MoneyFlowLocale,
+) {
+  return new Intl.DateTimeFormat(resolveLocale(locale), {
+    day: '2-digit',
+    month: 'short',
+  }).format(new Date(value))
+}
+
 export function formatMonth(
   value: string | number | Date,
   locale?: MoneyFlowLocale,
