@@ -2,7 +2,14 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { CalendarClock, Heart, Home, List, Target, WalletCards } from 'lucide-react'
+import {
+  CalendarClock,
+  Heart,
+  Home,
+  List,
+  Target,
+  WalletCards,
+} from 'lucide-react'
 import { createTranslator, type MoneyFlowLocale } from '@/lib/i18n'
 
 const items = [
@@ -19,7 +26,11 @@ const items = [
   },
   { href: '/dashboard/goals', key: 'nav.goals' as const, icon: Target },
   { href: '/dashboard/wishlist', key: 'nav.wishlist' as const, icon: Heart },
-  { href: '/dashboard/recurring', key: 'nav.recurring' as const, icon: CalendarClock },
+  {
+    href: '/dashboard/recurring',
+    key: 'nav.recurring' as const,
+    icon: CalendarClock,
+  },
 ]
 
 function isItemActive(pathname: string, href: string) {

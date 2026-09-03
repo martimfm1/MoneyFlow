@@ -4,7 +4,13 @@ import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { deleteRecurringExpense } from './actions'
 
-export function DeleteRecurringExpenseButton({ id, name }: { id: string; name: string }) {
+export function DeleteRecurringExpenseButton({
+  id,
+  name,
+}: {
+  id: string
+  name: string
+}) {
   return (
     <form
       action={deleteRecurringExpense}

@@ -1,5 +1,12 @@
 import Link from 'next/link'
-import { CalendarClock, CircleDollarSign, Pause, Play, Plus, RefreshCw } from 'lucide-react'
+import {
+  CalendarClock,
+  CircleDollarSign,
+  Pause,
+  Play,
+  Plus,
+  RefreshCw,
+} from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
@@ -89,8 +96,14 @@ export default async function RecurringExpensesPage({
   const currency = profile?.currency_code ?? 'EUR'
   const items = (expenses ?? []) as RecurringExpense[]
   const activeItems = items.filter((item) => item.is_active)
-  const monthlyTotal = activeItems.reduce((sum, item) => sum + monthlyReserve(item), 0)
-  const yearlyTotal = activeItems.reduce((sum, item) => sum + yearlyCost(item), 0)
+  const monthlyTotal = activeItems.reduce(
+    (sum, item) => sum + monthlyReserve(item),
+    0,
+  )
+  const yearlyTotal = activeItems.reduce(
+    (sum, item) => sum + yearlyCost(item),
+    0,
+  )
   const nextDue = activeItems
     .slice()
     .sort((a, b) => a.next_due_date.localeCompare(b.next_due_date))[0]
@@ -160,7 +173,9 @@ export default async function RecurringExpensesPage({
           </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:p-5">
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">A vencer em 30 dias</p>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            A vencer em 30 dias
+          </p>
           <p className="mt-2 text-2xl font-semibold tabular-nums">{dueSoon}</p>
           <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
             cobranças próximas
@@ -187,8 +202,12 @@ export default async function RecurringExpensesPage({
       <section className="mt-8">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">Os teus custos</p>
-            <h2 className="mt-1 text-lg font-semibold">Domínios e subscrições</h2>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Os teus custos
+            </p>
+            <h2 className="mt-1 text-lg font-semibold">
+              Domínios e subscrições
+            </h2>
           </div>
           <span className="text-sm text-[hsl(var(--muted-foreground))]">
             {items.length} {items.length === 1 ? 'item' : 'itens'}
@@ -198,7 +217,9 @@ export default async function RecurringExpensesPage({
         {!items.length ? (
           <div className="mt-4 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center">
             <CalendarClock className="mx-auto size-6" />
-            <h3 className="mt-4 font-medium">Ainda não tens despesas recorrentes</h3>
+            <h3 className="mt-4 font-medium">
+              Ainda não tens despesas recorrentes
+            </h3>
             <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-[hsl(var(--muted-foreground))]">
               Adiciona o primeiro domínio ou serviço e começa a calcular o valor
               que precisas de reservar todos os meses.
@@ -219,7 +240,8 @@ export default async function RecurringExpensesPage({
                     <div className="min-w-0">
                       <h3 className="truncate font-semibold">{item.name}</h3>
                       <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
-                        {item.provider || 'Sem fornecedor'} · {frequencyLabels[item.frequency]}
+                        {item.provider || 'Sem fornecedor'} ·{' '}
+                        {frequencyLabels[item.frequency]}
                       </p>
                     </div>
                     <span className="shrink-0 rounded-full bg-[hsl(var(--surface-muted))] px-2 py-1 text-xs font-medium">
@@ -229,28 +251,42 @@ export default async function RecurringExpensesPage({
 
                   <div className="mt-5 grid grid-cols-2 gap-3">
                     <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">Cobrança</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                        Cobrança
+                      </p>
                       <p className="mt-1 font-semibold tabular-nums">
-                        {formatCurrency(Number(item.amount), item.currency_code || currency)}
+                        {formatCurrency(
+                          Number(item.amount),
+                          item.currency_code || currency,
+                        )}
                       </p>
                     </div>
                     <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">Reserva/mês</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                        Reserva/mês
+                      </p>
                       <p className="mt-1 font-semibold tabular-nums">
-                        {formatCurrency(reserve, item.currency_code || currency)}
+                        {formatCurrency(
+                          reserve,
+                          item.currency_code || currency,
+                        )}
                       </p>
                     </div>
                   </div>
 
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">Custo anual</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                        Custo anual
+                      </p>
                       <p className="mt-1 font-medium tabular-nums">
                         {formatCurrency(annual, item.currency_code || currency)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">Próxima cobrança</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                        Próxima cobrança
+                      </p>
                       <p className="mt-1 font-medium">
                         {formatDate(`${item.next_due_date}T00:00:00`)}
                       </p>
@@ -288,7 +324,10 @@ export default async function RecurringExpensesPage({
                         )}
                       </Button>
                     </form>
-                    <DeleteRecurringExpenseButton id={item.id} name={item.name} />
+                    <DeleteRecurringExpenseButton
+                      id={item.id}
+                      name={item.name}
+                    />
                   </div>
                 </article>
               )
@@ -302,15 +341,22 @@ export default async function RecurringExpensesPage({
         className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
       >
         <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Simulador</p>
-          <h2 className="mt-1 text-lg font-semibold">Adicionar despesa recorrente</h2>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Simulador
+          </p>
+          <h2 className="mt-1 text-lg font-semibold">
+            Adicionar despesa recorrente
+          </h2>
           <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-            Para domínios anuais, escolhe “Anual”. Para SaaS, alojamento ou outras
-            cobranças frequentes, escolhe a periodicidade correspondente.
+            Para domínios anuais, escolhe “Anual”. Para SaaS, alojamento ou
+            outras cobranças frequentes, escolhe a periodicidade correspondente.
           </p>
         </div>
 
-        <form action={createRecurringExpense} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <form
+          action={createRecurringExpense}
+          className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <label className="grid gap-2 text-sm font-medium">
             Nome
             <input
