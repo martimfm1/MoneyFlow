@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { RegisterServiceWorker } from '@/components/pwa/register-sw'
+import { createClient } from '@/lib/supabase/server'
+import { normalizeLocale } from '@/lib/i18n'
 
 export const metadata: Metadata = {
   title: {
@@ -24,25 +26,28 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const { data: profile } = user
+    ? await supabase.from('profiles').select('locale').eq('id', user.id).maybeSingle()
+    : { data: null }
+
+  const locale = normalizeLocale(profile?.locale)
+
   return (
-    <html lang="pt-PT" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body>
-        <a
-          href="#main-content"
-          className="sr-only fixed left-4 top-4 z-[100] rounded-[var(--radius-md)] bg-[hsl(var(--foreground))] px-4 py-2 text-sm font-medium text-[hsl(var(--background))] focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] focus:ring-offset-2 focus:ring-offset-[hsl(var(--background))]"
-        >
-          Saltar para o conteúdo principal
-        </a>
         <RegisterServiceWorker />
         <div className="fixed right-4 top-4 z-50">
           <ThemeToggle />
         </div>
-        <div id="main-content" tabIndex={-1}>
-          {children}
-        </div>
+        {children}
       </body>
     </html>
   )
