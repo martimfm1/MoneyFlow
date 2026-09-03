@@ -26,8 +26,15 @@ export async function createClient() {
       global: {
         fetch: async (input, init) => {
           const startedAt = performance.now()
-          const requestUrl = typeof input === 'string' ? input : input.url
-          const method = init?.method ?? (typeof input === 'string' ? 'GET' : input.method)
+          const isRequest = input instanceof Request
+          const requestUrl =
+            typeof input === 'string'
+              ? input
+              : isRequest
+                ? input.url
+                : input.toString()
+          const method =
+            init?.method ?? (isRequest ? input.method : 'GET')
           let path = 'unknown'
 
           try {
