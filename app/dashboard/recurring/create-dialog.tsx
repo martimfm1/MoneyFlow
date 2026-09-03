@@ -59,7 +59,7 @@ export function RecurringExpenseCreateDialog({ currency, accounts }: Props) {
                   <CalendarIcon className="size-4" /> {date.toLocaleDateString('pt-PT')}
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <Calendar mode="single" selected={date} onSelect={(next) => { if (next) { setDate(next); setDateOpen(false) } }} initialFocus />
+                  <Calendar mode="single" selected={date} onSelect={(next) => { if (next) { setDate(next); setDateOpen(false) } }} />
                 </PopoverContent>
               </Popover>
               <input type="hidden" name="nextDueDate" value={date.toISOString().slice(0, 10)} />
