@@ -21,7 +21,8 @@ function sanitize(value: unknown, depth = 0): unknown {
       stack: value.stack,
     }
   }
-  if (Array.isArray(value)) return value.map((item) => sanitize(item, depth + 1))
+  if (Array.isArray(value))
+    return value.map((item) => sanitize(item, depth + 1))
   if (!value || typeof value !== 'object') return value
 
   return Object.fromEntries(

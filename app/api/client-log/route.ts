@@ -17,10 +17,14 @@ export async function POST(request: Request) {
     }
 
     const level = body.level === 'error' ? 'error' : 'info'
-    const message = typeof body.message === 'string' ? body.message.slice(0, MAX_MESSAGE_LENGTH) : 'client_event'
-    const meta = body.meta && typeof body.meta === 'object' && !Array.isArray(body.meta)
-      ? (body.meta as Record<string, unknown>)
-      : undefined
+    const message =
+      typeof body.message === 'string'
+        ? body.message.slice(0, MAX_MESSAGE_LENGTH)
+        : 'client_event'
+    const meta =
+      body.meta && typeof body.meta === 'object' && !Array.isArray(body.meta)
+        ? (body.meta as Record<string, unknown>)
+        : undefined
 
     logger[level](`client_${message}`, meta)
     return new Response(null, { status: 204 })

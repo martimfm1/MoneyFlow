@@ -36,7 +36,9 @@ if (enabled) {
   window.addEventListener('unhandledrejection', (event) => {
     sendClientError('unhandled_rejection', {
       reason:
-        event.reason instanceof Error ? event.reason.message : String(event.reason),
+        event.reason instanceof Error
+          ? event.reason.message
+          : String(event.reason),
     })
   })
 }
