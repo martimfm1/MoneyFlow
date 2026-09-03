@@ -1,9 +1,10 @@
 import Link from 'next/link'
-import { ArrowDownLeft, ArrowLeft, ArrowUpRight } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AccountCombobox } from '@/components/account-combobox'
 import { FormDatePicker } from '@/components/form-date-picker'
+import { TransactionTypeSelector } from '@/components/transaction-type-selector'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -35,11 +36,7 @@ export default async function NewTransactionPage({ searchParams }: { searchParam
             <div className="rounded-lg border border-dashed p-4 text-sm">Cria primeiro uma conta. <Link className="font-medium underline underline-offset-4" href="/dashboard/accounts/new">Criar conta</Link></div>
           ) : (
             <form action={createTransaction} className="grid gap-4">
-              <div className="grid grid-cols-2 gap-2">
-                <Button type="button" variant={defaultType === 'expense' ? 'secondary' : 'outline'} className="h-10" onClick={() => {}}> <ArrowUpRight className="size-4" /> Despesa </Button>
-                <Button type="button" variant={defaultType === 'income' ? 'secondary' : 'outline'} className="h-10" onClick={() => {}}> <ArrowDownLeft className="size-4" /> Receita </Button>
-              </div>
-              <input type="hidden" name="transactionType" value={defaultType} />
+              <TransactionTypeSelector defaultType={defaultType} />
               <label className="grid gap-2 text-sm font-medium">Valor<Input autoFocus name="amount" type="text" inputMode="decimal" required placeholder="0,00" className="h-14 text-2xl font-semibold tabular-nums" /></label>
               <AccountCombobox name="accountId" accounts={accounts} required />
               <label className="grid gap-2 text-sm font-medium">Categoria<select name="categoryId" defaultValue="" className="h-8 rounded-lg border bg-background px-2 text-sm"><option value="">Sem categoria</option>{categories?.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
