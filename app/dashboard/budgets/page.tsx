@@ -10,20 +10,13 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { upsertBudget } from './actions'
+import { formatCurrency, formatMonth } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
 
 type SearchParams = {
   month?: string
   error?: string
-}
-
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat('pt-PT', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-  }).format(amount)
 }
 
 function parseMonth(value?: string) {
@@ -106,10 +99,7 @@ export default async function BudgetsPage({
 
   const currency = profile?.currency_code ?? 'EUR'
   const budgetsByCategory = new Map(
-    (budgets ?? []).map((budget) => [
-      budget.category_id,
-      Number(budget.amount),
-    ]),
+    (budgets ?? []).map((budget) => [budget.category_id, Number(budget.amount)]),
   )
   const spentByCategory = new Map<string, number>()
 
@@ -133,10 +123,9 @@ export default async function BudgetsPage({
   const totalBudget = rows.reduce((sum, row) => sum + (row.budget ?? 0), 0)
   const totalSpent = rows.reduce((sum, row) => sum + row.spent, 0)
   const totalRemaining = totalBudget - totalSpent
-  const monthLabel = new Intl.DateTimeFormat('pt-PT', {
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(Date.UTC(year, month - 1, 1)))
+  const monthLabel = formatMonth(
+    new Date(Date.UTC(year, month - 1, 1)),
+  )
   const availableCategories = categories ?? []
 
   return (
@@ -182,7 +171,10 @@ export default async function BudgetsPage({
       </header>
 
       {params.error ? (
-        <p className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm">
+        <p
+          role="alert"
+          className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
+        >
           {params.error}
         </p>
       ) : null}
@@ -193,13 +185,13 @@ export default async function BudgetsPage({
             Orçamento
           </p>
           <p className="mt-1 text-xl font-semibold tabular-nums">
-            {formatMoney(totalBudget, currency)}
+            {formatCurrency(totalBudget, currency)}
           </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
           <p className="text-sm text-[hsl(var(--muted-foreground))]">Gasto</p>
           <p className="mt-1 text-xl font-semibold tabular-nums">
-            {formatMoney(totalSpent, currency)}
+            {formatCurrency(totalSpent, currency)}
           </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
@@ -209,7 +201,7 @@ export default async function BudgetsPage({
           <p
             className={`mt-1 text-xl font-semibold tabular-nums ${totalRemaining < 0 ? 'text-[hsl(var(--danger))]' : ''}`}
           >
-            {formatMoney(totalRemaining, currency)}
+            {formatCurrency(totalRemaining, currency)}
           </p>
         </article>
       </section>
@@ -254,7 +246,7 @@ export default async function BudgetsPage({
                       <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
                         {row.budget === null
                           ? 'Sem orçamento definido'
-                          : `Limite ${formatMoney(budget, currency)}`}
+                          : `Limite ${formatCurrency(budget, currency)}`}
                       </p>
                     </div>
                     <span
@@ -271,15 +263,15 @@ export default async function BudgetsPage({
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-3 text-sm">
                     <span className="tabular-nums">
-                      {formatMoney(row.spent, currency)} gastos
+                      {formatCurrency(row.spent, currency)} gastos
                     </span>
                     {row.budget !== null ? (
                       <span
                         className={`tabular-nums ${over ? 'font-medium text-[hsl(var(--danger))]' : 'text-[hsl(var(--muted-foreground))]'}`}
                       >
                         {over
-                          ? `+${formatMoney(row.spent - budget, currency)}`
-                          : `${formatMoney(Math.max(0, budget - row.spent), currency)} restantes`}
+                          ? `+${formatCurrency(row.spent - budget, currency)}`
+                          : `${formatCurrency(Math.max(0, budget - row.spent), currency)} restantes`}
                       </span>
                     ) : null}
                   </div>
