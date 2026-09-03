@@ -9,8 +9,6 @@ import { RecurringIncomeActionMenu } from './action-menu'
 
 export const dynamic = 'force-dynamic'
 
-type SearchParams = { error?: string }
-
 type RecurringIncome = {
   id: string
   name: string
@@ -20,7 +18,6 @@ type RecurringIncome = {
   next_income_date: string
   currency_code: string
   is_active: boolean
-  notes: string | null
 }
 
 const frequencyLabels = {
@@ -29,17 +26,8 @@ const frequencyLabels = {
   yearly: 'Anual',
 } as const
 
-const yearlyMultipliers = {
-  monthly: 12,
-  quarterly: 4,
-  yearly: 1,
-} as const
-
-const monthlyDivisors = {
-  monthly: 1,
-  quarterly: 3,
-  yearly: 12,
-} as const
+const yearlyMultipliers = { monthly: 12, quarterly: 4, yearly: 1 } as const
+const monthlyDivisors = { monthly: 1, quarterly: 3, yearly: 12 } as const
 
 function monthlyIncome(income: RecurringIncome) {
   return Number(income.amount) / monthlyDivisors[income.frequency]
@@ -58,12 +46,7 @@ function daysUntil(dateString: string) {
   return Math.ceil((due.getTime() - todayUtc.getTime()) / 86400000)
 }
 
-export default async function RecurringIncomePage({
-  searchParams,
-}: {
-  searchParams: Promise<SearchParams>
-}) {
-  const params = await searchParams
+export default async function RecurringIncomePage() {
   const supabase = await createClient()
   const {
     data: { user },
@@ -78,7 +61,7 @@ export default async function RecurringIncomePage({
       .maybeSingle(),
     supabase
       .from('recurring_incomes')
-      .select('id, name, source, amount, frequency, next_income_date, currency_code, is_active, notes')
+      .select('id, name, source, amount, frequency, next_income_date, currency_code, is_active')
       .eq('user_id', user.id)
       .order('is_active', { ascending: false })
       .order('next_income_date', { ascending: true }),
@@ -180,8 +163,6 @@ export default async function RecurringIncomePage({
           </div>
         )}
       </section>
-
-      {params.error ? null : null}
     </main>
   )
 }
