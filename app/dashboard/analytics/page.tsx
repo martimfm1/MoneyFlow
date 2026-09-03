@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { FinancialCharts } from '@/components/analytics/financial-charts'
-import { formatCurrency, formatMonth } from '@/lib/format'
+import { formatCurrency, formatShortMonth } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,10 +55,11 @@ export default async function AnalyticsPage() {
   for (let offset = -5; offset <= 0; offset += 1) {
     const date = monthStart(now, offset)
     const key = monthKey(date)
-    const label = new Intl.DateTimeFormat('pt-PT', { month: 'short' })
-      .format(date)
-      .replace('.', '')
-    monthlyMap.set(key, { label, income: 0, expense: 0 })
+    monthlyMap.set(key, {
+      label: formatShortMonth(date),
+      income: 0,
+      expense: 0,
+    })
   }
 
   const categoryMap = new Map<string, number>()
