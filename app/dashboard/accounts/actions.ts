@@ -4,6 +4,10 @@ import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 
+export type AccountActionState = {
+  error?: string
+}
+
 const toggleSchema = z.object({
   id: z.uuid(),
   isActive: z.enum(['true', 'false']),
@@ -37,11 +41,9 @@ export async function toggleAccountStatus(formData: FormData) {
     .eq('user_id', user.id)
 
   if (error)
-    redirect(
-      '/dashboard/accounts?error=Não%20foi%20possível%20atualizar%20a%20conta.',
-    )
+    redirect('/dashboard/accounts?error=Não%20foi%20possível%20atualizar%20a%20conta.')
 
-  redirect('/dashboard/accounts')
+  redirect('/dashboard/accounts?toast=Conta%20atualizada.')
 }
 
 export async function updateAccount(formData: FormData) {
@@ -51,9 +53,7 @@ export async function updateAccount(formData: FormData) {
     accountType: formData.get('accountType'),
   })
   if (!parsed.success)
-    redirect(
-      `/dashboard/accounts/${formData.get('id')}/edit?error=Dados%20inválidos.`,
-    )
+    redirect(`/dashboard/accounts/${formData.get('id')}/edit?error=Dados%20inválidos.`)
 
   const supabase = await createClient()
   const {
@@ -76,12 +76,15 @@ export async function updateAccount(formData: FormData) {
       `/dashboard/accounts/${parsed.data.id}/edit?error=Não%20foi%20possível%20atualizar%20a%20conta.`,
     )
 
-  redirect('/dashboard/accounts')
+  redirect('/dashboard/accounts?toast=Conta%20atualizada.')
 }
 
-export async function deleteAccount(formData: FormData) {
+export async function deleteAccount(
+  _previousState: AccountActionState,
+  formData: FormData,
+): Promise<AccountActionState> {
   const parsed = deleteSchema.safeParse({ id: formData.get('id') })
-  if (!parsed.success) redirect('/dashboard/accounts?error=Conta%20inválida.')
+  if (!parsed.success) return { error: 'Conta inválida.' }
 
   const supabase = await createClient()
   const {
@@ -89,21 +92,27 @@ export async function deleteAccount(formData: FormData) {
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const { data: account, error: accountError } = await supabase
+    .from('accounts')
+    .select('id')
+    .eq('id', parsed.data.id)
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (accountError)
+    return { error: 'Não foi possível verificar a conta.' }
+  if (!account) return { error: 'Conta não encontrada.' }
+
   const { count, error: countError } = await supabase
     .from('transactions')
     .select('id', { count: 'exact', head: true })
     .eq('account_id', parsed.data.id)
     .eq('user_id', user.id)
 
-  if (countError)
-    redirect(
-      '/dashboard/accounts?error=Não%20foi%20possível%20verificar%20a%20conta.',
-    )
+  if (countError) return { error: 'Não foi possível verificar os movimentos.' }
 
   if ((count ?? 0) > 0)
-    redirect(
-      '/dashboard/accounts?error=Esta%20conta%20tem%20movimentos.%20Arquiva-a%20em%20vez%20de%20a%20apagar.',
-    )
+    return { error: 'Esta conta tem movimentos. Arquiva-a em vez de a apagar.' }
 
   const { error } = await supabase
     .from('accounts')
@@ -111,10 +120,7 @@ export async function deleteAccount(formData: FormData) {
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
 
-  if (error)
-    redirect(
-      '/dashboard/accounts?error=Não%20foi%20possível%20apagar%20a%20conta.',
-    )
+  if (error) return { error: error.message || 'Não foi possível apagar a conta.' }
 
-  redirect('/dashboard/accounts')
+  redirect('/dashboard/accounts?toast=Conta%20apagada.')
 }
