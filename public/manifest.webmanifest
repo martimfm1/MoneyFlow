@@ -1,0 +1,21 @@
+{
+  "name": "MoneyFlow",
+  "short_name": "MoneyFlow",
+  "description": "Gestão pessoal de dinheiro, objetivos e compras.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fafafa",
+  "theme_color": "#fafafa",
+  "lang": "pt-PT",
+  "categories": ["finance", "productivity"],
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
