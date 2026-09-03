@@ -15,14 +15,12 @@ export const onRequestError: Instrumentation.onRequestError = async (
 ) => {
   logger.error('request_error', {
     error,
-    digest: error.digest,
     method: request.method,
     path: request.path.split('?')[0],
     routerKind: context.routerKind,
     routePath: context.routePath,
     routeType: context.routeType,
     renderSource: context.renderSource,
-    renderType: context.renderType,
     revalidateReason: context.revalidateReason,
   })
 }
