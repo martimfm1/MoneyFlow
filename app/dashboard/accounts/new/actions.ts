@@ -14,20 +14,36 @@ export type AccountActionState = {
 const schema = z.object({
   name: z.string().trim().min(1).max(80),
   accountType: z.enum(['cash', 'bank', 'card', 'savings', 'other']),
-  balance: z.coerce.number().finite().safe().gte(0),
+  balance: z.number().finite().gte(0),
 })
+
+function readText(formData: FormData, name: string) {
+  const value = formData.get(name)
+  return typeof value === 'string' ? value : ''
+}
 
 export async function createAccount(
   _previousState: AccountActionState,
   formData: FormData,
 ): Promise<AccountActionState> {
+  const name = readText(formData, 'name').trim()
+  const accountType = readText(formData, 'accountType')
+  const rawBalance = readText(formData, 'balance')
+  const normalizedBalance = normalizeDecimalInput(rawBalance)
+  const balance =
+    typeof normalizedBalance === 'string' && normalizedBalance.trim()
+      ? Number(normalizedBalance)
+      : NaN
+
   const parsed = schema.safeParse({
-    name: formData.get('name'),
-    accountType: formData.get('accountType'),
-    balance: normalizeDecimalInput(formData.get('balance')),
+    name,
+    accountType,
+    balance,
   })
 
-  if (!parsed.success) return { error: 'Confirma os dados da conta.' }
+  if (!parsed.success) {
+    return { error: 'Confirma o nome, tipo e saldo da conta.' }
+  }
 
   const supabase = await createClient()
   const {
