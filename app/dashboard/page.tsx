@@ -320,10 +320,9 @@ export default async function DashboardPage() {
           </section>
         </div>
 
-<<<<<<< HEAD
         <section
           id="add"
-          className="mt-8 grid gap-3 sm:grid-cols-2 lg:mt-10 lg:grid-cols-4"
+          className="mt-8 grid gap-3 sm:grid-cols-2 lg:mt-10 lg:grid-cols-5"
         >
           {[
             [
@@ -350,15 +349,12 @@ export default async function DashboardPage() {
               '/dashboard/budgets',
               CircleDollarSign,
             ],
-=======
-        <section id="add" className="mt-8 grid gap-3 sm:grid-cols-2 lg:mt-10 lg:grid-cols-5">
-          {[
-            ['Despesa', 'Regista dinheiro que saiu.', '/dashboard/transactions/new', Plus],
-            ['Receita', 'Regista dinheiro que entrou.', '/dashboard/transactions/new', ArrowDownLeft],
-            ['Objetivo', 'Começa a dar um propósito ao teu dinheiro.', '/dashboard/goals/new', Target],
-            ['Orçamento', 'Define limites mensais por categoria.', '/dashboard/budgets', CircleDollarSign],
-            ['Recorrente', 'Simula domínios, software e subscrições.', '/dashboard/recurring', CalendarClock],
->>>>>>> 6512230923f10ff063e76628ca9876414893ffd6
+            [
+              'Recorrente',
+              'Simula domínios, software e subscrições.',
+              '/dashboard/recurring',
+              CalendarClock,
+            ],
           ].map(([title, description, href, Icon]) => (
             <Link
               key={title as string}
