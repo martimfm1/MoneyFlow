@@ -132,7 +132,10 @@ html[data-theme='light'] {
 body {
   margin: 0;
   min-height: 100vh;
-  background: hsl(var(--background));
+  background:
+    radial-gradient(circle at 10% -10%, hsl(220 60% 20% / 0.12), transparent 34rem),
+    radial-gradient(circle at 90% 0%, hsl(270 45% 18% / 0.1), transparent 30rem),
+    hsl(var(--background));
   color: hsl(var(--foreground));
   text-rendering: optimizeLegibility;
   overscroll-behavior-y: none;
@@ -189,7 +192,7 @@ select {
   border: 1px solid hsl(var(--border));
   border-radius: var(--radius-lg);
   background: hsl(var(--surface));
-  box-shadow: 0 12px 36px hsl(var(--foreground) / 0.025);
+  box-shadow: 0 12px 36px hsl(0 0% 0% / 0.16);
 }
 
 .mf-surface-muted {
@@ -211,16 +214,53 @@ select {
   transition:
     background-color 150ms ease,
     border-color 150ms ease,
-    transform 150ms ease;
+    transform 150ms ease,
+    box-shadow 150ms ease;
 }
 
 .mf-interactive:hover {
   border-color: hsl(var(--foreground) / 0.16);
   background: hsl(var(--surface-muted));
+  box-shadow: 0 10px 24px hsl(0 0% 0% / 0.12);
 }
 
 .mf-interactive:active {
   transform: translateY(1px);
+}
+
+.glass-panel {
+  border: 1px solid hsl(var(--foreground) / 0.09);
+  background: linear-gradient(
+    135deg,
+    hsl(var(--surface) / 0.74),
+    hsl(var(--surface-muted) / 0.52)
+  );
+  box-shadow:
+    0 18px 45px hsl(0 0% 0% / 0.22),
+    inset 0 1px 0 hsl(var(--foreground) / 0.05);
+  backdrop-filter: blur(22px) saturate(145%);
+  -webkit-backdrop-filter: blur(22px) saturate(145%);
+}
+
+.glass-nav {
+  background: linear-gradient(
+    180deg,
+    hsl(var(--surface) / 0.78),
+    hsl(var(--background) / 0.9)
+  );
+  border-color: hsl(var(--foreground) / 0.08);
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  box-shadow:
+    0 -16px 50px hsl(0 0% 0% / 0.22),
+    inset 0 1px 0 hsl(var(--foreground) / 0.05);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-panel,
+  .glass-nav {
+    background: hsl(var(--surface));
+  }
 }
 
 @media (min-width: 768px) {
@@ -300,7 +340,6 @@ select {
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-foreground: var(--foreground);
   --color-background: var(--background);
   --radius-sm: calc(var(--radius) * 0.7);
   --radius-md: calc(var(--radius) * 0.85);
