@@ -15,6 +15,10 @@ export const metadata: Metadata = {
     'Track, understand, prioritize and decide what to do with your money.',
   applicationName: 'MoneyFlow',
   manifest: '/manifest.webmanifest',
+  icons: {
+    icon: '/icon.svg',
+    apple: '/icon.svg',
+  },
 }
 
 export const viewport: Viewport = {
