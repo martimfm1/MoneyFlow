@@ -13,7 +13,11 @@ export default async function DashboardLayout({
   } = await supabase.auth.getUser()
 
   const { data: profile } = user
-    ? await supabase.from('profiles').select('locale').eq('id', user.id).maybeSingle()
+    ? await supabase
+        .from('profiles')
+        .select('locale')
+        .eq('id', user.id)
+        .maybeSingle()
     : { data: null }
 
   const locale = normalizeLocale(profile?.locale)
@@ -25,7 +29,9 @@ export default async function DashboardLayout({
         href="#main-content"
         className="sr-only fixed left-4 top-4 z-[100] rounded-[var(--radius-md)] bg-[hsl(var(--foreground))] px-4 py-2 text-sm font-medium text-[hsl(var(--background))] focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring))] focus:ring-offset-2 focus:ring-offset-[hsl(var(--background))]"
       >
-        {locale === 'en' ? 'Skip to main content' : 'Saltar para o conteúdo principal'}
+        {locale === 'en'
+          ? 'Skip to main content'
+          : 'Saltar para o conteúdo principal'}
       </a>
 
       <div className="mx-auto min-h-screen max-w-[1600px] lg:grid lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-8 lg:px-6 xl:px-8">
@@ -33,7 +39,9 @@ export default async function DashboardLayout({
           <div className="sticky top-0 flex h-screen flex-col py-6">
             <div className="flex items-start justify-between gap-3 px-3 pb-5">
               <div>
-                <p className="text-base font-semibold tracking-tight">MoneyFlow</p>
+                <p className="text-base font-semibold tracking-tight">
+                  MoneyFlow
+                </p>
                 <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
                   Track → Understand → Decide
                 </p>

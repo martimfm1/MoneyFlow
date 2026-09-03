@@ -89,7 +89,9 @@ export default async function GoalsPage({
             const target = Number(goal.target_amount)
             const remaining = Math.max(0, target - current)
             const progress =
-              target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0
+              target > 0
+                ? Math.min(100, Math.round((current / target) * 100))
+                : 0
             return (
               <article
                 key={goal.id}
@@ -99,7 +101,8 @@ export default async function GoalsPage({
                   <div className="min-w-0">
                     <h2 className="truncate font-medium">{goal.name}</h2>
                     <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                      Prioridade {priorityLabels[goal.priority] ?? goal.priority}
+                      Prioridade{' '}
+                      {priorityLabels[goal.priority] ?? goal.priority}
                     </p>
                   </div>
                   <p className="shrink-0 text-sm font-semibold tabular-nums">
@@ -128,7 +131,10 @@ export default async function GoalsPage({
 
                 <div className="mt-auto pt-5">
                   {remaining > 0 ? (
-                    <form action={addGoalContribution} className="flex min-w-0 gap-2">
+                    <form
+                      action={addGoalContribution}
+                      className="flex min-w-0 gap-2"
+                    >
                       <input type="hidden" name="goalId" value={goal.id} />
                       <label
                         className="sr-only"

@@ -35,7 +35,11 @@ export default async function RootLayout({
   } = await supabase.auth.getUser()
 
   const { data: profile } = user
-    ? await supabase.from('profiles').select('locale').eq('id', user.id).maybeSingle()
+    ? await supabase
+        .from('profiles')
+        .select('locale')
+        .eq('id', user.id)
+        .maybeSingle()
     : { data: null }
 
   const locale = normalizeLocale(profile?.locale)

@@ -13,12 +13,16 @@ function monthKey(date: Date) {
 }
 
 function monthStart(date: Date, offset: number) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + offset, 1))
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + offset, 1),
+  )
 }
 
 export default async function AnalyticsPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const now = new Date()
@@ -26,15 +30,34 @@ export default async function AnalyticsPage() {
   const end = monthStart(now, 1)
 
   const [{ data: profile }, { data: transactions }] = await Promise.all([
-    supabase.from('profiles').select('currency_code').eq('id', user.id).maybeSingle(),
-    supabase.from('transactions').select('transaction_type, amount, occurred_at, category_id, categories(name)').eq('user_id', user.id).gte('occurred_at', start.toISOString()).lt('occurred_at', end.toISOString()).order('occurred_at', { ascending: true }),
+    supabase
+      .from('profiles')
+      .select('currency_code')
+      .eq('id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('transactions')
+      .select(
+        'transaction_type, amount, occurred_at, category_id, categories(name)',
+      )
+      .eq('user_id', user.id)
+      .gte('occurred_at', start.toISOString())
+      .lt('occurred_at', end.toISOString())
+      .order('occurred_at', { ascending: true }),
   ])
 
   const currency = profile?.currency_code ?? 'EUR'
-  const monthlyMap = new Map<string, { label: string; income: number; expense: number }>()
+  const monthlyMap = new Map<
+    string,
+    { label: string; income: number; expense: number }
+  >()
   for (let offset = -5; offset <= 0; offset += 1) {
     const date = monthStart(now, offset)
-    monthlyMap.set(monthKey(date), { label: formatShortMonth(date), income: 0, expense: 0 })
+    monthlyMap.set(monthKey(date), {
+      label: formatShortMonth(date),
+      income: 0,
+      expense: 0,
+    })
   }
 
   const categoryMap = new Map<string, number>()
@@ -49,46 +72,126 @@ export default async function AnalyticsPage() {
     } else {
       expenseTotal += amount
       if (point) point.expense += amount
-      const category = Array.isArray(transaction.categories) ? transaction.categories[0] : transaction.categories
+      const category = Array.isArray(transaction.categories)
+        ? transaction.categories[0]
+        : transaction.categories
       const categoryName = category?.name ?? 'Sem categoria'
-      categoryMap.set(categoryName, (categoryMap.get(categoryName) ?? 0) + amount)
+      categoryMap.set(
+        categoryName,
+        (categoryMap.get(categoryName) ?? 0) + amount,
+      )
     }
   }
 
   const monthly = Array.from(monthlyMap.values())
-  const categories = Array.from(categoryMap.entries()).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
+  const categories = Array.from(categoryMap.entries())
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
   const net = incomeTotal - expenseTotal
-  const savingsRate = incomeTotal > 0 ? Math.round((net / incomeTotal) * 100) : null
+  const savingsRate =
+    incomeTotal > 0 ? Math.round((net / incomeTotal) * 100) : null
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
       <div className="flex items-center justify-between gap-3">
-        <Button asChild size="sm" variant="ghost"><Link href="/dashboard"><ArrowLeft className="size-4" /> Início</Link></Button>
-        <span className="text-sm text-[hsl(var(--muted-foreground))]">Últimos 6 meses</span>
+        <Button asChild size="sm" variant="ghost">
+          <Link href="/dashboard">
+            <ArrowLeft className="size-4" /> Início
+          </Link>
+        </Button>
+        <span className="text-sm text-[hsl(var(--muted-foreground))]">
+          Últimos 6 meses
+        </span>
       </div>
 
       <header className="mt-5">
-        <p className="text-sm text-[hsl(var(--muted-foreground))]">Understand</p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">Analytics</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-[hsl(var(--muted-foreground))]">Percebe para onde está a ir o teu dinheiro sem estimativas: tudo aqui é calculado a partir dos teus movimentos.</p>
+        <p className="text-sm text-[hsl(var(--muted-foreground))]">
+          Understand
+        </p>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
+          Analytics
+        </h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+          Percebe para onde está a ir o teu dinheiro sem estimativas: tudo aqui
+          é calculado a partir dos teus movimentos.
+        </p>
       </header>
 
       <section className="mt-6 grid gap-3 sm:grid-cols-3">
-        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm"><div className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]"><TrendingUp className="size-4" aria-hidden="true" /> Receitas</div><p className="mt-2 text-2xl font-semibold tabular-nums">{formatCurrency(incomeTotal, currency)}</p></article>
-        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm"><div className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]"><TrendingDown className="size-4" aria-hidden="true" /> Despesas</div><p className="mt-2 text-2xl font-semibold tabular-nums">{formatCurrency(expenseTotal, currency)}</p></article>
-        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm"><p className="text-sm text-[hsl(var(--muted-foreground))]">Saldo líquido</p><p className={`mt-2 text-2xl font-semibold tabular-nums ${net < 0 ? 'text-[hsl(var(--danger))]' : 'text-[hsl(var(--success))]'}`}>{net >= 0 ? '+' : ''}{formatCurrency(net, currency)}</p></article>
+        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
+          <div className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]">
+            <TrendingUp className="size-4" aria-hidden="true" /> Receitas
+          </div>
+          <p className="mt-2 text-2xl font-semibold tabular-nums">
+            {formatCurrency(incomeTotal, currency)}
+          </p>
+        </article>
+        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
+          <div className="flex items-center gap-2 text-sm text-[hsl(var(--muted-foreground))]">
+            <TrendingDown className="size-4" aria-hidden="true" /> Despesas
+          </div>
+          <p className="mt-2 text-2xl font-semibold tabular-nums">
+            {formatCurrency(expenseTotal, currency)}
+          </p>
+        </article>
+        <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Saldo líquido
+          </p>
+          <p
+            className={`mt-2 text-2xl font-semibold tabular-nums ${net < 0 ? 'text-[hsl(var(--danger))]' : 'text-[hsl(var(--success))]'}`}
+          >
+            {net >= 0 ? '+' : ''}
+            {formatCurrency(net, currency)}
+          </p>
+        </article>
       </section>
 
       <section className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:p-6">
-        <FinancialCharts monthly={monthly} categories={categories} currency={currency} />
+        <FinancialCharts
+          monthly={monthly}
+          categories={categories}
+          currency={currency}
+        />
       </section>
 
       <section className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
-        <div className="flex items-end justify-between gap-4"><div><p className="text-sm text-[hsl(var(--muted-foreground))]">Leitura rápida</p><h2 className="mt-1 text-lg font-semibold">O que os dados dizem</h2></div><span className="text-sm text-[hsl(var(--muted-foreground))]">{transactions?.length ?? 0} movimentos</span></div>
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Leitura rápida
+            </p>
+            <h2 className="mt-1 text-lg font-semibold">O que os dados dizem</h2>
+          </div>
+          <span className="text-sm text-[hsl(var(--muted-foreground))]">
+            {transactions?.length ?? 0} movimentos
+          </span>
+        </div>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-4"><p className="text-sm font-medium">Maior categoria de despesa</p><p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">{categories[0] ? `${categories[0].name}: ${formatCurrency(categories[0].value, currency)}` : 'Ainda não existem despesas categorizadas.'}</p></div>
-          <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-4"><p className="text-sm font-medium">Taxa de poupança</p><p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">{savingsRate !== null ? `${savingsRate}% das receitas ficaram após despesas.` : 'Ainda não existem receitas no período.'}</p></div>
-          <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-4"><p className="text-sm font-medium">Resultado</p><p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">{net >= 0 ? 'Gastaste menos do que recebeste neste período.' : 'As despesas ultrapassaram as receitas neste período.'}</p></div>
+          <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-4">
+            <p className="text-sm font-medium">Maior categoria de despesa</p>
+            <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
+              {categories[0]
+                ? `${categories[0].name}: ${formatCurrency(categories[0].value, currency)}`
+                : 'Ainda não existem despesas categorizadas.'}
+            </p>
+          </div>
+          <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-4">
+            <p className="text-sm font-medium">Taxa de poupança</p>
+            <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
+              {savingsRate !== null
+                ? `${savingsRate}% das receitas ficaram após despesas.`
+                : 'Ainda não existem receitas no período.'}
+            </p>
+          </div>
+          <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-4">
+            <p className="text-sm font-medium">Resultado</p>
+            <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
+              {net >= 0
+                ? 'Gastaste menos do que recebeste neste período.'
+                : 'As despesas ultrapassaram as receitas neste período.'}
+            </p>
+          </div>
         </div>
       </section>
     </main>

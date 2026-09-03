@@ -11,7 +11,10 @@ export default function DashboardLoading() {
           <div className="h-4 w-64 rounded-[var(--radius-sm)] bg-[hsl(var(--surface-muted))]" />
         </div>
 
-        <section aria-label="Resumo financeiro" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <section
+          aria-label="Resumo financeiro"
+          className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
@@ -20,7 +23,10 @@ export default function DashboardLoading() {
           ))}
         </section>
 
-        <section aria-label="Atividade financeira recente" className="space-y-3">
+        <section
+          aria-label="Atividade financeira recente"
+          className="space-y-3"
+        >
           <div className="h-6 w-40 rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]" />
           <div className="overflow-hidden rounded-[var(--radius-lg)] border border-[hsl(var(--border)/0.9)] bg-[hsl(var(--surface))]">
             {Array.from({ length: 5 }).map((_, index) => (

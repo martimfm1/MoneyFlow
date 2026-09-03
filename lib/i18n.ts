@@ -31,7 +31,8 @@ const translations: Record<MoneyFlowLocale, Record<TranslationKey, string>> = {
     'nav.settings': 'Definições',
     'settings.eyebrow': 'Preferências',
     'settings.title': 'Definições',
-    'settings.description': 'Escolhe como o MoneyFlow deve apresentar a interface.',
+    'settings.description':
+      'Escolhe como o MoneyFlow deve apresentar a interface.',
     'settings.language': 'Idioma',
     'settings.languageHint': 'A preferência fica guardada no teu perfil.',
     'settings.portuguese': 'Português (Portugal)',
@@ -51,7 +52,8 @@ const translations: Record<MoneyFlowLocale, Record<TranslationKey, string>> = {
     'nav.settings': 'Settings',
     'settings.eyebrow': 'Preferences',
     'settings.title': 'Settings',
-    'settings.description': 'Choose how MoneyFlow should present the interface.',
+    'settings.description':
+      'Choose how MoneyFlow should present the interface.',
     'settings.language': 'Language',
     'settings.languageHint': 'Your preference is stored in your profile.',
     'settings.portuguese': 'Portuguese (Portugal)',

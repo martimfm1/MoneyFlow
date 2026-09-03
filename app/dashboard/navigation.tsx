@@ -7,8 +7,16 @@ import { createTranslator, type MoneyFlowLocale } from '@/lib/i18n'
 
 const items = [
   { href: '/dashboard', key: 'nav.home' as const, icon: Home },
-  { href: '/dashboard/accounts', key: 'nav.accounts' as const, icon: WalletCards },
-  { href: '/dashboard/transactions', key: 'nav.transactions' as const, icon: List },
+  {
+    href: '/dashboard/accounts',
+    key: 'nav.accounts' as const,
+    icon: WalletCards,
+  },
+  {
+    href: '/dashboard/transactions',
+    key: 'nav.transactions' as const,
+    icon: List,
+  },
   { href: '/dashboard/goals', key: 'nav.goals' as const, icon: Target },
   { href: '/dashboard/wishlist', key: 'nav.wishlist' as const, icon: Heart },
 ]
@@ -66,7 +74,9 @@ export function DashboardNavigation({
               }`}
             >
               <Icon aria-hidden="true" className="size-4 shrink-0" />
-              <span className={isSidebar ? 'truncate' : undefined}>{label}</span>
+              <span className={isSidebar ? 'truncate' : undefined}>
+                {label}
+              </span>
             </Link>
           )
         })}

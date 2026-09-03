@@ -65,8 +65,7 @@ export async function deleteGoal(formData: FormData) {
     goalId: formData.get('goalId'),
   })
 
-  if (!parsed.success)
-    redirect('/dashboard/goals?error=Objetivo%20inválido.')
+  if (!parsed.success) redirect('/dashboard/goals?error=Objetivo%20inválido.')
 
   const supabase = await createClient()
   const {
@@ -81,7 +80,9 @@ export async function deleteGoal(formData: FormData) {
     .eq('user_id', user.id)
 
   if (error)
-    redirect('/dashboard/goals?error=Não%20foi%20possível%20apagar%20o%20objetivo.')
+    redirect(
+      '/dashboard/goals?error=Não%20foi%20possível%20apagar%20o%20objetivo.',
+    )
 
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/goals')
