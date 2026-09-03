@@ -50,8 +50,21 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: DashboardNav
   const [moreOpen, setMoreOpen] = useState(false)
 
   useEffect(() => {
-    setMoreOpen(false)
-  }, [pathname])
+    if (!moreOpen) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMoreOpen(false)
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [moreOpen])
 
   if (isSidebar) {
     const allItems: NavigationItem[] = [...primaryItems, ...moreItems]
@@ -69,21 +82,23 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: DashboardNav
   }
 
   const moreActive = moreItems.some(({ href }) => isItemActive(pathname, href))
+  const closeMore = () => setMoreOpen(false)
+
   return (
     <>
       {moreOpen ? (
         <>
-          <button aria-label="Fechar menu" type="button" onClick={() => setMoreOpen(false)} className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]" />
+          <button aria-label={locale === 'en' ? 'Close menu' : 'Fechar menu'} type="button" onClick={closeMore} className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]" />
           <section aria-label={t('nav.more')} className="fixed inset-x-3 bottom-[5.75rem] z-50 mx-auto max-w-md overflow-hidden rounded-[1.5rem] border bg-[hsl(var(--surface))] p-2 shadow-2xl animate-in slide-in-from-bottom-3">
             <div className="mx-auto mb-2 mt-1 h-1 w-10 rounded-full bg-[hsl(var(--border))]" />
             <div className="flex items-center justify-between px-3 pb-2 pt-1">
               <p className="text-sm font-semibold">{t('nav.more')}</p>
-              <button type="button" onClick={() => setMoreOpen(false)} className="inline-flex size-10 items-center justify-center rounded-full hover:bg-[hsl(var(--surface-muted))]" aria-label="Fechar"><ChevronUp className="size-4" /></button>
+              <button type="button" onClick={closeMore} className="inline-flex size-10 items-center justify-center rounded-full hover:bg-[hsl(var(--surface-muted))]" aria-label={locale === 'en' ? 'Close' : 'Fechar'}><ChevronUp className="size-4" /></button>
             </div>
             <div className="grid grid-cols-2 gap-1">
               {moreItems.map(({ href, key, label, icon: Icon }) => {
                 const active = isItemActive(pathname, href)
-                return <Link key={href} href={href} className={`flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${active ? 'bg-[hsl(var(--surface-muted))]' : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--surface-muted))]'}`}><Icon className="size-4" aria-hidden="true" />{key ? t(key) : label?.[locale]}</Link>
+                return <Link key={href} href={href} onClick={closeMore} className={`flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${active ? 'bg-[hsl(var(--surface-muted))]' : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--surface-muted))]'}`}><Icon className="size-4" aria-hidden="true" />{key ? t(key) : label?.[locale]}</Link>
               })}
             </div>
           </section>
@@ -96,7 +111,7 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: DashboardNav
             const active = isItemActive(pathname, href)
             return <Link key={href} href={href} aria-current={active ? 'page' : undefined} className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[11px] font-medium transition-colors ${active ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))]'}`}><span className={`flex size-9 items-center justify-center rounded-full ${active ? 'bg-[hsl(var(--surface-muted))]' : ''}`}><Icon className="size-[18px]" aria-hidden="true" /></span><span>{t(key)}</span></Link>
           })}
-          <button type="button" onClick={() => setMoreOpen((open) => !open)} aria-expanded={moreOpen} className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[11px] font-medium transition-colors ${moreOpen || moreActive ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))]'}`}><span className={`flex size-9 items-center justify-center rounded-full ${moreOpen || moreActive ? 'bg-[hsl(var(--surface-muted))]' : ''}`}><MoreHorizontal className="size-[18px]" aria-hidden="true" /></span><span>{t('nav.more')}</span></button>
+          <button type="button" onClick={() => setMoreOpen((open) => !open)} aria-expanded={moreOpen} aria-haspopup="dialog" className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[11px] font-medium transition-colors ${moreOpen || moreActive ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))]'}`}><span className={`flex size-9 items-center justify-center rounded-full ${moreOpen || moreActive ? 'bg-[hsl(var(--surface-muted))]' : ''}`}><MoreHorizontal className="size-[18px]" aria-hidden="true" /></span><span>{t('nav.more')}</span></button>
         </div>
       </nav>
     </>
