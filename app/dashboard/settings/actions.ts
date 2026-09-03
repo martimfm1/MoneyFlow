@@ -9,7 +9,7 @@ const localeSchema = z.enum(['pt-PT', 'en'])
 export async function updateLocale(formData: FormData) {
   const locale = localeSchema.safeParse(formData.get('locale'))
   if (!locale.success) {
-    redirect('/dashboard/settings?error=Idioma%20inválido.')
+    redirect('/dashboard/settings?error=invalid_locale')
   }
 
   const supabase = await createClient()
@@ -28,7 +28,7 @@ export async function updateLocale(formData: FormData) {
     .eq('id', user.id)
 
   if (error) {
-    redirect('/dashboard/settings?error=Não%20foi%20possível%20atualizar%20o%20idioma.')
+    redirect('/dashboard/settings?error=save_failed')
   }
 
   redirect('/dashboard/settings?saved=1')
