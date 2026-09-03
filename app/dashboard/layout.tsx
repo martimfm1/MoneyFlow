@@ -17,7 +17,13 @@ export default function DashboardLayout({
             <DashboardNavigation />
           </div>
         </aside>
-        <div className="min-w-0 flex-1 pb-16 md:pb-8">{children}</div>
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="min-w-0 flex-1 pb-16 outline-none md:pb-8"
+        >
+          {children}
+        </main>
       </div>
       <div className="md:hidden">
         <DashboardNavigation />
