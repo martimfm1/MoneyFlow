@@ -28,12 +28,12 @@ export default async function DashboardLayout({
         {locale === 'en' ? 'Skip to main content' : 'Saltar para o conteúdo principal'}
       </a>
 
-      <div className="mx-auto max-w-7xl md:flex md:gap-6 md:px-6">
-        <aside className="hidden w-60 shrink-0 py-6 md:block">
-          <div className="sticky top-6 space-y-4">
-            <div className="flex items-start justify-between gap-3 px-3">
+      <div className="mx-auto min-h-screen max-w-[1600px] lg:grid lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-8 lg:px-6 xl:px-8">
+        <aside className="hidden lg:block">
+          <div className="sticky top-0 flex h-screen flex-col py-6">
+            <div className="flex items-start justify-between gap-3 px-3 pb-5">
               <div>
-                <p className="text-sm font-semibold tracking-tight">MoneyFlow</p>
+                <p className="text-base font-semibold tracking-tight">MoneyFlow</p>
                 <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
                   Track → Understand → Decide
                 </p>
@@ -48,18 +48,24 @@ export default async function DashboardLayout({
                 </Link>
               ) : null}
             </div>
-            <DashboardNavigation locale={locale} />
+            <DashboardNavigation locale={locale} variant="sidebar" />
+            <div className="mt-auto px-3 pt-5 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+              <p>MoneyFlow</p>
+              <p>Finanças pessoais, com contexto.</p>
+            </div>
           </div>
         </aside>
+
         <main
           id="main-content"
           tabIndex={-1}
-          className="min-w-0 flex-1 pb-16 outline-none md:pb-8"
+          className="min-w-0 pb-20 outline-none lg:pb-10"
         >
           {children}
         </main>
       </div>
-      <div className="fixed bottom-[5.5rem] right-4 z-30 md:hidden">
+
+      <div className="fixed bottom-[5.5rem] right-4 z-30 lg:hidden">
         {user ? (
           <Link
             href="/dashboard/settings"
@@ -70,7 +76,7 @@ export default async function DashboardLayout({
           </Link>
         ) : null}
       </div>
-      <div className="md:hidden">
+      <div className="lg:hidden">
         <DashboardNavigation locale={locale} />
       </div>
     </div>
