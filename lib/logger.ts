@@ -49,7 +49,4 @@ export const logger = {
 
     console.error(JSON.stringify(payload))
   },
-
-  info(_message: string, _meta?: LogMeta) {},
-  warn(_message: string, _meta?: LogMeta) {},
 }
