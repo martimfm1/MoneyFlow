@@ -31,7 +31,11 @@ const primaryItems = [
 ]
 
 const moreItems = [
-  { href: '/dashboard/accounts', key: 'nav.accounts' as const, icon: WalletCards },
+  {
+    href: '/dashboard/accounts',
+    key: 'nav.accounts' as const,
+    icon: WalletCards,
+  },
   {
     href: '/dashboard/budgets',
     label: { 'pt-PT': 'Orçamentos', en: 'Budgets' },
@@ -42,7 +46,11 @@ const moreItems = [
     label: { 'pt-PT': 'Analytics', en: 'Analytics' },
     icon: ChartNoAxesCombined,
   },
-  { href: '/dashboard/recurring', key: 'nav.recurring' as const, icon: CalendarClock },
+  {
+    href: '/dashboard/recurring',
+    key: 'nav.recurring' as const,
+    icon: CalendarClock,
+  },
   {
     href: '/dashboard/categories',
     label: { 'pt-PT': 'Categorias', en: 'Categories' },
@@ -63,7 +71,14 @@ type DashboardNavigationProps = {
 type NavigationItem = {
   href: string
   icon: typeof Home
-  key?: 'nav.home' | 'nav.accounts' | 'nav.transactions' | 'nav.goals' | 'nav.wishlist' | 'nav.recurring' | 'nav.settings'
+  key?:
+    | 'nav.home'
+    | 'nav.accounts'
+    | 'nav.transactions'
+    | 'nav.goals'
+    | 'nav.wishlist'
+    | 'nav.recurring'
+    | 'nav.settings'
   label?: Record<MoneyFlowLocale, string>
 }
 
@@ -87,7 +102,7 @@ export function DashboardNavigation({
         <div className="flex flex-col gap-1">
           {allItems.map(({ href, key, label, icon: Icon }) => {
             const active = isItemActive(pathname, href)
-            const text = key ? t(key) : label?.[locale] ?? ''
+            const text = key ? t(key) : (label?.[locale] ?? '')
             return (
               <Link
                 key={href}

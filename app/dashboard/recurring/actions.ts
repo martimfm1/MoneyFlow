@@ -24,7 +24,9 @@ function errorRedirect(message: string): never {
 
 async function getUser() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
   return { supabase, user }
 }
@@ -70,7 +72,8 @@ export async function updateRecurringExpense(formData: FormData) {
     currencyCode: String(formData.get('currencyCode') || '').toUpperCase(),
     notes: formData.get('notes') || undefined,
   })
-  if (!parsed.success || !parsed.data.id) errorRedirect('Verifica os dados da despesa.')
+  if (!parsed.success || !parsed.data.id)
+    errorRedirect('Verifica os dados da despesa.')
 
   const { supabase, user } = await getUser()
   const { error } = await supabase
@@ -88,7 +91,10 @@ export async function updateRecurringExpense(formData: FormData) {
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
 
-  if (error) redirect(`/dashboard/recurring/${parsed.data.id}/edit?error=${encodeURIComponent('Não foi possível atualizar a despesa.')}`)
+  if (error)
+    redirect(
+      `/dashboard/recurring/${parsed.data.id}/edit?error=${encodeURIComponent('Não foi possível atualizar a despesa.')}`,
+    )
   revalidatePath('/dashboard/recurring')
   revalidatePath(`/dashboard/recurring/${parsed.data.id}/edit`)
   revalidatePath('/dashboard')
@@ -99,7 +105,11 @@ export async function deleteRecurringExpense(formData: FormData) {
   const parsed = idSchema.safeParse(formData.get('id'))
   if (!parsed.success) errorRedirect('Despesa inválida.')
   const { supabase, user } = await getUser()
-  const { error } = await supabase.from('recurring_expenses').delete().eq('id', parsed.data).eq('user_id', user.id)
+  const { error } = await supabase
+    .from('recurring_expenses')
+    .delete()
+    .eq('id', parsed.data)
+    .eq('user_id', user.id)
   if (error) errorRedirect('Não foi possível apagar a despesa.')
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
@@ -107,13 +117,19 @@ export async function deleteRecurringExpense(formData: FormData) {
 }
 
 export async function toggleRecurringExpense(formData: FormData) {
-  const parsed = z.object({ id: z.uuid(), isActive: z.enum(['true', 'false']) }).safeParse({
-    id: formData.get('id'),
-    isActive: formData.get('isActive'),
-  })
+  const parsed = z
+    .object({ id: z.uuid(), isActive: z.enum(['true', 'false']) })
+    .safeParse({
+      id: formData.get('id'),
+      isActive: formData.get('isActive'),
+    })
   if (!parsed.success) errorRedirect('Despesa inválida.')
   const { supabase, user } = await getUser()
-  const { error } = await supabase.from('recurring_expenses').update({ is_active: parsed.data.isActive === 'true' }).eq('id', parsed.data.id).eq('user_id', user.id)
+  const { error } = await supabase
+    .from('recurring_expenses')
+    .update({ is_active: parsed.data.isActive === 'true' })
+    .eq('id', parsed.data.id)
+    .eq('user_id', user.id)
   if (error) errorRedirect('Não foi possível atualizar a despesa.')
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')

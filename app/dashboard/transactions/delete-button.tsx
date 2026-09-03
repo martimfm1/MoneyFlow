@@ -4,11 +4,25 @@ import { Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { deleteTransaction } from './actions'
 
-export function DeleteTransactionButton({ id, label }: { id: string; label: string }) {
+export function DeleteTransactionButton({
+  id,
+  label,
+}: {
+  id: string
+  label: string
+}) {
   return (
-    <form action={deleteTransaction} onSubmit={(event) => {
-      if (!window.confirm(`Apagar “${label}”? O saldo da conta será atualizado.`)) event.preventDefault()
-    }}>
+    <form
+      action={deleteTransaction}
+      onSubmit={(event) => {
+        if (
+          !window.confirm(
+            `Apagar “${label}”? O saldo da conta será atualizado.`,
+          )
+        )
+          event.preventDefault()
+      }}
+    >
       <input type="hidden" name="id" value={id} />
       <Button
         type="submit"

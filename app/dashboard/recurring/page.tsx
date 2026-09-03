@@ -203,8 +203,12 @@ export default async function RecurringExpensesPage({
       <section className="mt-8">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-sm text-[hsl(var(--muted-foreground))]">Os teus custos</p>
-            <h2 className="mt-1 text-lg font-semibold">Domínios e subscrições</h2>
+            <p className="text-sm text-[hsl(var(--muted-foreground))]">
+              Os teus custos
+            </p>
+            <h2 className="mt-1 text-lg font-semibold">
+              Domínios e subscrições
+            </h2>
           </div>
           <span className="text-sm text-[hsl(var(--muted-foreground))]">
             {items.length} {items.length === 1 ? 'item' : 'itens'}
@@ -214,7 +218,9 @@ export default async function RecurringExpensesPage({
         {!items.length ? (
           <div className="mt-4 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center">
             <CalendarClock className="mx-auto size-6" />
-            <h3 className="mt-4 font-medium">Ainda não tens despesas recorrentes</h3>
+            <h3 className="mt-4 font-medium">
+              Ainda não tens despesas recorrentes
+            </h3>
             <p className="mx-auto mt-1 max-w-md text-sm leading-6 text-[hsl(var(--muted-foreground))]">
               Adiciona o primeiro domínio ou serviço e começa a calcular o valor
               que precisas de reservar todos os meses.
@@ -237,7 +243,8 @@ export default async function RecurringExpensesPage({
                     <div className="min-w-0">
                       <h3 className="truncate font-semibold">{item.name}</h3>
                       <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
-                        {item.provider || 'Sem fornecedor'} · {frequencyLabels[item.frequency]}
+                        {item.provider || 'Sem fornecedor'} ·{' '}
+                        {frequencyLabels[item.frequency]}
                       </p>
                     </div>
                     <span className="shrink-0 rounded-full bg-[hsl(var(--surface-muted))] px-2 py-1 text-xs font-medium">
@@ -247,13 +254,17 @@ export default async function RecurringExpensesPage({
 
                   <div className="mt-5 grid grid-cols-2 gap-3">
                     <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">Cobrança</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                        Cobrança
+                      </p>
                       <p className="mt-1 font-semibold tabular-nums">
                         {formatCurrency(Number(item.amount), itemCurrency)}
                       </p>
                     </div>
                     <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">Reserva/mês</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                        Reserva/mês
+                      </p>
                       <p className="mt-1 font-semibold tabular-nums">
                         {formatCurrency(reserve, itemCurrency)}
                       </p>
@@ -262,13 +273,17 @@ export default async function RecurringExpensesPage({
 
                   <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">Custo anual</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                        Custo anual
+                      </p>
                       <p className="mt-1 font-medium tabular-nums">
                         {formatCurrency(annual, itemCurrency)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">Próxima cobrança</p>
+                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                        Próxima cobrança
+                      </p>
                       <p className="mt-1 font-medium">
                         {formatDate(`${item.next_due_date}T00:00:00`)}
                       </p>
@@ -311,7 +326,10 @@ export default async function RecurringExpensesPage({
                         )}
                       </Button>
                     </form>
-                    <DeleteRecurringExpenseButton id={item.id} name={item.name} />
+                    <DeleteRecurringExpenseButton
+                      id={item.id}
+                      name={item.name}
+                    />
                   </div>
                 </article>
               )
@@ -325,30 +343,61 @@ export default async function RecurringExpensesPage({
         className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
       >
         <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">Simulador</p>
-          <h2 className="mt-1 text-lg font-semibold">Adicionar despesa recorrente</h2>
+          <p className="text-sm text-[hsl(var(--muted-foreground))]">
+            Simulador
+          </p>
+          <h2 className="mt-1 text-lg font-semibold">
+            Adicionar despesa recorrente
+          </h2>
           <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-            Para domínios anuais, escolhe “Anual”. Para SaaS, alojamento ou outras
-            cobranças frequentes, escolhe a periodicidade correspondente.
+            Para domínios anuais, escolhe “Anual”. Para SaaS, alojamento ou
+            outras cobranças frequentes, escolhe a periodicidade correspondente.
           </p>
         </div>
 
-        <form action={createRecurringExpense} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <form
+          action={createRecurringExpense}
+          className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <label className="grid gap-2 text-sm font-medium">
             Nome
-            <input name="name" required maxLength={120} placeholder="Ex.: domínio cliente.pt" className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]" />
+            <input
+              name="name"
+              required
+              maxLength={120}
+              placeholder="Ex.: domínio cliente.pt"
+              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+            />
           </label>
           <label className="grid gap-2 text-sm font-medium">
             Fornecedor / cliente
-            <input name="provider" maxLength={120} placeholder="Ex.: Porkbun · Cliente X" className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]" />
+            <input
+              name="provider"
+              maxLength={120}
+              placeholder="Ex.: Porkbun · Cliente X"
+              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+            />
           </label>
           <label className="grid gap-2 text-sm font-medium">
             Valor da cobrança
-            <input name="amount" type="number" inputMode="decimal" min="0.01" step="0.01" required placeholder="20,00" className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]" />
+            <input
+              name="amount"
+              type="number"
+              inputMode="decimal"
+              min="0.01"
+              step="0.01"
+              required
+              placeholder="20,00"
+              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+            />
           </label>
           <label className="grid gap-2 text-sm font-medium">
             Periodicidade
-            <select name="frequency" defaultValue="yearly" className="min-h-11 rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]">
+            <select
+              name="frequency"
+              defaultValue="yearly"
+              className="min-h-11 rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+            >
               <option value="monthly">Mensal</option>
               <option value="quarterly">Trimestral</option>
               <option value="yearly">Anual</option>
@@ -356,18 +405,39 @@ export default async function RecurringExpensesPage({
           </label>
           <label className="grid gap-2 text-sm font-medium">
             Próxima cobrança
-            <input name="nextDueDate" type="date" defaultValue={new Date().toISOString().slice(0, 10)} required className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]" />
+            <input
+              name="nextDueDate"
+              type="date"
+              defaultValue={new Date().toISOString().slice(0, 10)}
+              required
+              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+            />
           </label>
           <label className="grid gap-2 text-sm font-medium">
             Moeda
-            <input name="currencyCode" defaultValue={currency} maxLength={3} pattern="[A-Z]{3}" required className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal uppercase outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]" />
+            <input
+              name="currencyCode"
+              defaultValue={currency}
+              maxLength={3}
+              pattern="[A-Z]{3}"
+              required
+              className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal uppercase outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+            />
           </label>
           <label className="grid gap-2 text-sm font-medium sm:col-span-2 lg:col-span-3">
             Notas
-            <textarea name="notes" maxLength={500} rows={3} placeholder="Ex.: renovação anual do domínio do cliente, inclui privacidade..." className="rounded-[var(--radius-md)] border bg-transparent px-3 py-2 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]" />
+            <textarea
+              name="notes"
+              maxLength={500}
+              rows={3}
+              placeholder="Ex.: renovação anual do domínio do cliente, inclui privacidade..."
+              className="rounded-[var(--radius-md)] border bg-transparent px-3 py-2 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+            />
           </label>
           <div className="flex items-end sm:col-span-2 lg:col-span-3">
-            <Button type="submit" className="w-full sm:w-auto">Guardar despesa</Button>
+            <Button type="submit" className="w-full sm:w-auto">
+              Guardar despesa
+            </Button>
           </div>
         </form>
       </section>
