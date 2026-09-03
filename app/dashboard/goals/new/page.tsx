@@ -49,12 +49,11 @@ export default async function NewGoalPage({
               <span>Quanto precisas?</span>
               <input
                 name="targetAmount"
-                type="number"
+                type="text"
                 inputMode="decimal"
-                step="0.01"
-                min="0.01"
+                autoComplete="off"
                 required
-                placeholder="1000"
+                placeholder="1000,00"
                 className="min-h-14 w-full rounded-xl border bg-transparent px-3 text-2xl font-semibold tracking-tight tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
               />
             </label>
