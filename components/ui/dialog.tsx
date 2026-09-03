@@ -124,18 +124,48 @@ export function DialogContent({
   )
 }
 
-export function DialogHeader({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function DialogHeader({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   return <div className={cn('pr-8', className)} {...props} />
 }
 
-export function DialogTitle({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn('text-lg font-semibold tracking-tight', className)} {...props} />
+export function DialogTitle({
+  className,
+  ...props
+}: HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h2
+      className={cn('text-lg font-semibold tracking-tight', className)}
+      {...props}
+    />
+  )
 }
 
-export function DialogDescription({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn('mt-1 text-sm text-[hsl(var(--muted-foreground))]', className)} {...props} />
+export function DialogDescription({
+  className,
+  ...props
+}: HTMLAttributes<HTMLParagraphElement>) {
+  return (
+    <p
+      className={cn(
+        'mt-1 text-sm text-[hsl(var(--muted-foreground))]',
+        className,
+      )}
+      {...props}
+    />
+  )
 }
 
-export function DialogFooter({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('mt-5 flex items-center justify-end gap-2', className)} {...props} />
+export function DialogFooter({
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn('mt-5 flex items-center justify-end gap-2', className)}
+      {...props}
+    />
+  )
 }

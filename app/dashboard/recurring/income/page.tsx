@@ -61,7 +61,9 @@ export default async function RecurringIncomePage() {
       .maybeSingle(),
     supabase
       .from('recurring_incomes')
-      .select('id, name, source, amount, frequency, next_income_date, currency_code, is_active')
+      .select(
+        'id, name, source, amount, frequency, next_income_date, currency_code, is_active',
+      )
       .eq('user_id', user.id)
       .order('is_active', { ascending: false })
       .order('next_income_date', { ascending: true }),
@@ -70,8 +72,14 @@ export default async function RecurringIncomePage() {
   const currency = profile?.currency_code ?? 'EUR'
   const items = (incomes ?? []) as RecurringIncome[]
   const activeItems = items.filter((item) => item.is_active)
-  const monthlyTotal = activeItems.reduce((sum, item) => sum + monthlyIncome(item), 0)
-  const yearlyTotal = activeItems.reduce((sum, item) => sum + yearlyIncome(item), 0)
+  const monthlyTotal = activeItems.reduce(
+    (sum, item) => sum + monthlyIncome(item),
+    0,
+  )
+  const yearlyTotal = activeItems.reduce(
+    (sum, item) => sum + yearlyIncome(item),
+    0,
+  )
   const nextIncome = activeItems[0]
   const dueSoon = activeItems.filter((item) => {
     const days = daysUntil(item.next_income_date)
@@ -96,21 +104,35 @@ export default async function RecurringIncomePage() {
 
       <section className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
-          <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">Mensal</p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums">{formatCurrency(monthlyTotal, currency)}</p>
+          <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">
+            Mensal
+          </p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums">
+            {formatCurrency(monthlyTotal, currency)}
+          </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
-          <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">Anual</p>
-          <p className="mt-2 text-2xl font-semibold tabular-nums">{formatCurrency(yearlyTotal, currency)}</p>
+          <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">
+            Anual
+          </p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums">
+            {formatCurrency(yearlyTotal, currency)}
+          </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
           <div className="flex items-center gap-2 text-xs font-medium text-[hsl(var(--muted-foreground))]">
             <CalendarClock className="size-4" /> Próximo
           </div>
-          <p className="mt-2 font-semibold">{nextIncome ? formatDate(`${nextIncome.next_income_date}T00:00:00`) : '—'}</p>
+          <p className="mt-2 font-semibold">
+            {nextIncome
+              ? formatDate(`${nextIncome.next_income_date}T00:00:00`)
+              : '—'}
+          </p>
         </article>
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
-          <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">30 dias</p>
+          <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">
+            30 dias
+          </p>
           <p className="mt-2 text-2xl font-semibold tabular-nums">{dueSoon}</p>
         </article>
       </section>
@@ -118,13 +140,17 @@ export default async function RecurringIncomePage() {
       <section className="mt-8">
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-sm font-semibold">Rendimentos</h2>
-          <span className="text-xs text-[hsl(var(--muted-foreground))]">{items.length}</span>
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">
+            {items.length}
+          </span>
         </div>
 
         {!items.length ? (
           <div className="mt-4 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-8 text-center">
             <ArrowDownLeft className="mx-auto size-6" />
-            <h3 className="mt-4 font-medium">Ainda não tens ganhos recorrentes</h3>
+            <h3 className="mt-4 font-medium">
+              Ainda não tens ganhos recorrentes
+            </h3>
           </div>
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -132,28 +158,44 @@ export default async function RecurringIncomePage() {
               const itemCurrency = item.currency_code || currency
               const days = daysUntil(item.next_income_date)
               return (
-                <article key={item.id} className={`rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm ${item.is_active ? '' : 'opacity-60'}`}>
+                <article
+                  key={item.id}
+                  className={`rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm ${item.is_active ? '' : 'opacity-60'}`}
+                >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <h3 className="truncate font-semibold">{item.name}</h3>
                       <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
-                        {item.source || 'Sem origem'} · {frequencyLabels[item.frequency]}
+                        {item.source || 'Sem origem'} ·{' '}
+                        {frequencyLabels[item.frequency]}
                       </p>
                     </div>
-                    <RecurringIncomeActionMenu id={item.id} name={item.name} isActive={item.is_active} />
+                    <RecurringIncomeActionMenu
+                      id={item.id}
+                      name={item.name}
+                      isActive={item.is_active}
+                    />
                   </div>
                   <div className="mt-5 flex items-end justify-between gap-4">
                     <div>
-                      <p className="text-2xl font-semibold tabular-nums">{formatCurrency(Number(item.amount), itemCurrency)}</p>
+                      <p className="text-2xl font-semibold tabular-nums">
+                        {formatCurrency(Number(item.amount), itemCurrency)}
+                      </p>
                       <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
                         {formatCurrency(monthlyIncome(item), itemCurrency)}/mês
                       </p>
                     </div>
                     <div className="text-right text-xs">
-                      <p className="text-[hsl(var(--muted-foreground))]">Próximo</p>
-                      <p className="mt-1 font-medium">{formatDate(`${item.next_income_date}T00:00:00`)}</p>
+                      <p className="text-[hsl(var(--muted-foreground))]">
+                        Próximo
+                      </p>
+                      <p className="mt-1 font-medium">
+                        {formatDate(`${item.next_income_date}T00:00:00`)}
+                      </p>
                       {item.is_active && days >= 0 && days <= 30 ? (
-                        <p className="mt-1 text-[hsl(var(--success))]">{days === 0 ? 'Hoje' : `${days}d`}</p>
+                        <p className="mt-1 text-[hsl(var(--success))]">
+                          {days === 0 ? 'Hoje' : `${days}d`}
+                        </p>
                       ) : null}
                     </div>
                   </div>

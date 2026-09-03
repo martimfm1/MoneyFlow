@@ -58,11 +58,7 @@ export function AccountForm() {
         />
       </label>
       <div className="flex items-end lg:justify-end">
-        <Button
-          type="submit"
-          disabled={isPending}
-          className="w-full lg:w-auto"
-        >
+        <Button type="submit" disabled={isPending} className="w-full lg:w-auto">
           {isPending ? 'A criar…' : 'Criar conta'}
         </Button>
       </div>

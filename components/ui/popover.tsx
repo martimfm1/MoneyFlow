@@ -23,7 +23,8 @@ const PopoverContext = createContext<PopoverContextValue | null>(null)
 
 function usePopoverContext() {
   const context = useContext(PopoverContext)
-  if (!context) throw new Error('Popover components must be used inside Popover')
+  if (!context)
+    throw new Error('Popover components must be used inside Popover')
   return context
 }
 
@@ -109,7 +110,10 @@ export function PopoverContent({
     }
     const onPointerDown = (event: MouseEvent) => {
       const target = event.target as Node
-      if (!ref.current?.contains(target) && !triggerRef.current?.contains(target)) {
+      if (
+        !ref.current?.contains(target) &&
+        !triggerRef.current?.contains(target)
+      ) {
         setOpen(false)
       }
     }

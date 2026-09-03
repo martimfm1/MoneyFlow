@@ -87,7 +87,9 @@ export async function toggleRecurringIncome(formData: FormData) {
 
   revalidatePath('/dashboard/recurring/income')
   revalidatePath('/dashboard')
-  redirect(`/dashboard/recurring/income?toast=${parsed.data.isActive === 'true' ? 'Ganho%20ativado.' : 'Ganho%20pausado.'}`)
+  redirect(
+    `/dashboard/recurring/income?toast=${parsed.data.isActive === 'true' ? 'Ganho%20ativado.' : 'Ganho%20pausado.'}`,
+  )
 }
 
 export async function deleteRecurringIncome(formData: FormData) {

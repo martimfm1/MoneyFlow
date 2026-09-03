@@ -41,7 +41,9 @@ export async function toggleAccountStatus(formData: FormData) {
     .eq('user_id', user.id)
 
   if (error)
-    redirect('/dashboard/accounts?error=Não%20foi%20possível%20atualizar%20a%20conta.')
+    redirect(
+      '/dashboard/accounts?error=Não%20foi%20possível%20atualizar%20a%20conta.',
+    )
 
   redirect('/dashboard/accounts?toast=Conta%20atualizada.')
 }
@@ -53,7 +55,9 @@ export async function updateAccount(formData: FormData) {
     accountType: formData.get('accountType'),
   })
   if (!parsed.success)
-    redirect(`/dashboard/accounts/${formData.get('id')}/edit?error=Dados%20inválidos.`)
+    redirect(
+      `/dashboard/accounts/${formData.get('id')}/edit?error=Dados%20inválidos.`,
+    )
 
   const supabase = await createClient()
   const {
@@ -99,8 +103,7 @@ export async function deleteAccount(
     .eq('user_id', user.id)
     .maybeSingle()
 
-  if (accountError)
-    return { error: 'Não foi possível verificar a conta.' }
+  if (accountError) return { error: 'Não foi possível verificar a conta.' }
   if (!account) return { error: 'Conta não encontrada.' }
 
   const { count, error: countError } = await supabase
@@ -120,7 +123,8 @@ export async function deleteAccount(
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
 
-  if (error) return { error: error.message || 'Não foi possível apagar a conta.' }
+  if (error)
+    return { error: error.message || 'Não foi possível apagar a conta.' }
 
   redirect('/dashboard/accounts?toast=Conta%20apagada.')
 }
