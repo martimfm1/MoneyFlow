@@ -47,6 +47,7 @@ export default async function BudgetsPage({
   const year = requested?.year ?? now.getUTCFullYear()
   const month = requested?.month ?? now.getUTCMonth() + 1
   const currentMonth = monthKey(year, month)
+  const currentMonthDate = `${currentMonth}-01`
   const next = shiftMonth(year, month, 1)
   const previous = shiftMonth(year, month, -1)
   const nextMonth = monthKey(next.year, next.month)
@@ -81,7 +82,7 @@ export default async function BudgetsPage({
       .from('budgets')
       .select('id, category_id, amount')
       .eq('user_id', user.id)
-      .eq('month_start', currentMonth),
+      .eq('month_start', currentMonthDate),
     supabase
       .from('transactions')
       .select('category_id, amount, transaction_type')
