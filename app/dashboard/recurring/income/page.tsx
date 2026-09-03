@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowDownLeft, CalendarClock, ChevronLeft, Plus } from 'lucide-react'
+import { ArrowDownLeft, CalendarClock, ChevronLeft } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
