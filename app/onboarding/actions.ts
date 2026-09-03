@@ -1,8 +1,9 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+import { normalizeDecimalInput } from '@/lib/number'
 
 const schema = z.object({
   displayName: z.string().trim().max(80).optional(),
@@ -18,7 +19,7 @@ export async function completeOnboarding(formData: FormData) {
     currencyCode: formData.get('currencyCode'),
     accountName: formData.get('accountName'),
     accountType: formData.get('accountType'),
-    balance: formData.get('balance'),
+    balance: normalizeDecimalInput(formData.get('balance')),
   })
 
   if (!parsed.success) redirect('/onboarding?error=Confirma%20os%20dados.')
