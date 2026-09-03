@@ -226,35 +226,41 @@ export default async function TransactionsPage({
                   key={transaction.id}
                   className="grid items-center gap-3 p-4 lg:grid-cols-[auto_minmax(0,1fr)_10rem_8rem_auto_auto] lg:gap-4 lg:px-5"
                 >
-                  <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))]">
-                    {isIncome ? (
-                      <ArrowDownLeft className="size-4" aria-hidden="true" />
-                    ) : (
-                      <ArrowUpRight className="size-4" aria-hidden="true" />
-                    )}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate font-medium">{label}</p>
-                    <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
-                      {account?.name ?? 'Conta'} ·{' '}
-                      {category?.name ?? 'Sem categoria'}
+                  <Link
+                    href={`/dashboard/transactions/${transaction.id}`}
+                    className="contents"
+                    aria-label={`Ver detalhes de ${label}`}
+                  >
+                    <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))]">
+                      {isIncome ? (
+                        <ArrowDownLeft className="size-4" aria-hidden="true" />
+                      ) : (
+                        <ArrowUpRight className="size-4" aria-hidden="true" />
+                      )}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{label}</p>
+                      <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
+                        {account?.name ?? 'Conta'} ·{' '}
+                        {category?.name ?? 'Sem categoria'}
+                      </p>
+                      <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))] lg:hidden">
+                        {formatDate(transaction.occurred_at)}
+                      </p>
+                    </div>
+                    <p
+                      className={`shrink-0 font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}
+                    >
+                      {isIncome ? '+' : '-'}
+                      {formatCurrency(
+                        Number(transaction.amount),
+                        account?.currency_code || currency,
+                      )}
                     </p>
-                    <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))] lg:hidden">
+                    <p className="hidden text-sm text-[hsl(var(--muted-foreground))] lg:block">
                       {formatDate(transaction.occurred_at)}
                     </p>
-                  </div>
-                  <p
-                    className={`shrink-0 font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}
-                  >
-                    {isIncome ? '+' : '-'}
-                    {formatCurrency(
-                      Number(transaction.amount),
-                      account?.currency_code || currency,
-                    )}
-                  </p>
-                  <p className="hidden text-sm text-[hsl(var(--muted-foreground))] lg:block">
-                    {formatDate(transaction.occurred_at)}
-                  </p>
+                  </Link>
                   <Button
                     asChild
                     size="icon"
