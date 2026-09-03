@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Heart, Home, List, Target, WalletCards } from 'lucide-react'
+import { CalendarClock, Heart, Home, List, Target, WalletCards } from 'lucide-react'
 import { createTranslator, type MoneyFlowLocale } from '@/lib/i18n'
 
 const items = [
@@ -11,6 +11,7 @@ const items = [
   { href: '/dashboard/transactions', key: 'nav.transactions' as const, icon: List },
   { href: '/dashboard/goals', key: 'nav.goals' as const, icon: Target },
   { href: '/dashboard/wishlist', key: 'nav.wishlist' as const, icon: Heart },
+  { href: '/dashboard/recurring', key: 'nav.recurring' as const, icon: CalendarClock },
 ]
 
 function isItemActive(pathname: string, href: string) {
@@ -43,7 +44,7 @@ export function DashboardNavigation({
         className={
           isSidebar
             ? 'flex flex-col gap-1'
-            : 'mx-auto grid max-w-3xl grid-cols-5 px-2 safe-bottom'
+            : 'mx-auto grid max-w-5xl grid-cols-6 px-2 safe-bottom'
         }
       >
         {items.map(({ href, key, icon: Icon }) => {
@@ -58,7 +59,7 @@ export function DashboardNavigation({
               className={`flex font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))] ${
                 isSidebar
                   ? 'min-h-11 items-center gap-3 rounded-[var(--radius-md)] px-3 text-sm'
-                  : 'min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-md)] px-2 text-[11px]'
+                  : 'min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-md)] px-1 text-[10px] sm:text-[11px]'
               } ${
                 active
                   ? 'bg-[hsl(var(--surface-muted))] text-[hsl(var(--foreground))]'
