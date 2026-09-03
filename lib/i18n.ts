@@ -6,6 +6,7 @@ type TranslationKey =
   | 'nav.transactions'
   | 'nav.goals'
   | 'nav.wishlist'
+  | 'nav.recurring'
   | 'nav.label'
   | 'nav.settings'
   | 'settings.eyebrow'
@@ -27,6 +28,7 @@ const translations: Record<MoneyFlowLocale, Record<TranslationKey, string>> = {
     'nav.transactions': 'Movimentos',
     'nav.goals': 'Objetivos',
     'nav.wishlist': 'Wishlist',
+    'nav.recurring': 'Recorrentes',
     'nav.label': 'Navegação principal',
     'nav.settings': 'Definições',
     'settings.eyebrow': 'Preferências',
@@ -47,6 +49,7 @@ const translations: Record<MoneyFlowLocale, Record<TranslationKey, string>> = {
     'nav.transactions': 'Transactions',
     'nav.goals': 'Goals',
     'nav.wishlist': 'Wishlist',
+    'nav.recurring': 'Recurring',
     'nav.label': 'Main navigation',
     'nav.settings': 'Settings',
     'settings.eyebrow': 'Preferences',
