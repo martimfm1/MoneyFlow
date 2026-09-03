@@ -104,12 +104,7 @@ export default async function AccountsPage({
                 Gestão
               </p>
               <p className="mt-2 text-sm leading-6">
-<<<<<<< HEAD
-                Podes editar, arquivar ou apagar uma conta. Contas com
-                movimentos são preservadas e podem ser arquivadas.
-=======
-                Podes abrir uma conta para ver os movimentos, editar, arquivar ou apagar quando permitido.
->>>>>>> 2f06c0dcc90fa756136367b41cf137e82a69d911
+                Podes abrir uma conta para ver os movimentos, editar, arquivar ou apagar quando permitido. Contas com movimentos são preservadas e podem ser arquivadas.
               </p>
             </article>
           </section>
