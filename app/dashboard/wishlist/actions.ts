@@ -1,141 +1,119 @@
 'use server'
 
+import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
-const createSchema = z.object({
+const itemSchema = z.object({
+  id: z.uuid().optional(),
   name: z.string().trim().min(1).max(120),
   price: z.coerce.number().finite().nonnegative(),
+  category: z.string().trim().max(50).optional().or(z.literal('')),
   priority: z.enum(['high', 'medium', 'low']),
   url: z.string().trim().url().max(2048).optional().or(z.literal('')),
+  imageUrl: z.string().trim().url().max(2048).optional().or(z.literal('')),
   desiredDate: z.string().date().optional().or(z.literal('')),
   notes: z.string().trim().max(1000).optional().or(z.literal('')),
 })
 
-const statusSchema = z.object({
-  id: z.uuid(),
-  status: z.enum(['want', 'saving', 'ready', 'purchased']),
-})
+const statusSchema = z.object({ id: z.uuid(), status: z.enum(['want', 'saving', 'ready', 'purchased']) })
+const goalSchema = z.object({ id: z.uuid() })
 
-const goalSchema = z.object({
-  id: z.uuid(),
-})
+async function getUser() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+  return { supabase, user }
+}
 
-export async function createWishlistItem(formData: FormData) {
-  const parsed = createSchema.safeParse({
+function errorRedirect(path: string, message: string): never {
+  redirect(`${path}?error=${encodeURIComponent(message)}`)
+}
+
+function itemInput(formData: FormData) {
+  return {
+    id: formData.get('id'),
     name: formData.get('name'),
     price: formData.get('price'),
+    category: formData.get('category') || '',
     priority: formData.get('priority'),
-    url: formData.get('url') || undefined,
-    desiredDate: formData.get('desiredDate') || undefined,
-    notes: formData.get('notes') || undefined,
-  })
+    url: formData.get('url') || '',
+    imageUrl: formData.get('imageUrl') || '',
+    desiredDate: formData.get('desiredDate') || '',
+    notes: formData.get('notes') || '',
+  }
+}
 
-  if (!parsed.success)
-    redirect('/dashboard/wishlist/new?error=Confirma%20os%20dados.')
-
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
+export async function createWishlistItem(formData: FormData) {
+  const parsed = itemSchema.safeParse(itemInput(formData))
+  if (!parsed.success) errorRedirect('/dashboard/wishlist/new', 'Confirma os dados.')
+  const { supabase, user } = await getUser()
   const { error } = await supabase.from('wishlist_items').insert({
-    user_id: user.id,
-    name: parsed.data.name,
-    price: parsed.data.price,
-    priority: parsed.data.priority,
-    url: parsed.data.url || null,
-    desired_date: parsed.data.desiredDate || null,
-    notes: parsed.data.notes || null,
+    user_id: user.id, name: parsed.data.name, price: parsed.data.price,
+    category: parsed.data.category || null, priority: parsed.data.priority,
+    url: parsed.data.url || null, image_url: parsed.data.imageUrl || null,
+    desired_date: parsed.data.desiredDate || null, notes: parsed.data.notes || null,
   })
+  if (error) errorRedirect('/dashboard/wishlist/new', 'Não foi possível guardar o item.')
+  revalidatePath('/dashboard/wishlist')
+  revalidatePath('/dashboard')
+  redirect('/dashboard/wishlist')
+}
 
-  if (error)
-    redirect(
-      '/dashboard/wishlist/new?error=Não%20foi%20possível%20guardar%20o%20item.',
-    )
+export async function updateWishlistItem(formData: FormData) {
+  const parsed = itemSchema.safeParse(itemInput(formData))
+  if (!parsed.success || !parsed.data.id) errorRedirect('/dashboard/wishlist', 'Confirma os dados.')
+  const { supabase, user } = await getUser()
+  const { error } = await supabase.from('wishlist_items').update({
+    name: parsed.data.name, price: parsed.data.price, category: parsed.data.category || null,
+    priority: parsed.data.priority, url: parsed.data.url || null,
+    image_url: parsed.data.imageUrl || null, desired_date: parsed.data.desiredDate || null,
+    notes: parsed.data.notes || null, updated_at: new Date().toISOString(),
+  }).eq('id', parsed.data.id).eq('user_id', user.id)
+  if (error) errorRedirect(`/dashboard/wishlist/${parsed.data.id}/edit`, 'Não foi possível atualizar o item.')
+  revalidatePath('/dashboard/wishlist')
+  revalidatePath(`/dashboard/wishlist/${parsed.data.id}/edit`)
+  revalidatePath('/dashboard')
+  redirect('/dashboard/wishlist')
+}
+
+export async function deleteWishlistItem(formData: FormData) {
+  const parsed = goalSchema.safeParse({ id: formData.get('id') })
+  if (!parsed.success) errorRedirect('/dashboard/wishlist', 'Item inválido.')
+  const { supabase, user } = await getUser()
+  const { data: linkedGoal } = await supabase.from('goals').select('id').eq('wishlist_item_id', parsed.data.id).eq('user_id', user.id).maybeSingle()
+  if (linkedGoal) errorRedirect('/dashboard/wishlist', 'Este item já está ligado a um objetivo. Apaga o objetivo primeiro.')
+  const { error } = await supabase.from('wishlist_items').delete().eq('id', parsed.data.id).eq('user_id', user.id)
+  if (error) errorRedirect('/dashboard/wishlist', 'Não foi possível apagar o item.')
+  revalidatePath('/dashboard/wishlist')
+  revalidatePath('/dashboard')
   redirect('/dashboard/wishlist')
 }
 
 export async function updateWishlistStatus(formData: FormData) {
-  const parsed = statusSchema.safeParse({
-    id: formData.get('id'),
-    status: formData.get('status'),
-  })
-
-  if (!parsed.success) redirect('/dashboard/wishlist?error=Estado%20inválido.')
-
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { error } = await supabase
-    .from('wishlist_items')
-    .update({ status: parsed.data.status })
-    .eq('id', parsed.data.id)
-    .eq('user_id', user.id)
-
-  if (error)
-    redirect(
-      '/dashboard/wishlist?error=Não%20foi%20possível%20atualizar%20o%20item.',
-    )
+  const parsed = statusSchema.safeParse({ id: formData.get('id'), status: formData.get('status') })
+  if (!parsed.success) errorRedirect('/dashboard/wishlist', 'Estado inválido.')
+  const { supabase, user } = await getUser()
+  const { error } = await supabase.from('wishlist_items').update({ status: parsed.data.status, updated_at: new Date().toISOString() }).eq('id', parsed.data.id).eq('user_id', user.id)
+  if (error) errorRedirect('/dashboard/wishlist', 'Não foi possível atualizar o item.')
+  revalidatePath('/dashboard/wishlist')
+  revalidatePath('/dashboard')
   redirect('/dashboard/wishlist')
 }
 
 export async function createGoalFromWishlist(formData: FormData) {
   const parsed = goalSchema.safeParse({ id: formData.get('id') })
-  if (!parsed.success) redirect('/dashboard/wishlist?error=Item%20inválido.')
-
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: item } = await supabase
-    .from('wishlist_items')
-    .select('id, name, price, priority, desired_date')
-    .eq('id', parsed.data.id)
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (!item) redirect('/dashboard/wishlist?error=Item%20inválido.')
-
-  const { data: existingGoal } = await supabase
-    .from('goals')
-    .select('id')
-    .eq('wishlist_item_id', item.id)
-    .eq('user_id', user.id)
-    .maybeSingle()
-
+  if (!parsed.success) errorRedirect('/dashboard/wishlist', 'Item inválido.')
+  const { supabase, user } = await getUser()
+  const { data: item } = await supabase.from('wishlist_items').select('id, name, price, priority, desired_date').eq('id', parsed.data.id).eq('user_id', user.id).maybeSingle()
+  if (!item) errorRedirect('/dashboard/wishlist', 'Item inválido.')
+  const { data: existingGoal } = await supabase.from('goals').select('id').eq('wishlist_item_id', item.id).eq('user_id', user.id).maybeSingle()
   if (existingGoal) redirect(`/dashboard/goals/${existingGoal.id}`)
-
-  const { data: goal, error } = await supabase
-    .from('goals')
-    .insert({
-      user_id: user.id,
-      wishlist_item_id: item.id,
-      name: item.name,
-      target_amount: item.price,
-      priority: item.priority,
-      target_date: item.desired_date,
-    })
-    .select('id')
-    .single()
-
-  if (error || !goal)
-    redirect(
-      '/dashboard/wishlist?error=Não%20foi%20possível%20criar%20o%20objetivo.',
-    )
-
-  await supabase
-    .from('wishlist_items')
-    .update({ status: 'saving' })
-    .eq('id', item.id)
-    .eq('user_id', user.id)
-
+  const { data: goal, error } = await supabase.from('goals').insert({ user_id: user.id, wishlist_item_id: item.id, name: item.name, target_amount: item.price, priority: item.priority, target_date: item.desired_date }).select('id').single()
+  if (error || !goal) errorRedirect('/dashboard/wishlist', 'Não foi possível criar o objetivo.')
+  await supabase.from('wishlist_items').update({ status: 'saving' }).eq('id', item.id).eq('user_id', user.id)
+  revalidatePath('/dashboard/wishlist')
+  revalidatePath('/dashboard')
   redirect(`/dashboard/goals/${goal.id}`)
 }

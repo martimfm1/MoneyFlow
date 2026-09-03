@@ -16,7 +16,7 @@ MoneyFlow should make a user's financial position understandable within seconds 
 4. Transactions
 5. More
 
-The dominant creation action remains accessible without forcing users into deep navigation.
+The More menu contains Accounts, Budgets, Analytics, Recurring, Categories and Settings. The dominant creation action remains accessible without forcing users into deep navigation.
 
 ### Desktop
 
@@ -53,11 +53,21 @@ Description, notes, recurrence and attachments remain secondary options.
 5. Add contributions over time
 6. Mark item ready or purchased when appropriate
 
+### Recurring costs
+
+1. Add domain/subscription/hosting expense
+2. Enter amount and frequency
+3. Set next renewal date
+4. Review monthly reserve and annualized cost
+5. Pause, edit or delete the commitment as needed
+
+The recurring simulator is designed to turn irregular annual or quarterly invoices into predictable monthly planning values. It does not represent money that has actually been paid unless a real transaction is recorded separately.
+
 ## Database direction
 
 All user-owned records require `user_id` ownership and Row Level Security.
 
-Initial tables:
+Core tables:
 
 - `profiles`
 - `accounts`
@@ -66,6 +76,7 @@ Initial tables:
 - `wishlist_items`
 - `goals`
 - `goal_contributions`
+- `recurring_expenses`
 
 Important principles:
 
@@ -75,6 +86,17 @@ Important principles:
 - Financial values should use exact numeric/decimal database types rather than floating point.
 - Destructive category operations must protect or explicitly reassign related records.
 - Goal contribution mutations must be transactional where multiple balances are affected.
+- Recurring expenses are planning records, not transactions.
+
+## Dashboard model
+
+The dashboard shows the current account balance separately from planning commitments. Monthly overview values are derived from actual transactions for the current month. The financial-health indicator is explicitly formula-based:
+
+- up to 40 points for positive monthly cash flow
+- up to 30 points for the recorded savings rate
+- up to 30 points for the relative weight of active recurring commitments
+
+The score is an informational product indicator, not financial advice. When there is no recorded income, the score is 0 because the product has insufficient data for the calculation.
 
 ## UI architecture
 
@@ -141,6 +163,14 @@ Use Client Components only for:
 
 Data access and authorization stay server-side wherever possible.
 
+## PWA and offline
+
+- `public/manifest.webmanifest` defines standalone installation metadata.
+- `public/icon.svg` is the application icon.
+- `public/sw.js` caches the offline shell and static application assets.
+- Navigation failures fall back to `/offline`.
+- The app does not claim full offline transaction persistence; future work may add IndexedDB-backed drafts/queueing.
+
 ## Security baseline
 
 - Supabase RLS on every user-owned table
@@ -163,7 +193,7 @@ Onboarding, accounts, transactions and dashboard.
 
 ### Phase 3 — Planning
 
-Wishlist, priorities, goals and goal contributions.
+Wishlist, priorities, goals, goal contributions, budgets and recurring expense planning.
 
 ### Phase 4 — Product depth
 
@@ -171,4 +201,4 @@ Analytics, PWA, dark mode and responsive refinements.
 
 ### Phase 5 — Quality
 
-Accessibility, performance, security review, tests, edge cases and UX polish.
+Accessibility verification, performance optimization, automated tests, edge cases and UX polish.
