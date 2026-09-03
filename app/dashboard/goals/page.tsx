@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { addGoalContribution } from './actions'
+import { formatCurrency, formatDate } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,12 +12,6 @@ const priorityLabels: Record<string, string> = {
   high: 'Alta',
   medium: 'Média',
   low: 'Baixa',
-}
-
-function formatMoney(amount: number, currency: string) {
-  return new Intl.NumberFormat('pt-PT', { style: 'currency', currency }).format(
-    amount,
-  )
 }
 
 export default async function GoalsPage({
@@ -66,7 +61,10 @@ export default async function GoalsPage({
       </header>
 
       {params.error ? (
-        <p className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm">
+        <p
+          role="alert"
+          className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
+        >
           {params.error}
         </p>
       ) : null}
@@ -89,7 +87,8 @@ export default async function GoalsPage({
             const current = Number(goal.current_amount)
             const target = Number(goal.target_amount)
             const remaining = Math.max(0, target - current)
-            const progress = Math.min(100, Math.round((current / target) * 100))
+            const progress =
+              target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0
             return (
               <article
                 key={goal.id}
@@ -99,11 +98,12 @@ export default async function GoalsPage({
                   <div>
                     <h2 className="font-medium">{goal.name}</h2>
                     <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                      Prioridade{' '}
-                      {priorityLabels[goal.priority] ?? goal.priority}
+                      Prioridade {priorityLabels[goal.priority] ?? goal.priority}
                     </p>
                   </div>
-                  <p className="text-sm font-semibold">{progress}%</p>
+                  <p className="text-sm font-semibold tabular-nums">
+                    {progress}%
+                  </p>
                 </div>
                 <div className="mt-5 h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
                   <div
@@ -113,18 +113,15 @@ export default async function GoalsPage({
                 </div>
                 <div className="mt-3 flex items-center justify-between text-sm">
                   <span className="tabular-nums">
-                    {formatMoney(current, currency)}
+                    {formatCurrency(current, currency)}
                   </span>
                   <span className="text-[hsl(var(--muted-foreground))]">
-                    de {formatMoney(target, currency)}
+                    de {formatCurrency(target, currency)}
                   </span>
                 </div>
                 {goal.target_date ? (
                   <p className="mt-3 text-xs text-[hsl(var(--muted-foreground))]">
-                    Data alvo:{' '}
-                    {new Intl.DateTimeFormat('pt-PT').format(
-                      new Date(`${goal.target_date}T00:00:00`),
-                    )}
+                    Data alvo: {formatDate(`${goal.target_date}T00:00:00`)}
                   </p>
                 ) : null}
 
@@ -154,7 +151,7 @@ export default async function GoalsPage({
                         step="0.01"
                         min="0.01"
                         max={remaining.toFixed(2)}
-                        placeholder={`Até ${formatMoney(remaining, currency)}`}
+                        placeholder={`Até ${formatCurrency(remaining, currency)}`}
                         className="min-h-10 min-w-0 flex-1 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
                       />
                       <Button type="submit" size="sm">
