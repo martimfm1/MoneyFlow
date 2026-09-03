@@ -24,15 +24,39 @@ const primaryItems = [
   { href: '/dashboard', key: 'nav.home' as const, icon: Home },
   { href: '/dashboard/goals', key: 'nav.goals' as const, icon: Target },
   { href: '/dashboard/wishlist', key: 'nav.wishlist' as const, icon: Heart },
-  { href: '/dashboard/transactions', key: 'nav.transactions' as const, icon: List },
+  {
+    href: '/dashboard/transactions',
+    key: 'nav.transactions' as const,
+    icon: List,
+  },
 ]
 
 const moreItems = [
-  { href: '/dashboard/accounts', key: 'nav.accounts' as const, icon: WalletCards },
-  { href: '/dashboard/budgets', label: { 'pt-PT': 'Orçamentos', en: 'Budgets' }, icon: CircleDollarSign },
-  { href: '/dashboard/analytics', label: { 'pt-PT': 'Analytics', en: 'Analytics' }, icon: ChartNoAxesCombined },
-  { href: '/dashboard/recurring', key: 'nav.recurring' as const, icon: CalendarClock },
-  { href: '/dashboard/categories', label: { 'pt-PT': 'Categorias', en: 'Categories' }, icon: Tags },
+  {
+    href: '/dashboard/accounts',
+    key: 'nav.accounts' as const,
+    icon: WalletCards,
+  },
+  {
+    href: '/dashboard/budgets',
+    label: { 'pt-PT': 'Orçamentos', en: 'Budgets' },
+    icon: CircleDollarSign,
+  },
+  {
+    href: '/dashboard/analytics',
+    label: { 'pt-PT': 'Analytics', en: 'Analytics' },
+    icon: ChartNoAxesCombined,
+  },
+  {
+    href: '/dashboard/recurring',
+    key: 'nav.recurring' as const,
+    icon: CalendarClock,
+  },
+  {
+    href: '/dashboard/categories',
+    label: { 'pt-PT': 'Categorias', en: 'Categories' },
+    icon: Tags,
+  },
   { href: '/dashboard/settings', key: 'nav.settings' as const, icon: Settings },
 ]
 
@@ -59,7 +83,10 @@ type NavigationItem = {
   label?: Record<MoneyFlowLocale, string>
 }
 
-export function DashboardNavigation({ locale, variant = 'mobile' }: DashboardNavigationProps) {
+export function DashboardNavigation({
+  locale,
+  variant = 'mobile',
+}: DashboardNavigationProps) {
   const pathname = usePathname()
   const t = createTranslator(locale)
   const isSidebar = variant === 'sidebar'
@@ -82,7 +109,10 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: DashboardNav
   if (isSidebar) {
     const allItems: NavigationItem[] = [...primaryItems, ...moreItems]
     return (
-      <nav aria-label={t('nav.label')} className="glass-panel rounded-[var(--radius-lg)] p-2">
+      <nav
+        aria-label={t('nav.label')}
+        className="glass-panel rounded-[var(--radius-lg)] p-2"
+      >
         <div className="flex flex-col gap-1">
           {allItems.map(({ href, key, label, icon: Icon }) => {
             const active = isItemActive(pathname, href)
@@ -167,7 +197,9 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: DashboardNav
                 aria-current={active ? 'page' : undefined}
                 className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-[11px] font-medium transition-colors ${active ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))]'}`}
               >
-                <span className={`flex size-9 items-center justify-center rounded-full ${active ? 'bg-[hsl(var(--surface-muted))]' : ''}`}>
+                <span
+                  className={`flex size-9 items-center justify-center rounded-full ${active ? 'bg-[hsl(var(--surface-muted))]' : ''}`}
+                >
                   <Icon className="size-[18px]" aria-hidden="true" />
                 </span>
                 <span>{t(key)}</span>
@@ -181,7 +213,9 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: DashboardNav
             aria-haspopup="dialog"
             className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-[11px] font-medium transition-colors ${moreOpen || moreActive ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))]'}`}
           >
-            <span className={`flex size-9 items-center justify-center rounded-full ${moreOpen || moreActive ? 'bg-[hsl(var(--surface-muted))]' : ''}`}>
+            <span
+              className={`flex size-9 items-center justify-center rounded-full ${moreOpen || moreActive ? 'bg-[hsl(var(--surface-muted))]' : ''}`}
+            >
               <MoreHorizontal className="size-[18px]" aria-hidden="true" />
             </span>
             <span>{t('nav.more')}</span>

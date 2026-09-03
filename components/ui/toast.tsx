@@ -143,8 +143,10 @@ function ToastIcon({ type }: { type: string | undefined }) {
   if (type === 'success') icon = <CircleCheckIcon aria-hidden="true" />
   if (type === 'info') icon = <InfoIcon aria-hidden="true" />
   if (type === 'warning') icon = <TriangleAlertIcon aria-hidden="true" />
-  if (type === 'error') icon = <OctagonXIcon className="text-destructive" aria-hidden="true" />
-  if (type === 'loading') icon = <Loader2Icon className="animate-spin" aria-hidden="true" />
+  if (type === 'error')
+    icon = <OctagonXIcon className="text-destructive" aria-hidden="true" />
+  if (type === 'loading')
+    icon = <Loader2Icon className="animate-spin" aria-hidden="true" />
 
   if (!icon) return null
 
