@@ -5,6 +5,10 @@ import { RegisterServiceWorker } from '@/components/pwa/register-sw'
 import { ToastViewport } from '@/components/toast-viewport'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeLocale } from '@/lib/i18n'
+import { Geist } from "next/font/google";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
   title: {
@@ -55,7 +59,7 @@ export default async function RootLayout({
   const locale = normalizeLocale(profile?.locale)
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body>
         <RegisterServiceWorker />
         <Suspense fallback={null}>
