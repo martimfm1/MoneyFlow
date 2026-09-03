@@ -1,65 +1,74 @@
 # MoneyFlow
 
-MoneyFlow is a mobile-first personal finance and wishlist application designed to answer three questions quickly: what do I have, what can I spend, and what should I spend it on?
+MoneyFlow is a mobile-first personal finance and wishlist application designed to answer three questions quickly: **what do I have, what can I spend, and what should I spend it on?**
 
-The product follows the flow **Track → Understand → Prioritize → Decide**. It is intentionally not just another expense tracker.
+The product follows **Track → Understand → Prioritize → Decide**. It is intentionally more than an expense tracker.
 
 ## Status
 
-Phase 4 is in progress. Authentication, PostgreSQL schema/RLS, onboarding, accounts, transactions, categories, transaction filtering/search, wishlist planning, goal contributions, account management, monthly budgets, financial analytics, dark mode and PWA foundations are implemented.
+MoneyFlow is in active product-quality development. The core money flow, planning tools, recurring-expense simulator, PWA foundations, responsive desktop experience and security baseline are implemented. The next focus is automated testing, deeper accessibility verification, performance work and additional financial insights.
 
-## Implemented
+## Features
 
-- Supabase SSR authentication with Next.js 16 proxy session refresh
-- Sign in / sign up flow
-- Guided onboarding with name, currency and first account setup
-- User profiles with locale and currency defaults
-- Accounts and balances
-- Account editing, archiving and reactivation
+### Money
+
+- Supabase SSR authentication with Next.js 16
+- Guided onboarding with name, currency and first account
+- Accounts, balances, editing, archiving and reactivation
 - Fast income and expense tracking
-- Transaction editing and deletion with ownership validation
-- Default personal finance categories
-- Personal category management
-- Category selection on transactions
-- Transaction history with type/category filters and description search
-- Database trigger to keep account balances synchronized with transactions
-- Protection against creating new transactions on archived accounts
-- Wishlist with price, priority, notes, target date, URL and status
-- Wishlist state management: want, saving, ready and purchased
-- Wishlist-to-goal conversion while preserving the item relationship
-- Savings goals with priorities and target dates
-- Goal detail pages with progress and contribution history
-- Goal contributions with automatic progress synchronization
-- Database guard preventing goal contributions from exceeding the target, including concurrent writes
-- Monthly budgets per category with real expense tracking and month navigation
-- Budget status with remaining amount and overspend detection
-- Financial analytics with six-month income/expense trends
-- Current-period spending breakdown by category
-- Transparent net balance and savings-rate calculations
-- User-selectable light, dark and system theme with persistence
+- Transaction editing and secure deletion
+- Transaction filtering by type/category and description search
+- Automatic account-balance synchronization through PostgreSQL triggers
+- Protection against transactions on archived accounts
+- Locale-aware EUR formatting through shared formatting helpers
+
+### Planning
+
+- Custom categories with create, rename, delete and ordering controls
+- Deletion protection for categories containing existing transactions
+- Wishlist with price, category, priority, status, URL, image URL, desired date and notes
+- Wishlist editing and secure deletion
+- Wishlist-to-goal conversion
+- Goals with target amount, current amount, priority and target date
+- Goal contributions with server validation and target protection
+- Monthly budgets by category with overspend detection
+- Recurring-expense simulator for domains, subscriptions, hosting and other commitments
+- Monthly reserve and annualized cost calculations for recurring expenses
+- Next-renewal tracking, due-soon indicators, pause/reactivate and editing
+
+### Dashboard & insights
+
+- Desktop sidebar with progressive mobile navigation
+- Five-item mobile navigation with a dedicated More menu
+- Current balance overview
+- Current-month income, expenses and saved amount
+- Transparent financial-health indicator based on recorded cash flow, savings rate and recurring commitments
+- Recent transactions
+- Active goals
+- Responsive desktop layouts for accounts, transactions, budgets, analytics, wishlist and settings
+- Six-month income/expense analytics and category spending breakdown
+
+### Platform
+
+- Light, dark and system themes
 - Installable PWA manifest and application icon
-- Safe service worker caching for static assets with offline navigation fallback
-- Offline fallback screen for unavailable pages
-- Row Level Security with cross-table ownership checks
-- Mobile-first dashboard shell
-- Dashboard overview with recent activity and active goal summary
-- Reusable button and link-button primitives
-
-## Planned core features
-
-- More advanced financial insights and comparisons
-- Portuguese (Portugal) and English localization
-- Accessibility, performance and automated tests
+- Service-worker static-asset caching
+- Offline navigation fallback
+- Safe-area-aware mobile navigation
+- Server-side Zod validation
+- Supabase Row Level Security and cross-table ownership checks
+- No service-role credentials in client code
 
 ## Stack
 
 - Next.js App Router 16
-- React + TypeScript
+- React 19 + TypeScript
 - Tailwind CSS 4
 - Supabase + PostgreSQL
 - React Hook Form + Zod
 - Recharts
 - Lucide Icons
+- pnpm
 
 ## Local development
 
@@ -71,6 +80,16 @@ pnpm dev
 
 Then open `http://localhost:3000`.
 
+## Quality checks
+
+Run the complete local quality pipeline before submitting changes:
+
+```bash
+pnpm qa
+```
+
+The CI workflow runs linting, typechecking, production build and formatting checks.
+
 ## Environment variables
 
 ```env
@@ -78,24 +97,35 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-Never commit service-role keys or private credentials.
+Only public client configuration belongs in these variables. Never commit service-role keys, private credentials or tokens.
 
 ## Supabase
 
-Apply migrations in `supabase/migrations` to the project in order. Authentication is handled through Supabase Auth and user-owned data is protected by PostgreSQL Row Level Security.
+Apply the files in `supabase/migrations` in ascending order. Migration numbers must never be reused. User-owned records use Row Level Security and server-side ownership checks.
+
+For the current schema, the recurring-expense simulator is introduced by `0011_recurring_expenses.sql`.
 
 ## Product architecture
 
-See [`docs/architecture.md`](docs/architecture.md) for the information architecture, user flows, database direction, component boundaries and delivery phases.
+See [`docs/architecture.md`](docs/architecture.md) for information architecture, user flows, database boundaries, UI architecture, design tokens and security principles.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+## Security
+
+See [`SECURITY.md`](SECURITY.md) for the security baseline and private vulnerability-reporting guidance.
 
 ## Roadmap
 
-1. Foundation: auth, design system, Supabase clients, schema and RLS
-2. Onboarding, accounts, transactions and dashboard
-3. Wishlist, priorities, goals and budgets
-4. Analytics, PWA, dark mode and responsive refinements
-5. Accessibility, performance, security, tests and UX polish
+1. Automated business-logic and permission tests
+2. Deeper accessibility verification and keyboard/screen-reader QA
+3. Performance optimization and large-transaction pagination
+4. Richer financial comparisons and decision-oriented insights
+5. More resilient offline form persistence
+6. Public release preparation and screenshot/documentation refresh
 
 ## License
 
-MIT license planned before the first public release.
+MIT. See [`LICENSE`](LICENSE).
