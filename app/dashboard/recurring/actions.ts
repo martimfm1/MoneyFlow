@@ -157,16 +157,26 @@ export async function toggleRecurringExpense(formData: FormData) {
     .object({ id: z.uuid(), isActive: z.enum(['true', 'false']) })
     .safeParse({ id: formData.get('id'), isActive: formData.get('isActive') })
   if (!parsed.success) errorRedirect('Despesa inválida.')
+
   const { supabase, user } = await getUser()
-  const { error } = await supabase
+  const nextIsActive = parsed.data.isActive === 'true'
+  const { data, error } = await supabase
     .from('recurring_expenses')
-    .update({ is_active: parsed.data.isActive === 'true' })
+    .update({
+      is_active: nextIsActive,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
-  if (error) errorRedirect('Não foi possível atualizar a despesa.')
+    .select('id, is_active')
+    .maybeSingle()
+
+  if (error || !data || data.is_active !== nextIsActive)
+    errorRedirect('Não foi possível atualizar a despesa recorrente.')
+
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
   redirect(
-    `/dashboard/recurring?toast=${parsed.data.isActive === 'true' ? 'Despesa%20ativada.' : 'Despesa%20pausada.'}`,
+    `/dashboard/recurring?toast=${nextIsActive ? 'Despesa%20ativada.' : 'Despesa%20pausada.'}`,
   )
 }
