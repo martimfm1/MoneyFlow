@@ -272,7 +272,7 @@ export default async function RecurringExpensesPage({
                           name="isActive"
                           value={item.is_active ? 'false' : 'true'}
                         />
-                        <Button size="sm" variant="outline">
+                        <Button type="submit" size="sm" variant="outline">
                           {item.is_active ? 'Pausar' : 'Ativar'}
                         </Button>
                       </form>
