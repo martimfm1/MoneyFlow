@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { Settings } from 'lucide-react'
@@ -40,19 +41,26 @@ export default async function DashboardLayout({
         <aside className="hidden lg:block">
           <div className="sticky top-0 flex h-screen flex-col py-6">
             <div className="flex items-start justify-between gap-3 px-3 pb-5">
-              <div>
-                <p className="text-base font-semibold tracking-tight">
-                  MoneyFlow
-                </p>
-                <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
-                  Track → Understand → Decide
-                </p>
-              </div>
+              <Link href="/dashboard" className="group flex items-center gap-2.5">
+                <Image
+                  src="/moneyflow-icon.svg"
+                  alt=""
+                  width={36}
+                  height={36}
+                  className="rounded-[11px] shadow-md shadow-[hsl(var(--brand-green)/0.08)]"
+                />
+                <div>
+                  <p className="text-base font-semibold tracking-tight">MoneyFlow</p>
+                  <p className="mt-0.5 text-xs text-[hsl(var(--muted-foreground))]">
+                    Track → Understand → Decide
+                  </p>
+                </div>
+              </Link>
               {user ? (
                 <Link
                   href="/dashboard/settings"
                   aria-label={t('nav.settings')}
-                  className="inline-flex size-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] text-[hsl(var(--muted-foreground))] transition-colors hover:bg-[hsl(var(--surface-muted))] hover:text-[hsl(var(--foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+                  className="inline-flex size-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] text-[hsl(var(--muted-foreground))] transition-colors hover:bg-[hsl(var(--brand-green)/0.08)] hover:text-[hsl(var(--brand-green))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
                 >
                   <Settings className="size-4" aria-hidden="true" />
                 </Link>
@@ -60,7 +68,7 @@ export default async function DashboardLayout({
             </div>
             <DashboardNavigation locale={locale} variant="sidebar" />
             <div className="mt-auto px-3 pt-5 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
-              <p>MoneyFlow</p>
+              <p className="font-medium text-[hsl(var(--foreground))]">MoneyFlow</p>
               <p>Finanças pessoais, com contexto.</p>
             </div>
           </div>
