@@ -83,6 +83,11 @@ type NavigationItem = {
   label?: Record<MoneyFlowLocale, string>
 }
 
+const activeClasses =
+  'bg-[hsl(var(--brand-green)/0.12)] text-[hsl(var(--brand-green))] ring-1 ring-[hsl(var(--brand-green)/0.18)]'
+const inactiveClasses =
+  'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--brand-green)/0.06)] hover:text-[hsl(var(--foreground))]'
+
 export function DashboardNavigation({
   locale,
   variant = 'mobile',
@@ -122,7 +127,7 @@ export function DashboardNavigation({
                 key={href}
                 href={href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex min-h-11 items-center gap-3 rounded-[var(--radius-sm)] px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] ${active ? 'bg-[hsl(var(--surface-muted))] text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--surface-muted))] hover:text-[hsl(var(--foreground))]'}`}
+                className={`flex min-h-11 items-center gap-3 rounded-[var(--radius-sm)] px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] ${active ? activeClasses : inactiveClasses}`}
               >
                 <Icon aria-hidden="true" className="size-4 shrink-0" />
                 <span className="truncate">{text}</span>
@@ -145,7 +150,7 @@ export function DashboardNavigation({
             aria-label={locale === 'en' ? 'Close menu' : 'Fechar menu'}
             type="button"
             onClick={closeMore}
-            className="fixed inset-0 z-40 bg-black/45 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-[hsl(var(--brand-navy)/0.62)] backdrop-blur-sm"
           />
           <section
             aria-label={t('nav.more')}
@@ -157,7 +162,7 @@ export function DashboardNavigation({
               <button
                 type="button"
                 onClick={closeMore}
-                className="inline-flex size-10 items-center justify-center rounded-full hover:bg-[hsl(var(--surface-muted))]"
+                className="inline-flex size-10 items-center justify-center rounded-full hover:bg-[hsl(var(--brand-green)/0.08)]"
                 aria-label={locale === 'en' ? 'Close' : 'Fechar'}
               >
                 <ChevronUp className="size-4" />
@@ -171,7 +176,7 @@ export function DashboardNavigation({
                     key={href}
                     href={href}
                     onClick={closeMore}
-                    className={`flex min-h-12 items-center gap-3 rounded-[var(--radius-sm)] px-3 text-sm font-medium transition-colors ${active ? 'bg-[hsl(var(--surface-muted))] text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))] hover:bg-[hsl(var(--surface-muted))] hover:text-[hsl(var(--foreground))]'}`}
+                    className={`flex min-h-12 items-center gap-3 rounded-[var(--radius-sm)] px-3 text-sm font-medium transition-colors ${active ? activeClasses : inactiveClasses}`}
                   >
                     <Icon className="size-4" aria-hidden="true" />
                     {key ? t(key) : label?.[locale]}
@@ -185,7 +190,7 @@ export function DashboardNavigation({
 
       <nav
         aria-label={t('nav.label')}
-        className="glass-nav fixed inset-x-0 bottom-0 z-40 border-t shadow-[0_-12px_40px_hsl(0_0%_0%/0.24)]"
+        className="glass-nav fixed inset-x-0 bottom-0 z-40 border-t shadow-[0_-12px_40px_hsl(221_60%_4%/0.30)]"
       >
         <div className="mx-auto grid max-w-3xl grid-cols-5 px-2 safe-bottom">
           {primaryItems.map(({ href, key, icon: Icon }) => {
@@ -195,10 +200,10 @@ export function DashboardNavigation({
                 key={href}
                 href={href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-[11px] font-medium transition-colors ${active ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))]'}`}
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-[11px] font-medium transition-colors ${active ? 'text-[hsl(var(--brand-green))]' : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'}`}
               >
                 <span
-                  className={`flex size-9 items-center justify-center rounded-full ${active ? 'bg-[hsl(var(--surface-muted))]' : ''}`}
+                  className={`flex size-9 items-center justify-center rounded-full ${active ? 'bg-[hsl(var(--brand-green)/0.12)] ring-1 ring-[hsl(var(--brand-green)/0.18)]' : ''}`}
                 >
                   <Icon className="size-[18px]" aria-hidden="true" />
                 </span>
@@ -211,10 +216,10 @@ export function DashboardNavigation({
             onClick={() => setMoreOpen((open) => !open)}
             aria-expanded={moreOpen}
             aria-haspopup="dialog"
-            className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-[11px] font-medium transition-colors ${moreOpen || moreActive ? 'text-[hsl(var(--foreground))]' : 'text-[hsl(var(--muted-foreground))]'}`}
+            className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-[11px] font-medium transition-colors ${moreOpen || moreActive ? 'text-[hsl(var(--brand-green))]' : 'text-[hsl(var(--muted-foreground))]'}`}
           >
             <span
-              className={`flex size-9 items-center justify-center rounded-full ${moreOpen || moreActive ? 'bg-[hsl(var(--surface-muted))]' : ''}`}
+              className={`flex size-9 items-center justify-center rounded-full ${moreOpen || moreActive ? 'bg-[hsl(var(--brand-green)/0.12)] ring-1 ring-[hsl(var(--brand-green)/0.18)]' : ''}`}
             >
               <MoreHorizontal className="size-[18px]" aria-hidden="true" />
             </span>
