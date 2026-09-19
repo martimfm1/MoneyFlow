@@ -65,13 +65,13 @@ export function QuickAdd() {
             type="button"
             aria-label="Fechar ações rápidas"
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-black/25 backdrop-blur-[3px]"
+            className="absolute inset-0 bg-black/45 backdrop-blur-[3px]"
           />
           <section
             role="dialog"
             aria-modal="true"
             aria-label="Adicionar"
-            className="absolute inset-x-3 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] mx-auto max-w-sm rounded-[1.5rem] border bg-[hsl(var(--surface))] p-3 shadow-2xl animate-in slide-in-from-bottom-3"
+            className="glass-panel absolute inset-x-3 bottom-[calc(4.5rem+env(safe-area-inset-bottom))] mx-auto max-w-sm rounded-[1.5rem] p-3 shadow-2xl animate-in slide-in-from-bottom-3"
           >
             <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-[hsl(var(--border))]" />
             <div className="grid gap-1">
