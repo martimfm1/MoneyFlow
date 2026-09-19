@@ -1,0 +1,2 @@
+export const REMEMBER_COOKIE = 'moneyflow-remember'
+export const SESSION_MAX_AGE = 30 * 24 * 60 * 60
