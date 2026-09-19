@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import { LinkButton } from '@/components/ui/link-button'
 import { FeaturePreview } from '@/components/home/feature-preview'
+import { SilentraCredit } from '@/components/silentra-credit'
 
 const featureSections = [
   {
@@ -579,6 +580,7 @@ export default function HomePage() {
             <div>
               <p className="font-medium text-[hsl(var(--foreground))]">MoneyFlow</p>
               <p className="mt-1">Finanças pessoais sem complicação.</p>
+              <SilentraCredit className="mt-3" />
             </div>
             <div className="flex flex-wrap gap-x-4 gap-y-2">
               <Link href="/login" className="hover:text-[hsl(var(--foreground))]">Entrar</Link>
