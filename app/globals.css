@@ -203,25 +203,44 @@ select {
 }
 
 .glass-panel {
-  border: 1px solid hsl(var(--foreground) / 0.09);
-  background: linear-gradient(135deg, hsl(var(--surface) / 0.84), hsl(var(--brand-navy-soft) / 0.58));
-  box-shadow: 0 18px 45px hsl(221 60% 4% / 0.28), inset 0 1px 0 hsl(var(--foreground) / 0.05);
+  border: 1px solid hsl(var(--foreground) / 0.14);
+  background: linear-gradient(135deg, hsl(var(--surface) / 0.96), hsl(var(--brand-navy-soft) / 0.92));
+  box-shadow: 0 18px 45px hsl(221 60% 4% / 0.32), inset 0 1px 0 hsl(var(--foreground) / 0.07);
   backdrop-filter: blur(22px) saturate(135%);
   -webkit-backdrop-filter: blur(22px) saturate(135%);
 }
 
 .glass-nav {
-  background: linear-gradient(180deg, hsl(var(--surface) / 0.9), hsl(var(--background) / 0.96));
-  border-color: hsl(var(--foreground) / 0.08);
+  background: linear-gradient(180deg, hsl(var(--surface) / 0.98), hsl(var(--background) / 0.985));
+  border-color: hsl(var(--foreground) / 0.12);
   backdrop-filter: blur(24px) saturate(135%);
   -webkit-backdrop-filter: blur(24px) saturate(135%);
-  box-shadow: 0 -16px 50px hsl(221 60% 4% / 0.28), inset 0 1px 0 hsl(var(--foreground) / 0.05);
+  box-shadow: 0 -16px 50px hsl(221 60% 4% / 0.32), inset 0 1px 0 hsl(var(--foreground) / 0.07);
 }
 
 @supports not (backdrop-filter: blur(1px)) {
   .glass-panel,
   .glass-nav {
     background: hsl(var(--surface));
+  }
+}
+
+@media (prefers-contrast: more) {
+  .glass-panel,
+  .glass-nav {
+    border-color: hsl(var(--foreground) / 0.24);
+    background: hsl(var(--surface));
+    box-shadow: 0 12px 30px hsl(221 60% 4% / 0.36);
+  }
+}
+
+@media (forced-colors: active) {
+  .glass-panel,
+  .glass-nav {
+    background: Canvas;
+    color: CanvasText;
+    border: 1px solid CanvasText;
+    forced-color-adjust: none;
   }
 }
 
