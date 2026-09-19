@@ -2,11 +2,8 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import {
-  createClient,
-  REMEMBER_COOKIE,
-  SESSION_MAX_AGE,
-} from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
+import { REMEMBER_COOKIE, SESSION_MAX_AGE } from '@/lib/supabase/session'
 import { signInSchema, signUpSchema } from '@/lib/validations/auth'
 
 export type AuthState = { error?: string }
