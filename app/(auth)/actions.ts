@@ -1,7 +1,12 @@
 'use server'
 
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import {
+  createClient,
+  REMEMBER_COOKIE,
+  SESSION_MAX_AGE,
+} from '@/lib/supabase/server'
 import { signInSchema, signUpSchema } from '@/lib/validations/auth'
 
 export type AuthState = { error?: string }
@@ -18,8 +23,30 @@ export async function signIn(
   if (!parsed.success)
     return { error: parsed.error.issues[0]?.message ?? 'Dados inválidos.' }
 
-  const supabase = await createClient()
+  const remember = formData.get('remember') === 'on'
+  const supabase = await createClient({ remember })
   const { error } = await supabase.auth.signInWithPassword(parsed.data)
+
+  if (!error) {
+    const cookieStore = await cookies()
+    if (remember) {
+      cookieStore.set(REMEMBER_COOKIE, '1', {
+        httpOnly: true,
+        maxAge: SESSION_MAX_AGE,
+        path: '/',
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+      })
+    } else {
+      cookieStore.set(REMEMBER_COOKIE, '', {
+        httpOnly: true,
+        maxAge: 0,
+        path: '/',
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+      })
+    }
+  }
 
   if (error)
     return {
