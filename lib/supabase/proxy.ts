@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { REMEMBER_COOKIE, SESSION_MAX_AGE } from '@/lib/supabase/server'
+import { REMEMBER_COOKIE, SESSION_MAX_AGE } from '@/lib/supabase/session'
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })
