@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { AuthForm } from '@/components/auth/auth-form'
+import { SilentraCredit } from '@/components/silentra-credit'
 
 export default function SignupPage() {
   return (
@@ -28,6 +29,7 @@ export default function SignupPage() {
             </Link>
           </p>
         </div>
+        <SilentraCredit className="mt-5 text-center" />
       </section>
     </main>
   )
