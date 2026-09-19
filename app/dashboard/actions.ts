@@ -2,7 +2,8 @@
 
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { createClient, REMEMBER_COOKIE } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
+import { REMEMBER_COOKIE } from '@/lib/supabase/session'
 
 export async function signOut() {
   const supabase = await createClient()
