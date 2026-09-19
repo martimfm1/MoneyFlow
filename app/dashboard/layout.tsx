@@ -3,6 +3,7 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { Settings } from 'lucide-react'
 import { DashboardNavigation } from './navigation'
+import { SilentraCredit } from '@/components/silentra-credit'
 import { QuickAdd } from '@/components/dashboard/quick-add'
 import { createClient } from '@/lib/supabase/server'
 import { createTranslator, normalizeLocale } from '@/lib/i18n'
@@ -52,7 +53,7 @@ export default async function DashboardLayout({
                 <div>
                   <p className="text-base font-semibold tracking-tight">MoneyFlow</p>
                   <p className="mt-0.5 text-xs text-[hsl(var(--muted-foreground))]">
-                    Track → Understand → Decide
+                    Track · Understand · Decide
                   </p>
                 </div>
               </Link>
@@ -80,6 +81,9 @@ export default async function DashboardLayout({
           className="min-w-0 pb-20 outline-none lg:pb-10"
         >
           {children}
+          <div className="px-4 pb-6 sm:px-6 lg:px-0">
+            <SilentraCredit className="pt-4" />
+          </div>
         </main>
       </div>
 
