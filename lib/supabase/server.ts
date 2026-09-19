@@ -1,9 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { logger } from '@/lib/logger'
-
-export const REMEMBER_COOKIE = 'moneyflow-remember'
-export const SESSION_MAX_AGE = 30 * 24 * 60 * 60
+import { REMEMBER_COOKIE, SESSION_MAX_AGE } from '@/lib/supabase/session'
 
 type CreateClientOptions = {
   remember?: boolean
