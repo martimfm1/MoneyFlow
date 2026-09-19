@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { AuthForm } from '@/components/auth/auth-form'
+import { SilentraCredit } from '@/components/silentra-credit'
 
 export default async function LoginPage({
   searchParams,
@@ -39,6 +40,7 @@ export default async function LoginPage({
             </Link>
           </p>
         </div>
+        <SilentraCredit className="mt-5 text-center" />
       </section>
     </main>
   )
