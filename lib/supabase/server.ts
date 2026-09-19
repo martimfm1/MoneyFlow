@@ -2,8 +2,18 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { logger } from '@/lib/logger'
 
-export async function createClient() {
+export const REMEMBER_COOKIE = 'moneyflow-remember'
+export const SESSION_MAX_AGE = 30 * 24 * 60 * 60
+
+type CreateClientOptions = {
+  remember?: boolean
+}
+
+export async function createClient(options: CreateClientOptions = {}) {
   const cookieStore = await cookies()
+  const remember =
+    options.remember ??
+    cookieStore.get(REMEMBER_COOKIE)?.value === '1'
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,7 +25,11 @@ export async function createClient() {
         },
         setAll(cookiesToSet) {
           try {
-            cookiesToSet.forEach(({ name, value, options }) => {
+            cookiesToSet.forEach(({ name, value, options: cookieOptions }) => {
+              const options =
+                remember && value
+                  ? { ...cookieOptions, maxAge: SESSION_MAX_AGE }
+                  : cookieOptions
               cookieStore.set(name, value, options)
             })
           } catch {
