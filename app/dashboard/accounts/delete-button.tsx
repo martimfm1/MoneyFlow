@@ -35,13 +35,14 @@ export function DeleteAccountButton({
           render={
             <Button
               variant="destructive"
-              size="icon-sm"
+              size="sm"
               aria-label={`Apagar ${name}`}
               title="Apagar conta"
             />
           }
         >
-          <Trash2 className="size-4" />
+          <Trash2 className="size-4" aria-hidden="true" />
+          Apagar
         </AlertDialogTrigger>
         <AlertDialogContent size="sm">
           <AlertDialogHeader>
