@@ -245,12 +245,22 @@ export default async function BudgetsPage({
                       {row.budget === null ? '—' : `${percentage}%`}
                     </span>
                   </div>
-                  <div className="mt-4 h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
+                  {row.budget !== null ? (
                     <div
-                      className={`h-full rounded-full ${over ? 'bg-[hsl(var(--danger))]' : 'bg-[hsl(var(--primary))]'}`}
-                      style={{ width: `${clamped}%` }}
-                    />
-                  </div>
+                      className="mt-4 h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]"
+                      role="progressbar"
+                      aria-label={`Orçamento de ${row.name}`}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={clamped}
+                      aria-valuetext={`${percentage}% do limite utilizado`}
+                    >
+                      <div
+                        className={`h-full rounded-full ${over ? 'bg-[hsl(var(--danger))]' : 'bg-[hsl(var(--primary))]'}`}
+                        style={{ width: `${clamped}%` }}
+                      />
+                    </div>
+                  ) : null}
                   <div className="mt-3 flex items-center justify-between gap-3 text-sm">
                     <span className="tabular-nums">
                       {formatCurrency(row.spent, currency)} gastos
