@@ -77,29 +77,29 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
         </span>
       </div>
 
-      <div className="-mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 sm:grid sm:grid-cols-3 sm:overflow-visible">
-        <article className="min-w-[9.5rem] snap-start rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:min-w-0">
+      <div className="grid gap-2 sm:grid-cols-3">
+        <article className="min-w-0 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
           <div className="flex items-center gap-2 text-xs font-medium text-[hsl(var(--muted-foreground))]">
             <TrendingUp className="size-4" aria-hidden="true" /> Receitas
           </div>
-          <p className="mt-2 text-xl font-semibold tabular-nums text-[hsl(var(--success))]">
+          <p className="mt-2 break-words text-lg font-semibold tabular-nums text-[hsl(var(--success))] sm:text-xl">
             +{formatCurrency(income, currency)}
           </p>
         </article>
-        <article className="min-w-[9.5rem] snap-start rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:min-w-0">
+        <article className="min-w-0 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
           <div className="flex items-center gap-2 text-xs font-medium text-[hsl(var(--muted-foreground))]">
             <TrendingDown className="size-4" aria-hidden="true" /> Despesas
           </div>
-          <p className="mt-2 text-xl font-semibold tabular-nums text-[hsl(var(--danger))]">
+          <p className="mt-2 break-words text-lg font-semibold tabular-nums text-[hsl(var(--danger))] sm:text-xl">
             -{formatCurrency(expenses, currency)}
           </p>
         </article>
-        <article className="min-w-[9.5rem] snap-start rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:min-w-0">
+        <article className="min-w-0 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
           <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">
             Poupado
           </p>
           <p
-            className={`mt-2 text-xl font-semibold tabular-nums ${saved < 0 ? 'text-[hsl(var(--danger))]' : 'text-[hsl(var(--success))]'}`}
+            className={`mt-2 break-words text-lg font-semibold tabular-nums sm:text-xl ${saved < 0 ? 'text-[hsl(var(--danger))]' : 'text-[hsl(var(--success))]'}`}
           >
             {saved >= 0 ? '+' : ''}
             {formatCurrency(saved, currency)}
@@ -108,7 +108,7 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
       </div>
 
       <details className="mt-3 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] px-4 py-3 shadow-sm">
-        <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
           <span>Saúde financeira</span>
           <span className="inline-flex items-center gap-1 text-xs text-[hsl(var(--muted-foreground))]">
             {health}/100 <CircleHelp className="size-3.5" aria-hidden="true" />
@@ -117,14 +117,24 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
         <div className="mt-3">
           <div className="h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
             <div
+              role="progressbar"
+              aria-label="Saúde financeira"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={health}
+              aria-valuetext={`${health} em 100`}
               className="h-full rounded-full bg-[hsl(var(--primary))]"
               style={{ width: `${health}%` }}
             />
           </div>
-          <div className="mt-2 flex items-center justify-between text-xs text-[hsl(var(--muted-foreground))]">
-            <span>Fluxo + poupança + recorrentes</span>
-            <span>{formatCurrency(recurringReserve, currency)}/mês</span>
+          <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[hsl(var(--muted-foreground))]">
+            <span>Fluxo, poupança e compromissos recorrentes</span>
+            <span className="shrink-0 tabular-nums">{formatCurrency(recurringReserve, currency)}/mês</span>
           </div>
+          <p className="mt-2 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+            Indicador calculado a partir dos movimentos e compromissos
+            registados. Não constitui aconselhamento financeiro.
+          </p>
         </div>
       </details>
     </section>
