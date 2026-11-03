@@ -13,7 +13,8 @@ Design choices should support these principles:
 3. **Progressive disclosure.** Keep common actions visible and move advanced options into clearly named sections or dialogs.
 4. **Consistency across the product.** Reuse shared components, labels, status language, spacing and interaction patterns.
 5. **Trust through transparency.** Distinguish recorded transactions from projections, estimates, recurring commitments and planned savings.
-6. **Calm by default.** Use neutral surfaces and restrained accents. Do not use glass, gradients, shadows or motion to communicate meaning.
+6. **Currency integrity.** Never aggregate balances, transactions or recurring amounts across different currencies without an explicit, dated exchange-rate conversion. Keep foreign-currency records visible and explain when they are excluded from a total.
+7. **Calm by default.** Use neutral surfaces and restrained accents. Do not use glass, gradients, shadows or motion to communicate meaning.
 
 ## Visual foundations
 
