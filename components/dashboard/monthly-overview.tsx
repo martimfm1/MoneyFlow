@@ -40,7 +40,7 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
   const [{ data: transactions }, { data: recurring }] = await Promise.all([
     supabase
       .from('transactions')
-      .select('transaction_type, amount')
+      .select('transaction_type, amount, accounts(currency_code)')
       .eq('user_id', user.id)
       .gte('occurred_at', start.toISOString())
       .lt('occurred_at', end.toISOString()),
@@ -51,10 +51,18 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
       .eq('is_active', true),
   ])
 
-  const income = (transactions ?? [])
+  const primaryCurrencyTransactions = (transactions ?? []).filter((item) => {
+    const account = Array.isArray(item.accounts)
+      ? item.accounts[0]
+      : item.accounts
+    return (account?.currency_code ?? currency) === currency
+  })
+  const transactionsInOtherCurrencies =
+    (transactions ?? []).length - primaryCurrencyTransactions.length
+  const income = primaryCurrencyTransactions
     .filter((item) => item.transaction_type === 'income')
     .reduce((sum, item) => sum + Number(item.amount), 0)
-  const expenses = (transactions ?? [])
+  const expenses = primaryCurrencyTransactions
     .filter((item) => item.transaction_type === 'expense')
     .reduce((sum, item) => sum + Number(item.amount), 0)
   const saved = income - expenses
@@ -106,6 +114,16 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
           </p>
         </article>
       </div>
+
+      {transactionsInOtherCurrencies > 0 ? (
+        <p className="mt-3 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+          {transactionsInOtherCurrencies} movimento
+          {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
+          {transactionsInOtherCurrencies === 1 ? ' moeda' : 's moedas'} não
+          entra{transactionsInOtherCurrencies === 1 ? '' : 'm'} nestes totais.
+          Não é feita conversão automática.
+        </p>
+      ) : null}
 
       <details className="mt-3 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] px-4 py-3 shadow-sm">
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
