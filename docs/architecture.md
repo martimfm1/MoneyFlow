@@ -96,7 +96,7 @@ The dashboard shows the current account balance separately from planning commitm
 - up to 30 points for the recorded savings rate
 - up to 30 points for the relative weight of active recurring commitments
 
-The score is an informational product indicator, not financial advice. When there is no recorded income, the score is 0 because the product has insufficient data for the calculation.
+The score is an informational product indicator, not financial advice. When there is no recorded income for the current month, show that there is insufficient data instead of presenting a zero score.
 
 ## UI architecture
 
