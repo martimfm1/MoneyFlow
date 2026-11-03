@@ -16,7 +16,7 @@ MoneyFlow should make a user's financial position understandable within seconds 
 4. Transactions
 5. More
 
-The More menu contains Accounts, Budgets, Analytics, Recurring, Categories and Settings. The dominant creation action remains accessible without forcing users into deep navigation.
+The More menu contains Accounts, Budgets, Analytics, Recurring, Categories and Settings. It is presented as an accessible modal sheet and must retain keyboard and focus behaviour. The dominant creation action remains accessible without forcing users into deep navigation.
 
 ### Desktop
 
@@ -115,6 +115,8 @@ The score is an informational product indicator, not financial advice. When ther
 - BottomSheet
 - ConfirmationDialog
 
+Domain components should compose primitives rather than duplicate their behaviour. Shared primitive changes should be preferred to page-specific patches when the same interaction appears in multiple routes.
+
 ### Domain components
 
 - MoneyDisplay
@@ -130,7 +132,9 @@ The score is an informational product indicator, not financial advice. When ther
 - LoadingState
 - ErrorState
 
-Domain components should compose primitives rather than duplicate their behavior.
+### Design and accessibility contract
+
+See [`docs/design-system.md`](design-system.md) for visual hierarchy, navigation and form patterns, responsive behaviour and the WCAG 2.2 AA engineering baseline. New UI should use semantic design tokens and shared primitives rather than introducing one-off styles.
 
 ## Design tokens
 

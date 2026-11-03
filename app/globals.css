@@ -52,6 +52,7 @@
   --sidebar-accent-foreground: 220 100% 98%;
   --sidebar-border: 220 32% 20%;
   --sidebar-ring: 153 67% 55%;
+  --mf-control-height: 2.75rem;
 }
 
 .dark {
@@ -59,14 +60,20 @@
 }
 
 [data-theme='light'] {
+  --brand-green: 153 67% 29%;
+  --brand-green-dark: 153 58% 25%;
   --background: 220 100% 99%;
   --foreground: 221 60% 12%;
   --surface: 0 0% 100%;
   --surface-muted: 220 43% 97%;
   --border: 220 25% 88%;
   --muted-foreground: 220 18% 43%;
-  --primary: 153 58% 39%;
-  --primary-foreground: 220 100% 98%;
+  --primary: 153 58% 30%;
+  --primary-foreground: 0 0% 100%;
+  --success: 153 58% 30%;
+  --danger: 0 68% 47%;
+  --warning: 35 85% 34%;
+  --info: 205 78% 36%;
   --card: 0 0% 100%;
   --card-foreground: 221 60% 12%;
   --popover: 0 0% 100%;
@@ -76,17 +83,22 @@
   --muted: 220 37% 95%;
   --accent: 153 32% 93%;
   --accent-foreground: 221 60% 12%;
-  --destructive: 0 70% 52%;
+  --destructive: 0 68% 47%;
   --input: 220 25% 85%;
-  --ring: 153 58% 39%;
+  --ring: 153 58% 30%;
+  --chart-1: 153 58% 30%;
+  --chart-2: 205 78% 36%;
+  --chart-3: 221 60% 12%;
+  --chart-4: 35 85% 34%;
+  --chart-5: 220 18% 43%;
   --sidebar: 0 0% 100%;
   --sidebar-foreground: 221 60% 12%;
-  --sidebar-primary: 153 58% 39%;
-  --sidebar-primary-foreground: 220 100% 98%;
+  --sidebar-primary: 153 58% 30%;
+  --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 153 32% 94%;
   --sidebar-accent-foreground: 221 60% 12%;
   --sidebar-border: 220 25% 88%;
-  --sidebar-ring: 153 58% 39%;
+  --sidebar-ring: 153 58% 30%;
 }
 
 * {
@@ -95,9 +107,11 @@
 }
 
 html {
+  min-width: 320px;
   background: hsl(var(--background));
   color-scheme: dark;
   scroll-behavior: smooth;
+  text-size-adjust: 100%;
 }
 
 html[data-theme='light'] {
@@ -113,7 +127,7 @@ body {
     hsl(var(--background));
   color: hsl(var(--foreground));
   text-rendering: optimizeLegibility;
-  overscroll-behavior-y: none;
+  overflow-wrap: break-word;
   transition: background-color 160ms ease, color 160ms ease;
 }
 
@@ -225,6 +239,15 @@ select {
   }
 }
 
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel,
+  .glass-nav {
+    background: hsl(var(--surface));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 @media (prefers-contrast: more) {
   .glass-panel,
   .glass-nav {
@@ -241,6 +264,29 @@ select {
     color: CanvasText;
     border: 1px solid CanvasText;
     forced-color-adjust: none;
+  }
+
+  :focus-visible,
+  [data-slot='button']:focus-visible,
+  [data-slot='input']:focus-visible {
+    outline: 2px solid Highlight !important;
+    outline-offset: 3px;
+  }
+}
+
+/* Comfortable touch targets without making desktop interfaces unnecessarily dense. */
+@media (pointer: coarse) {
+  button,
+  [role='button'],
+  [data-slot='button'],
+  input:not([type='hidden']):not([type='checkbox']):not([type='radio']),
+  select {
+    min-height: var(--mf-control-height);
+  }
+
+  [data-slot='button'],
+  [role='button'] {
+    min-width: var(--mf-control-height);
   }
 }
 
