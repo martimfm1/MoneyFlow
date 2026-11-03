@@ -25,7 +25,7 @@ const statusLabels: Record<string, string> = {
 export default async function WishlistPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; toast?: string }>
 }) {
   const params = await searchParams
   const supabase = await createClient()
@@ -58,7 +58,7 @@ export default async function WishlistPage({
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
-      <header className="flex items-start justify-between gap-4">
+      <header className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
         <div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
             Priorizar
@@ -73,10 +73,18 @@ export default async function WishlistPage({
         </div>
         <Button asChild size="sm">
           <Link href="/dashboard/wishlist/new">
-            <Plus className="size-4" /> Novo
+            <Plus className="size-4" aria-hidden="true" /> Adicionar item
           </Link>
         </Button>
       </header>
+      {params.toast ? (
+        <p
+          role="status"
+          className="mt-5 rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.toast}
+        </p>
+      ) : null}
       {params.error ? (
         <p
           role="alert"
@@ -185,28 +193,28 @@ export default async function WishlistPage({
                     <div className="mt-auto space-y-3 pt-5">
                       <form
                         action={updateWishlistStatus}
-                        className="flex flex-wrap items-center gap-2"
+                        className="flex items-end gap-2"
                       >
                         <input type="hidden" name="id" value={item.id} />
                         <label
-                          className="sr-only"
+                          className="grid min-w-0 flex-1 gap-1.5 text-xs font-medium"
                           htmlFor={`status-${item.id}`}
                         >
-                          Estado de {item.name}
+                          Estado
+                          <select
+                            id={`status-${item.id}`}
+                            name="status"
+                            defaultValue={item.status}
+                            className="min-h-11 min-w-0 w-full rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+                          >
+                            <option value="want">Quero</option>
+                            <option value="saving">A guardar</option>
+                            <option value="ready">Pronto</option>
+                            <option value="purchased">Comprado</option>
+                          </select>
                         </label>
-                        <select
-                          id={`status-${item.id}`}
-                          name="status"
-                          defaultValue={item.status}
-                          className="min-h-10 min-w-0 flex-1 rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-                        >
-                          <option value="want">Quero</option>
-                          <option value="saving">A guardar</option>
-                          <option value="ready">Pronto</option>
-                          <option value="purchased">Comprado</option>
-                        </select>
-                        <Button type="submit" size="sm" variant="outline">
-                          Guardar
+                        <Button type="submit" size="sm" variant="outline" className="min-h-11">
+                          Guardar estado
                         </Button>
                       </form>
                       <div className="flex flex-wrap gap-2">

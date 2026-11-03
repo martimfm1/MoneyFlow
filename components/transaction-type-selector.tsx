@@ -10,25 +10,33 @@ export function TransactionTypeSelector({
   defaultType: 'income' | 'expense'
 }) {
   const [type, setType] = useState(defaultType)
+
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <fieldset className="grid gap-2 border-0 p-0">
+      <legend className="text-sm font-medium">Tipo de movimento</legend>
       <input type="hidden" name="transactionType" value={type} />
-      <Button
-        type="button"
-        variant={type === 'expense' ? 'secondary' : 'outline'}
-        className="h-10"
-        onClick={() => setType('expense')}
-      >
-        <ArrowUpRight className="size-4" /> Despesa
-      </Button>
-      <Button
-        type="button"
-        variant={type === 'income' ? 'secondary' : 'outline'}
-        className="h-10"
-        onClick={() => setType('income')}
-      >
-        <ArrowDownLeft className="size-4" /> Receita
-      </Button>
-    </div>
+      <div className="grid grid-cols-2 gap-2">
+        <Button
+          type="button"
+          variant={type === 'expense' ? 'secondary' : 'outline'}
+          aria-pressed={type === 'expense'}
+          className="min-h-11"
+          onClick={() => setType('expense')}
+        >
+          <ArrowUpRight className="size-4" aria-hidden="true" />
+          Despesa
+        </Button>
+        <Button
+          type="button"
+          variant={type === 'income' ? 'secondary' : 'outline'}
+          aria-pressed={type === 'income'}
+          className="min-h-11"
+          onClick={() => setType('income')}
+        >
+          <ArrowDownLeft className="size-4" aria-hidden="true" />
+          Receita
+        </Button>
+      </div>
+    </fieldset>
   )
 }

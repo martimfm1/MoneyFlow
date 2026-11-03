@@ -3,10 +3,29 @@
 import { useEffect, useState } from 'react'
 import { Monitor, Moon, Sun } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import type { MoneyFlowLocale } from '@/lib/i18n'
 
 type Theme = 'system' | 'light' | 'dark'
 
 const STORAGE_KEY = 'moneyflow-theme'
+
+const labels: Record<MoneyFlowLocale, Record<Theme, string>> = {
+  'pt-PT': {
+    system: 'Tema do sistema',
+    light: 'Tema claro',
+    dark: 'Tema escuro',
+  },
+  en: {
+    system: 'System theme',
+    light: 'Light theme',
+    dark: 'Dark theme',
+  },
+}
+
+const changeLabels: Record<MoneyFlowLocale, string> = {
+  'pt-PT': 'Alterar tema',
+  en: 'Change theme',
+}
 
 function getStoredTheme(): Theme {
   if (typeof window === 'undefined') return 'system'
@@ -34,14 +53,9 @@ const nextTheme: Record<Theme, Theme> = {
   dark: 'system',
 }
 
-const labels: Record<Theme, string> = {
-  system: 'Tema do sistema',
-  light: 'Tema claro',
-  dark: 'Tema escuro',
-}
-
-export function ThemeToggle() {
+export function ThemeToggle({ locale }: { locale: MoneyFlowLocale }) {
   const [theme, setTheme] = useState<Theme>(() => getStoredTheme())
+  const label = labels[locale][theme]
 
   useEffect(() => {
     applyTheme(theme)
@@ -69,11 +83,11 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={handleToggle}
-      aria-label={`${labels[theme]}. Alterar tema`}
-      title={`${labels[theme]} · clicar para alterar`}
+      aria-label={`${label}. ${changeLabels[locale]}`}
+      title={`${label} · ${changeLabels[locale]}`}
     >
       <Icon className="size-4" aria-hidden="true" />
-      <span className="sr-only">{labels[theme]}</span>
+      <span className="sr-only">{label}</span>
     </Button>
   )
 }

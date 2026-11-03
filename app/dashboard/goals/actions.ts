@@ -58,7 +58,7 @@ export async function addGoalContribution(formData: FormData) {
     redirect(
       '/dashboard/goals?error=Não%20foi%20possível%20adicionar%20a%20contribuição.',
     )
-  redirect('/dashboard/goals')
+  redirect('/dashboard/goals?toast=Contribuição%20adicionada.')
 }
 
 export async function deleteGoal(formData: FormData) {
@@ -87,5 +87,5 @@ export async function deleteGoal(formData: FormData) {
 
   revalidatePath('/dashboard')
   revalidatePath('/dashboard/goals')
-  redirect('/dashboard/goals')
+  redirect('/dashboard/goals?toast=Objetivo%20eliminado.')
 }

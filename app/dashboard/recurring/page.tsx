@@ -65,7 +65,7 @@ function daysUntil(dateString: string) {
 export default async function RecurringExpensesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; toast?: string }>
 }) {
   const params = await searchParams
   const supabase = await createClient()
@@ -98,11 +98,18 @@ export default async function RecurringExpensesPage({
   const currency = profile?.currency_code ?? 'EUR'
   const items = (expenses ?? []) as unknown as RecurringExpense[]
   const active = items.filter((item) => item.is_active)
-  const monthlyTotal = active.reduce(
+  const activeInPrimaryCurrency = active.filter(
+    (item) => (item.currency_code || currency) === currency,
+  )
+  const activeInOtherCurrencies = active.length - activeInPrimaryCurrency.length
+  const monthlyTotal = activeInPrimaryCurrency.reduce(
     (sum, item) => sum + monthlyReserve(item),
     0,
   )
-  const yearlyTotal = active.reduce((sum, item) => sum + yearlyCost(item), 0)
+  const yearlyTotal = activeInPrimaryCurrency.reduce(
+    (sum, item) => sum + yearlyCost(item),
+    0,
+  )
   const next = active[0]
   const dueSoon = active.filter((item) => {
     const days = daysUntil(item.next_due_date)
@@ -111,7 +118,7 @@ export default async function RecurringExpensesPage({
   const chartData = (['monthly', 'quarterly', 'yearly'] as const).map(
     (frequency) => ({
       frequency: frequencyLabels[frequency],
-      amount: active
+      amount: activeInPrimaryCurrency
         .filter((item) => item.frequency === frequency)
         .reduce((sum, item) => sum + Number(item.amount), 0),
     }),
@@ -141,6 +148,14 @@ export default async function RecurringExpensesPage({
           />
         </div>
       </header>
+      {params.toast ? (
+        <p
+          role="status"
+          className="mt-4 rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.toast}
+        </p>
+      ) : null}
       {params.error ? (
         <Card className="mt-4 border-destructive/30 bg-destructive/5">
           <CardContent className="pt-4 text-sm text-destructive" role="alert">
@@ -150,8 +165,8 @@ export default async function RecurringExpensesPage({
       ) : null}
       <section className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          ['Reserva/mês', formatCurrency(monthlyTotal, currency)],
-          ['Custo anual', formatCurrency(yearlyTotal, currency)],
+          [`Reserva/mês · ${currency}`, formatCurrency(monthlyTotal, currency)],
+          [`Custo anual · ${currency}`, formatCurrency(yearlyTotal, currency)],
           [
             'Próxima',
             next ? formatDate(`${next.next_due_date}T00:00:00`) : '—',
@@ -170,7 +185,17 @@ export default async function RecurringExpensesPage({
           </Card>
         ))}
       </section>
-      {active.length ? (
+      {activeInOtherCurrencies > 0 ? (
+        <p className="mt-3 text-xs leading-5 text-muted-foreground">
+          {activeInOtherCurrencies} despesa
+          {activeInOtherCurrencies === 1 ? '' : 's'} ativa
+          {activeInOtherCurrencies === 1 ? '' : 's'} noutra moeda
+          {activeInOtherCurrencies === 1 ? '' : 's'} não entra
+          {activeInOtherCurrencies === 1 ? '' : 'm'} na reserva e no custo anual
+          apresentados. Os valores não são convertidos.
+        </p>
+      ) : null}
+      {activeInPrimaryCurrency.length ? (
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="text-base">Por frequência</CardTitle>

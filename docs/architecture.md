@@ -16,7 +16,7 @@ MoneyFlow should make a user's financial position understandable within seconds 
 4. Transactions
 5. More
 
-The More menu contains Accounts, Budgets, Analytics, Recurring, Categories and Settings. The dominant creation action remains accessible without forcing users into deep navigation.
+The More menu contains Accounts, Budgets, Analytics, Recurring, Categories and Settings. It is presented as an accessible modal sheet and must retain keyboard and focus behaviour. The dominant creation action remains accessible without forcing users into deep navigation.
 
 ### Desktop
 
@@ -84,6 +84,7 @@ Important principles:
 - Resolve identity from the authenticated Supabase session.
 - Validate mutations server-side with Zod.
 - Financial values should use exact numeric/decimal database types rather than floating point.
+- Do not aggregate balances or movements from different currencies without an explicit exchange-rate conversion and timestamp. When conversion is unavailable, group totals by currency or restrict each total to one currency and state that scope.
 - Destructive category operations must protect or explicitly reassign related records.
 - Goal contribution mutations must be transactional where multiple balances are affected.
 - Recurring expenses are planning records, not transactions.
@@ -96,7 +97,7 @@ The dashboard shows the current account balance separately from planning commitm
 - up to 30 points for the recorded savings rate
 - up to 30 points for the relative weight of active recurring commitments
 
-The score is an informational product indicator, not financial advice. When there is no recorded income, the score is 0 because the product has insufficient data for the calculation.
+The score is an informational product indicator, not financial advice. When there is no recorded income for the current month, show that there is insufficient data instead of presenting a zero score.
 
 ## UI architecture
 
@@ -115,6 +116,8 @@ The score is an informational product indicator, not financial advice. When ther
 - BottomSheet
 - ConfirmationDialog
 
+Domain components should compose primitives rather than duplicate their behaviour. Shared primitive changes should be preferred to page-specific patches when the same interaction appears in multiple routes.
+
 ### Domain components
 
 - MoneyDisplay
@@ -130,7 +133,9 @@ The score is an informational product indicator, not financial advice. When ther
 - LoadingState
 - ErrorState
 
-Domain components should compose primitives rather than duplicate their behavior.
+### Design and accessibility contract
+
+See [`docs/design-system.md`](design-system.md) for visual hierarchy, navigation and form patterns, responsive behaviour and the WCAG 2.2 AA engineering baseline. New UI should use semantic design tokens and shared primitives rather than introducing one-off styles.
 
 ## Design tokens
 

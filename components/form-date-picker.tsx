@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { CalendarIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -25,21 +25,29 @@ export function FormDatePicker({
 }) {
   const [date, setDate] = useState(parseDate(defaultValue))
   const [open, setOpen] = useState(false)
+  const labelId = useId()
+  const dateId = useId()
+  const formattedDate = date.toLocaleDateString('pt-PT')
 
   return (
     <div className="grid gap-2 text-sm font-medium">
-      <span>{label}</span>
+      <span id={labelId}>{label}</span>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger
           render={
             <Button
               variant="outline"
               className="w-full justify-start font-normal"
+              aria-labelledby={`${labelId} ${dateId}`}
+              aria-haspopup="dialog"
             />
           }
         >
-          <CalendarIcon className="size-4" />
-          {date.toLocaleDateString('pt-PT')}
+          <CalendarIcon className="size-4" aria-hidden="true" />
+          {formattedDate}
+          <span id={dateId} className="sr-only">
+            {formattedDate}
+          </span>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
           <Calendar

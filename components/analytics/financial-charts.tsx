@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/format'
 
 type MonthlyPoint = {
@@ -41,14 +42,25 @@ export function FinancialCharts({
 }: FinancialChartsProps) {
   return (
     <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
-      <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
+      <section
+        aria-labelledby="income-expense-chart-title"
+        className={cn(
+          'rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))]',
+          'p-5 shadow-sm sm:p-6',
+        )}
+      >
         <div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
             Últimos 6 meses
           </p>
-          <h2 className="mt-1 text-lg font-semibold">Receitas vs despesas</h2>
+          <h2
+            id="income-expense-chart-title"
+            className="mt-1 text-lg font-semibold"
+          >
+            Receitas vs despesas
+          </h2>
         </div>
-        <div className="mt-6 h-72 w-full">
+        <div className="mt-6 h-72 w-full" aria-hidden="true">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={monthly}
@@ -80,44 +92,101 @@ export function FinancialCharts({
             </BarChart>
           </ResponsiveContainer>
         </div>
+        <table className="sr-only">
+          <caption>
+            Dados do gráfico de receitas e despesas dos últimos seis meses
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Mês</th>
+              <th scope="col">Receitas</th>
+              <th scope="col">Despesas</th>
+            </tr>
+          </thead>
+          <tbody>
+            {monthly.map((point) => (
+              <tr key={point.label}>
+                <th scope="row">{point.label}</th>
+                <td>{formatCurrency(point.income, currency)}</td>
+                <td>{formatCurrency(point.expense, currency)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
-      <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
+      <section
+        aria-labelledby="category-chart-title"
+        className={cn(
+          'rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))]',
+          'p-5 shadow-sm sm:p-6',
+        )}
+      >
         <div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
             Período atual
           </p>
-          <h2 className="mt-1 text-lg font-semibold">Despesas por categoria</h2>
+          <h2
+            id="category-chart-title"
+            className="mt-1 text-lg font-semibold"
+          >
+            Despesas por categoria
+          </h2>
         </div>
         {categories.length ? (
-          <div className="mt-6 h-72 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categories}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={62}
-                  outerRadius={94}
-                  paddingAngle={2}
-                >
-                  {categories.map((entry, index) => (
-                    <Cell key={`${entry.name}-${index}`} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) =>
-                    tooltipFormatter(Number(value), currency)
-                  }
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
+          <>
+            <div className="mt-6 h-72 w-full" aria-hidden="true">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categories}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={62}
+                    outerRadius={94}
+                    paddingAngle={2}
+                  >
+                    {categories.map((entry, index) => (
+                      <Cell key={`${entry.name}-${index}`} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value) =>
+                      tooltipFormatter(Number(value), currency)
+                    }
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <table className="sr-only">
+              <caption>Despesas por categoria no período atual</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Categoria</th>
+                  <th scope="col">Despesas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {categories.map((category) => (
+                  <tr key={category.name}>
+                    <th scope="row">{category.name}</th>
+                    <td>{formatCurrency(category.value, currency)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         ) : (
-          <div className="mt-6 flex min-h-72 items-center justify-center rounded-[var(--radius-md)] border border-dashed px-6 text-center">
-            <p className="max-w-xs text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+          <div
+            className={cn(
+              'mt-6 flex min-h-72 items-center justify-center',
+              'rounded-[var(--radius-md)] border border-dashed',
+              'px-6 text-center',
+            )}
+          >
+            <p className="max-w-xs text-sm leading-6 text-muted-foreground">
               Ainda não existem despesas categorizadas no mês atual.
             </p>
           </div>

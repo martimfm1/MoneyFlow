@@ -14,7 +14,7 @@ import { formatCurrency, formatMonth } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
 
-type SearchParams = { month?: string; error?: string }
+type SearchParams = { month?: string; error?: string; toast?: string }
 
 function parseMonth(value?: string) {
   if (!value || !/^\d{4}-\d{2}$/.test(value)) return null
@@ -85,7 +85,7 @@ export default async function BudgetsPage({
       .eq('month_start', currentMonthDate),
     supabase
       .from('transactions')
-      .select('category_id, amount, transaction_type')
+      .select('category_id, amount, transaction_type, accounts(currency_code)')
       .eq('user_id', user.id)
       .eq('transaction_type', 'expense')
       .gte('occurred_at', start)
@@ -99,8 +99,18 @@ export default async function BudgetsPage({
       Number(budget.amount),
     ]),
   )
+  const transactionsInPrimaryCurrency = (transactions ?? []).filter(
+    (transaction) => {
+      const account = Array.isArray(transaction.accounts)
+        ? transaction.accounts[0]
+        : transaction.accounts
+      return (account?.currency_code ?? currency) === currency
+    },
+  )
+  const transactionsInOtherCurrencies =
+    (transactions ?? []).length - transactionsInPrimaryCurrency.length
   const spentByCategory = new Map<string, number>()
-  for (const transaction of transactions ?? []) {
+  for (const transaction of transactionsInPrimaryCurrency) {
     if (!transaction.category_id) continue
     spentByCategory.set(
       transaction.category_id,
@@ -163,6 +173,14 @@ export default async function BudgetsPage({
         </Button>
       </header>
 
+      {params.toast ? (
+        <p
+          role="status"
+          className="mt-5 rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.toast}
+        </p>
+      ) : null}
       {params.error ? (
         <p
           role="alert"
@@ -198,6 +216,16 @@ export default async function BudgetsPage({
           </p>
         </article>
       </section>
+
+      {transactionsInOtherCurrencies > 0 ? (
+        <p className="mt-4 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+          {transactionsInOtherCurrencies} despesa
+          {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
+          {transactionsInOtherCurrencies === 1 ? ' moeda foi' : 's moedas foram'}
+          {' '}excluída{transactionsInOtherCurrencies === 1 ? '' : 's'} destes
+          cálculos. Não é feita conversão automática.
+        </p>
+      ) : null}
 
       <section className="mt-8">
         <div>
@@ -245,12 +273,22 @@ export default async function BudgetsPage({
                       {row.budget === null ? '—' : `${percentage}%`}
                     </span>
                   </div>
-                  <div className="mt-4 h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
+                  {row.budget !== null ? (
                     <div
-                      className={`h-full rounded-full ${over ? 'bg-[hsl(var(--danger))]' : 'bg-[hsl(var(--primary))]'}`}
-                      style={{ width: `${clamped}%` }}
-                    />
-                  </div>
+                      className="mt-4 h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]"
+                      role="progressbar"
+                      aria-label={`Orçamento de ${row.name}`}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={clamped}
+                      aria-valuetext={`${percentage}% do limite utilizado`}
+                    >
+                      <div
+                        className={`h-full rounded-full ${over ? 'bg-[hsl(var(--danger))]' : 'bg-[hsl(var(--primary))]'}`}
+                        style={{ width: `${clamped}%` }}
+                      />
+                    </div>
+                  ) : null}
                   <div className="mt-3 flex items-center justify-between gap-3 text-sm">
                     <span className="tabular-nums">
                       {formatCurrency(row.spent, currency)} gastos

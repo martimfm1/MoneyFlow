@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import {
   Combobox,
   ComboboxContent,
@@ -42,16 +42,13 @@ export function AccountCombobox({
     accounts[0] ??
     null
   const [value, setValue] = useState<AccountOption | null>(initialAccount)
+  const labelId = useId()
+  const descriptionId = useId()
 
   return (
     <div className="grid gap-2 text-sm font-medium">
-      <span>Conta</span>
-      <input
-        type="hidden"
-        name={name}
-        value={value?.id ?? ''}
-        required={required}
-      />
+      <span id={labelId}>Conta</span>
+      <input type="hidden" name={name} value={value?.id ?? ''} />
       <Combobox
         items={accounts}
         value={value}
@@ -60,7 +57,9 @@ export function AccountCombobox({
       >
         <ComboboxInput
           placeholder="Escolher conta"
-          aria-label="Conta"
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
+          required={required}
           showClear={false}
         />
         <ComboboxContent>
@@ -85,6 +84,12 @@ export function AccountCombobox({
         </ComboboxContent>
         <ComboboxValue />
       </Combobox>
+      <p
+        id={descriptionId}
+        className="text-xs font-normal leading-5 text-[hsl(var(--muted-foreground))]"
+      >
+        Escolhe a conta onde este movimento será registado.
+      </p>
     </div>
   )
 }

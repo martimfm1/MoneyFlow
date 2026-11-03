@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { ArrowLeft, Languages } from 'lucide-react'
+import { ArrowLeft, Languages, MoonStar } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { createClient } from '@/lib/supabase/server'
 import { createTranslator, normalizeLocale } from '@/lib/i18n'
 import { updateLocale } from './actions'
@@ -42,6 +43,7 @@ export default async function SettingsPage({
           {t('settings.back')}
         </Link>
       </Button>
+
       <header className="mt-5">
         <p className="text-sm text-[hsl(var(--muted-foreground))]">
           {t('settings.eyebrow')}
@@ -53,10 +55,11 @@ export default async function SettingsPage({
           {t('settings.description')}
         </p>
       </header>
+
       {params.saved ? (
         <p
           role="status"
-          className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+          className="mt-5 max-w-3xl rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
         >
           {t('settings.saved')}
         </p>
@@ -64,14 +67,17 @@ export default async function SettingsPage({
       {errorMessage ? (
         <p
           role="alert"
-          className="mt-5 rounded-[var(--radius-md)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
+          className="mt-5 max-w-3xl rounded-[var(--radius-md)] border border-[hsl(var(--danger)/0.25)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
         >
           {errorMessage}
         </p>
       ) : null}
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(20rem,0.75fr)_minmax(0,1.25fr)] lg:items-start">
-        <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
+      <section
+        className="mt-8 max-w-3xl divide-y rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] shadow-sm"
+        aria-label={locale === 'en' ? 'Preferences' : 'Preferências'}
+      >
+        <div className="grid gap-4 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.9fr)] sm:items-center sm:p-6">
           <div className="flex items-start gap-3">
             <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
               <Languages className="size-4" aria-hidden="true" />
@@ -83,24 +89,42 @@ export default async function SettingsPage({
               </p>
             </div>
           </div>
-        </section>
-        <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
-          <form action={updateLocale} className="max-w-xl space-y-5">
-            <label className="grid gap-2 text-sm font-medium">
-              <span>{t('settings.language')}</span>
-              <select
-                name="locale"
-                defaultValue={locale}
-                className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-              >
-                <option value="pt-PT">{t('settings.portuguese')}</option>
-                <option value="en">{t('settings.english')}</option>
-              </select>
+          <form action={updateLocale} className="flex flex-col gap-2 sm:flex-row">
+            <label className="sr-only" htmlFor="settings-locale">
+              {t('settings.language')}
             </label>
+            <select
+              id="settings-locale"
+              name="locale"
+              defaultValue={locale}
+              className="min-h-11 min-w-0 flex-1 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+            >
+              <option value="pt-PT">{t('settings.portuguese')}</option>
+              <option value="en">{t('settings.english')}</option>
+            </select>
             <Button type="submit">{t('settings.save')}</Button>
           </form>
-        </section>
-      </div>
+        </div>
+
+        <div className="flex items-center justify-between gap-4 p-5 sm:p-6">
+          <div className="flex items-start gap-3">
+            <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
+              <MoonStar className="size-4" aria-hidden="true" />
+            </span>
+            <div>
+              <h2 className="font-medium">
+                {locale === 'en' ? 'Appearance' : 'Tema'}
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+                {locale === 'en'
+                  ? 'Switch between light, dark or your device preference.'
+                  : 'Alterna entre o tema claro, escuro ou o tema do dispositivo.'}
+              </p>
+            </div>
+          </div>
+          <ThemeToggle locale={locale} />
+        </div>
+      </section>
     </main>
   )
 }

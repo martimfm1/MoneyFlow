@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation'
 import {
   CalendarClock,
   ChartNoAxesCombined,
-  ChevronUp,
   CircleDollarSign,
   Heart,
   Home,
@@ -15,9 +14,19 @@ import {
   Tags,
   Target,
   WalletCards,
+  X,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { createTranslator, type MoneyFlowLocale } from '@/lib/i18n'
 
 const primaryItems = [
@@ -97,20 +106,6 @@ export function DashboardNavigation({
   const isSidebar = variant === 'sidebar'
   const [moreOpen, setMoreOpen] = useState(false)
 
-  useEffect(() => {
-    if (!moreOpen) return
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setMoreOpen(false)
-    }
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [moreOpen])
-
   if (isSidebar) {
     const allItems: NavigationItem[] = [...primaryItems, ...moreItems]
     return (
@@ -140,53 +135,54 @@ export function DashboardNavigation({
   }
 
   const moreActive = moreItems.some(({ href }) => isItemActive(pathname, href))
-  const closeMore = () => setMoreOpen(false)
 
   return (
-    <>
-      {moreOpen ? (
-        <>
-          <button
-            aria-label={locale === 'en' ? 'Close menu' : 'Fechar menu'}
-            type="button"
-            onClick={closeMore}
-            className="fixed inset-0 z-40 bg-[hsl(var(--brand-navy)/0.62)] backdrop-blur-sm"
-          />
-          <section
-            aria-label={t('nav.more')}
-            className="glass-panel fixed inset-x-3 bottom-[5.75rem] z-50 mx-auto max-w-md overflow-hidden rounded-[var(--radius-lg)] p-2 shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom-3"
-          >
-            <div className="mx-auto mb-2 mt-1 h-1 w-10 rounded-full bg-[hsl(var(--border))]" />
-            <div className="flex items-center justify-between px-3 pb-2 pt-1">
-              <p className="text-sm font-semibold">{t('nav.more')}</p>
+    <Dialog open={moreOpen} onOpenChange={setMoreOpen}>
+      <DialogContent
+        showCloseButton={false}
+        className="top-auto bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-1/2 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 translate-y-0 gap-1 rounded-[var(--radius-lg)] p-2 shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom-3"
+      >
+        <DialogHeader className="flex-row items-center justify-between gap-3 px-3 pb-2 pt-1">
+          <div>
+            <DialogTitle className="text-sm font-semibold">
+              {t('nav.more')}
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              {locale === 'en'
+                ? 'Additional areas of your MoneyFlow account.'
+                : 'Outras áreas da tua conta MoneyFlow.'}
+            </DialogDescription>
+          </div>
+          <DialogClose
+            render={
               <button
                 type="button"
-                onClick={closeMore}
-                className="inline-flex size-10 items-center justify-center rounded-full hover:bg-[hsl(var(--brand-green)/0.08)]"
-                aria-label={locale === 'en' ? 'Close' : 'Fechar'}
+                aria-label={locale === 'en' ? 'Close menu' : 'Fechar menu'}
+                className="inline-flex size-11 items-center justify-center rounded-full text-[hsl(var(--muted-foreground))] transition-colors hover:bg-[hsl(var(--brand-green)/0.08)] hover:text-[hsl(var(--foreground))]"
+              />
+            }
+          >
+            <X className="size-4" aria-hidden="true" />
+          </DialogClose>
+        </DialogHeader>
+        <div className="grid grid-cols-2 gap-1">
+          {moreItems.map(({ href, key, label, icon: Icon }) => {
+            const active = isItemActive(pathname, href)
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setMoreOpen(false)}
+                aria-current={active ? 'page' : undefined}
+                className={`flex min-h-12 items-center gap-3 rounded-[var(--radius-sm)] px-3 text-sm font-medium transition-colors ${active ? activeClasses : inactiveClasses}`}
               >
-                <ChevronUp className="size-4" />
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-1">
-              {moreItems.map(({ href, key, label, icon: Icon }) => {
-                const active = isItemActive(pathname, href)
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={closeMore}
-                    className={`flex min-h-12 items-center gap-3 rounded-[var(--radius-sm)] px-3 text-sm font-medium transition-colors ${active ? activeClasses : inactiveClasses}`}
-                  >
-                    <Icon className="size-4" aria-hidden="true" />
-                    {key ? t(key) : label?.[locale]}
-                  </Link>
-                )
-              })}
-            </div>
-          </section>
-        </>
-      ) : null}
+                <Icon className="size-4 shrink-0" aria-hidden="true" />
+                <span>{key ? t(key) : label?.[locale]}</span>
+              </Link>
+            )
+          })}
+        </div>
+      </DialogContent>
 
       <nav
         aria-label={t('nav.label')}
@@ -200,23 +196,27 @@ export function DashboardNavigation({
                 key={href}
                 href={href}
                 aria-current={active ? 'page' : undefined}
-                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-[11px] font-medium transition-colors ${active ? 'text-[hsl(var(--brand-green))]' : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'}`}
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-xs font-medium transition-colors ${active ? 'text-[hsl(var(--brand-green))]' : 'text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]'}`}
               >
                 <span
                   className={`flex size-9 items-center justify-center rounded-full ${active ? 'bg-[hsl(var(--brand-green)/0.12)] ring-1 ring-[hsl(var(--brand-green)/0.18)]' : ''}`}
                 >
                   <Icon className="size-[18px]" aria-hidden="true" />
                 </span>
-                <span>{t(key)}</span>
+                <span className="max-w-full truncate">{t(key)}</span>
               </Link>
             )
           })}
-          <button
-            type="button"
-            onClick={() => setMoreOpen((open) => !open)}
-            aria-expanded={moreOpen}
-            aria-haspopup="dialog"
-            className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-[11px] font-medium transition-colors ${moreOpen || moreActive ? 'text-[hsl(var(--brand-green))]' : 'text-[hsl(var(--muted-foreground))]'}`}
+          <DialogTrigger
+            render={
+              <button
+                type="button"
+                aria-label={t('nav.more')}
+                aria-expanded={moreOpen}
+                aria-haspopup="dialog"
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[var(--radius-sm)] px-1 text-xs font-medium transition-colors ${moreOpen || moreActive ? 'text-[hsl(var(--brand-green))]' : 'text-[hsl(var(--muted-foreground))]'}`}
+              />
+            }
           >
             <span
               className={`flex size-9 items-center justify-center rounded-full ${moreOpen || moreActive ? 'bg-[hsl(var(--brand-green)/0.12)] ring-1 ring-[hsl(var(--brand-green)/0.18)]' : ''}`}
@@ -224,9 +224,9 @@ export function DashboardNavigation({
               <MoreHorizontal className="size-[18px]" aria-hidden="true" />
             </span>
             <span>{t('nav.more')}</span>
-          </button>
+          </DialogTrigger>
         </div>
       </nav>
-    </>
+    </Dialog>
   )
 }

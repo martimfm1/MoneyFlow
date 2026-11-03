@@ -40,5 +40,5 @@ export async function createGoal(formData: FormData) {
     redirect(
       '/dashboard/goals/new?error=Não%20foi%20possível%20criar%20o%20objetivo.',
     )
-  redirect('/dashboard')
+  redirect('/dashboard/goals?toast=Objetivo%20criado.')
 }

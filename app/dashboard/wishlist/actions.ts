@@ -92,7 +92,7 @@ export async function createWishlistItem(formData: FormData) {
   }
   revalidatePath('/dashboard/wishlist')
   revalidatePath('/dashboard')
-  redirect('/dashboard/wishlist')
+  redirect('/dashboard/wishlist?toast=Item%20adicionado%20à%20wishlist.')
 }
 
 export async function updateWishlistItem(formData: FormData) {
@@ -139,7 +139,7 @@ export async function updateWishlistItem(formData: FormData) {
   revalidatePath('/dashboard/wishlist')
   revalidatePath(`/dashboard/wishlist/${parsed.data.id}/edit`)
   revalidatePath('/dashboard')
-  redirect('/dashboard/wishlist')
+  redirect('/dashboard/wishlist?toast=Item%20atualizado.')
 }
 
 export async function deleteWishlistItem(formData: FormData) {
@@ -166,7 +166,7 @@ export async function deleteWishlistItem(formData: FormData) {
     errorRedirect('/dashboard/wishlist', 'Não foi possível apagar o item.')
   revalidatePath('/dashboard/wishlist')
   revalidatePath('/dashboard')
-  redirect('/dashboard/wishlist')
+  redirect('/dashboard/wishlist?toast=Item%20eliminado.')
 }
 
 export async function updateWishlistStatus(formData: FormData) {
@@ -188,7 +188,7 @@ export async function updateWishlistStatus(formData: FormData) {
     errorRedirect('/dashboard/wishlist', 'Não foi possível atualizar o item.')
   revalidatePath('/dashboard/wishlist')
   revalidatePath('/dashboard')
-  redirect('/dashboard/wishlist')
+  redirect('/dashboard/wishlist?toast=Estado%20atualizado.')
 }
 
 export async function createGoalFromWishlist(formData: FormData) {

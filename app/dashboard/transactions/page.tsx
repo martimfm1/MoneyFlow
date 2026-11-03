@@ -22,6 +22,8 @@ type SearchParams = {
   type?: string
   category?: string
   account?: string
+  toast?: string
+  error?: string
 }
 
 export default async function TransactionsPage({
@@ -79,10 +81,18 @@ export default async function TransactionsPage({
   const currency = profile?.currency_code ?? 'EUR'
   const hasFilters =
     Boolean(q) || type !== 'all' || categoryId !== 'all' || accountId !== 'all'
-  const incomeTotal = (transactions ?? [])
+  const primaryCurrencyTransactions = (transactions ?? []).filter((transaction) => {
+    const account = Array.isArray(transaction.accounts)
+      ? transaction.accounts[0]
+      : transaction.accounts
+    return (account?.currency_code ?? currency) === currency
+  })
+  const transactionsInOtherCurrencies =
+    (transactions ?? []).length - primaryCurrencyTransactions.length
+  const incomeTotal = primaryCurrencyTransactions
     .filter((t) => t.transaction_type === 'income')
     .reduce((sum, t) => sum + Number(t.amount), 0)
-  const expenseTotal = (transactions ?? [])
+  const expenseTotal = primaryCurrencyTransactions
     .filter((t) => t.transaction_type === 'expense')
     .reduce((sum, t) => sum + Number(t.amount), 0)
 
@@ -106,6 +116,23 @@ export default async function TransactionsPage({
           </Link>
         </Button>
       </header>
+
+      {params.toast ? (
+        <p
+          role="status"
+          className="mt-5 rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.toast}
+        </p>
+      ) : null}
+      {params.error ? (
+        <p
+          role="alert"
+          className="mt-5 rounded-[var(--radius-md)] border border-[hsl(var(--danger)/0.25)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.error}
+        </p>
+      ) : null}
 
       <section className="mt-6 grid gap-3 sm:grid-cols-3">
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
@@ -133,6 +160,17 @@ export default async function TransactionsPage({
           </p>
         </article>
       </section>
+
+      {transactionsInOtherCurrencies > 0 ? (
+        <p className="mt-3 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+          Os totais incluem apenas movimentos em {currency}.{' '}
+          {transactionsInOtherCurrencies} movimento
+          {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
+          {transactionsInOtherCurrencies === 1 ? ' moeda não foi' : 's moedas não foram'}
+          {' '}convertido{transactionsInOtherCurrencies === 1 ? '' : 's'} nem
+          incluído{transactionsInOtherCurrencies === 1 ? '' : 's'} nos totais.
+        </p>
+      ) : null}
 
       <section className="mt-6 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:p-5">
         <form

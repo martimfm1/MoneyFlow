@@ -95,5 +95,7 @@ export async function upsertBudget(formData: FormData) {
     redirectWithError(normalizedMonth, 'Não foi possível guardar o orçamento.')
   }
 
-  redirect(`/dashboard/budgets?month=${encodeURIComponent(normalizedMonth)}`)
+  redirect(
+    `/dashboard/budgets?month=${encodeURIComponent(normalizedMonth)}&toast=Orçamento%20guardado.`,
+  )
 }

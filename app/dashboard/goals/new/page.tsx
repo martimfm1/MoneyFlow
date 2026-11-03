@@ -23,6 +23,10 @@ export default async function NewGoalPage({
           <h1 className="text-2xl font-semibold tracking-tight">
             Novo objetivo
           </h1>
+          <p className="mt-2 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+            Define quanto queres juntar. Podes acrescentar dinheiro à meta
+            sempre que fizeres uma contribuição.
+          </p>
           {params.error ? (
             <p
               role="alert"
@@ -39,7 +43,6 @@ export default async function NewGoalPage({
                 name="name"
                 required
                 maxLength={120}
-                autoFocus
                 placeholder="Ex.: viagem"
                 className="min-h-12 w-full rounded-xl border bg-transparent px-3 text-base outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
               />

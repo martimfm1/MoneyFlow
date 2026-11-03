@@ -18,7 +18,7 @@ const priorityLabels: Record<string, string> = {
 export default async function GoalsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; toast?: string }>
 }) {
   const params = await searchParams
   const supabase = await createClient()
@@ -45,7 +45,7 @@ export default async function GoalsPage({
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10 lg:py-12">
-      <header className="flex items-center justify-between gap-4">
+      <header className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
         <div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
             Planeamento
@@ -53,14 +53,25 @@ export default async function GoalsPage({
           <h1 className="mt-1 text-2xl font-semibold tracking-tight lg:text-3xl">
             Objetivos
           </h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+            Define metas de poupança e acompanha o progresso com contribuições.
+          </p>
         </div>
         <Button asChild size="sm">
           <Link href="/dashboard/goals/new">
-            <Plus className="size-4" /> Novo
+            <Plus className="size-4" aria-hidden="true" /> Novo objetivo
           </Link>
         </Button>
       </header>
 
+      {params.toast ? (
+        <p
+          role="status"
+          className="mt-5 rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.toast}
+        </p>
+      ) : null}
       {params.error ? (
         <p
           role="alert"
@@ -99,7 +110,7 @@ export default async function GoalsPage({
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <h2 className="truncate font-medium">{goal.name}</h2>
+                    <h2 className="break-words font-medium">{goal.name}</h2>
                     <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
                       Prioridade{' '}
                       {priorityLabels[goal.priority] ?? goal.priority}
@@ -109,7 +120,15 @@ export default async function GoalsPage({
                     {progress}%
                   </p>
                 </div>
-                <div className="mt-5 h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
+                <div
+                  className="mt-5 h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]"
+                  role="progressbar"
+                  aria-label={`Progresso de ${goal.name}`}
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={progress}
+                  aria-valuetext={`${progress}% concluído`}
+                >
                   <div
                     className="h-full rounded-full bg-[hsl(var(--primary))]"
                     style={{ width: `${progress}%` }}
@@ -123,6 +142,11 @@ export default async function GoalsPage({
                     de {formatCurrency(target, currency)}
                   </span>
                 </div>
+                <p className="mt-2 text-xs text-[hsl(var(--muted-foreground))]">
+                  {remaining > 0
+                    ? `Faltam ${formatCurrency(remaining, currency)}`
+                    : 'Objetivo alcançado'}
+                </p>
                 {goal.target_date ? (
                   <p className="mt-3 text-xs text-[hsl(var(--muted-foreground))]">
                     Data alvo: {formatDate(`${goal.target_date}T00:00:00`)}
@@ -150,10 +174,10 @@ export default async function GoalsPage({
                         autoComplete="off"
                         minLength={1}
                         placeholder={`Até ${formatCurrency(remaining, currency)}`}
-                        className="min-h-10 min-w-0 flex-1 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+                        className="min-h-11 min-w-0 flex-1 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
                       />
                       <Button type="submit" size="sm">
-                        Guardar
+                        Adicionar
                       </Button>
                     </form>
                   ) : null}

@@ -62,7 +62,7 @@ function daysUntil(dateString: string) {
 export default async function RecurringIncomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; toast?: string }>
 }) {
   const params = await searchParams
   const supabase = await createClient()
@@ -97,11 +97,16 @@ export default async function RecurringIncomePage({
   const currency = profile?.currency_code ?? 'EUR'
   const items = (incomes ?? []) as unknown as RecurringIncome[]
   const activeItems = items.filter((item) => item.is_active)
-  const monthlyTotal = activeItems.reduce(
+  const activeInPrimaryCurrency = activeItems.filter(
+    (item) => (item.currency_code || currency) === currency,
+  )
+  const activeInOtherCurrencies =
+    activeItems.length - activeInPrimaryCurrency.length
+  const monthlyTotal = activeInPrimaryCurrency.reduce(
     (sum, item) => sum + monthlyIncome(item),
     0,
   )
-  const yearlyTotal = activeItems.reduce(
+  const yearlyTotal = activeInPrimaryCurrency.reduce(
     (sum, item) => sum + yearlyIncome(item),
     0,
   )
@@ -136,6 +141,14 @@ export default async function RecurringIncomePage({
         </div>
       </header>
 
+      {params.toast ? (
+        <p
+          role="status"
+          className="mt-4 rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.toast}
+        </p>
+      ) : null}
       {params.error ? (
         <Card className="mt-4 border-destructive/30 bg-destructive/5">
           <CardContent className="pt-4 text-sm text-destructive" role="alert">
@@ -146,8 +159,8 @@ export default async function RecurringIncomePage({
 
       <section className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          ['Mensal', formatCurrency(monthlyTotal, currency)],
-          ['Anual', formatCurrency(yearlyTotal, currency)],
+          [`Mensal · ${currency}`, formatCurrency(monthlyTotal, currency)],
+          [`Anual · ${currency}`, formatCurrency(yearlyTotal, currency)],
           [
             'Próximo',
             nextIncome
@@ -168,6 +181,17 @@ export default async function RecurringIncomePage({
           </Card>
         ))}
       </section>
+
+      {activeInOtherCurrencies > 0 ? (
+        <p className="mt-3 text-xs leading-5 text-muted-foreground">
+          {activeInOtherCurrencies} ganho
+          {activeInOtherCurrencies === 1 ? '' : 's'} ativo
+          {activeInOtherCurrencies === 1 ? '' : 's'} noutra moeda
+          {activeInOtherCurrencies === 1 ? '' : 's'} não entra
+          {activeInOtherCurrencies === 1 ? '' : 'm'} nos totais apresentados.
+          Os valores não são convertidos.
+        </p>
+      ) : null}
 
       <Separator className="my-8" />
 
