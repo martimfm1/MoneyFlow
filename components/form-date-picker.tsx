@@ -26,6 +26,8 @@ export function FormDatePicker({
   const [date, setDate] = useState(parseDate(defaultValue))
   const [open, setOpen] = useState(false)
   const labelId = useId()
+  const dateId = useId()
+  const formattedDate = date.toLocaleDateString('pt-PT')
 
   return (
     <div className="grid gap-2 text-sm font-medium">
@@ -36,13 +38,16 @@ export function FormDatePicker({
             <Button
               variant="outline"
               className="w-full justify-start font-normal"
-              aria-labelledby={labelId}
+              aria-labelledby={`${labelId} ${dateId}`}
               aria-haspopup="dialog"
             />
           }
         >
           <CalendarIcon className="size-4" aria-hidden="true" />
-          {date.toLocaleDateString('pt-PT')}
+          {formattedDate}
+          <span id={dateId} className="sr-only">
+            {formattedDate}
+          </span>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
           <Calendar
