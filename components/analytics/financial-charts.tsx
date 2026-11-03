@@ -41,7 +41,10 @@ export function FinancialCharts({
 }: FinancialChartsProps) {
   return (
     <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
-      <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
+      <section
+        aria-labelledby="income-expense-chart-title"
+        className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
+      >
         <div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
             Últimos 6 meses
@@ -108,7 +111,10 @@ export function FinancialCharts({
         </table>
       </section>
 
-      <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
+      <section
+        aria-labelledby="category-chart-title"
+        className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
+      >
         <div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
             Período atual
