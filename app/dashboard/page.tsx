@@ -70,7 +70,13 @@ export default async function DashboardPage() {
 
   if (!profile?.onboarding_completed_at) redirect('/onboarding')
   const currency = profile.currency_code ?? 'EUR'
-  const totalBalance = (accounts ?? []).reduce(
+  const accountsInPrimaryCurrency = (accounts ?? []).filter(
+    (account) => (account.currency_code || currency) === currency,
+  )
+  const accountsInOtherCurrencies = (accounts ?? []).filter(
+    (account) => (account.currency_code || currency) !== currency,
+  ).length
+  const totalBalance = accountsInPrimaryCurrency.reduce(
     (sum, account) => sum + Number(account.balance),
     0,
   )
@@ -109,6 +115,15 @@ export default async function DashboardPage() {
               <p className="mt-1 truncate text-[clamp(2.5rem,10vw,4rem)] font-semibold tracking-tight tabular-nums">
                 {formatCurrency(totalBalance, currency)}
               </p>
+              {accountsInOtherCurrencies > 0 ? (
+                <p className="mt-2 max-w-lg text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+                  {accountsInOtherCurrencies} conta
+                  {accountsInOtherCurrencies === 1 ? '' : 's'} noutra
+                  {accountsInOtherCurrencies === 1 ? ' moeda' : 's moedas'} não
+                  incluída{accountsInOtherCurrencies === 1 ? '' : 's'} neste
+                  total. Não é feita conversão automática.
+                </p>
+              ) : null}
             </div>
             <Button
               asChild
