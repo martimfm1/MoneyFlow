@@ -186,9 +186,7 @@ export function FinancialCharts({
               'px-6 text-center',
             )}
           >
-            <p
-              className="max-w-xs text-sm leading-6 text-muted-foreground"
-            >
+            <p className="max-w-xs text-sm leading-6 text-muted-foreground">
               Ainda não existem despesas categorizadas no mês atual.
             </p>
           </div>
