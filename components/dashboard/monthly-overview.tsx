@@ -12,8 +12,8 @@ function calculateHealth(
   income: number,
   expenses: number,
   recurringReserve: number,
-) {
-  if (income <= 0) return 0
+): number | null {
+  if (income <= 0) return null
   const cashFlowScore = expenses <= income ? 40 : 0
   const savingsRate = (income - expenses) / income
   const savingsScore = Math.round(Math.max(0, Math.min(30, savingsRate * 150)))
@@ -73,7 +73,7 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
           Este mês
         </h2>
         <span className="text-xs text-[hsl(var(--muted-foreground))]">
-          Saúde {health}/100
+          Saúde {health === null ? '—' : `${health}/100`}
         </span>
       </div>
 
@@ -111,29 +111,39 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
           <span>Saúde financeira</span>
           <span className="inline-flex items-center gap-1 text-xs text-[hsl(var(--muted-foreground))]">
-            {health}/100 <CircleHelp className="size-3.5" aria-hidden="true" />
+            {health === null ? 'Dados insuficientes' : `${health}/100`}
+            <CircleHelp className="size-3.5" aria-hidden="true" />
           </span>
         </summary>
         <div className="mt-3">
-          <div className="h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
+          {health === null ? (
+            <p className="text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+              Regista pelo menos uma receita neste mês para calcular o indicador.
+            </p>
+          ) : (
             <div
+              className="h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]"
               role="progressbar"
               aria-label="Saúde financeira"
               aria-valuemin={0}
               aria-valuemax={100}
               aria-valuenow={health}
               aria-valuetext={`${health} em 100`}
-              className="h-full rounded-full bg-[hsl(var(--primary))]"
-              style={{ width: `${health}%` }}
-            />
-          </div>
+            >
+              <div
+                className="h-full rounded-full bg-[hsl(var(--primary))]"
+                style={{ width: `${health}%` }}
+              />
+            </div>
+          )}
           <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[hsl(var(--muted-foreground))]">
             <span>Fluxo, poupança e compromissos recorrentes</span>
             <span className="shrink-0 tabular-nums">{formatCurrency(recurringReserve, currency)}/mês</span>
           </div>
           <p className="mt-2 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
-            Indicador calculado a partir dos movimentos e compromissos
-            registados. Não constitui aconselhamento financeiro.
+            Pontuação baseada no fluxo de caixa, na taxa de poupança e nos
+            compromissos recorrentes registados. Não constitui aconselhamento
+            financeiro.
           </p>
         </div>
       </details>
