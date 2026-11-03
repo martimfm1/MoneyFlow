@@ -123,30 +123,30 @@ export function FinancialCharts({
         {categories.length ? (
           <>
             <div className="mt-6 h-72 w-full" aria-hidden="true">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categories}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={62}
-                  outerRadius={94}
-                  paddingAngle={2}
-                >
-                  {categories.map((entry, index) => (
-                    <Cell key={`${entry.name}-${index}`} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value) =>
-                    tooltipFormatter(Number(value), currency)
-                  }
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            </div>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categories}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={62}
+                    outerRadius={94}
+                    paddingAngle={2}
+                  >
+                    {categories.map((entry, index) => (
+                      <Cell key={`${entry.name}-${index}`} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value) =>
+                      tooltipFormatter(Number(value), currency)
+                    }
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              </div>
             <table className="sr-only">
               <caption>Despesas por categoria no período atual</caption>
               <thead>
