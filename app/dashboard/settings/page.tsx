@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { createTranslator, normalizeLocale } from '@/lib/i18n'
+import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { updateLocale } from './actions'
 
 export const dynamic = 'force-dynamic'
@@ -71,8 +72,9 @@ export default async function SettingsPage({
       ) : null}
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(20rem,0.75fr)_minmax(0,1.25fr)] lg:items-start">
-        <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
-          <div className="flex items-start gap-3">
+        <div className="grid gap-4">
+          <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
+            <div className="flex items-start gap-3">
             <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
               <Languages className="size-4" aria-hidden="true" />
             </span>
@@ -82,8 +84,23 @@ export default async function SettingsPage({
                 {t('settings.languageHint')}
               </p>
             </div>
-          </div>
-        </section>
+          </section>
+          <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="font-medium">
+                  {locale === 'en' ? 'Appearance' : 'Tema'}
+                </h2>
+                <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+                  {locale === 'en'
+                    ? 'Choose light, dark or follow your device settings.'
+                    : 'Escolhe o tema claro, escuro ou acompanha as definições do dispositivo.'}
+                </p>
+              </div>
+              <ThemeToggle />
+            </div>
+          </section>
+        </div>
         <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
           <form action={updateLocale} className="max-w-xl space-y-5">
             <label className="grid gap-2 text-sm font-medium">
