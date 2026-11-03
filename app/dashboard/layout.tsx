@@ -82,7 +82,7 @@ export default async function DashboardLayout({
           </div>
         </aside>
 
-        <main
+        <div
           id="main-content"
           tabIndex={-1}
           className="min-w-0 pb-20 outline-none lg:pb-10"
@@ -91,7 +91,7 @@ export default async function DashboardLayout({
           <div className="px-4 pb-6 sm:px-6 lg:px-0">
             <SilentraCredit className="pt-4" />
           </div>
-        </main>
+        </div>
       </div>
 
       {user ? <QuickAdd locale={locale} /> : null}
