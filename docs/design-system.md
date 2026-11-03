@@ -96,6 +96,7 @@ Do not show summary cards that merely repeat information immediately below them.
 ### Feedback and states
 
 Every asynchronous or data-driven view should have:
+
 - A loading state that preserves the page structure.
 - An empty state that explains what is missing and gives one useful next action.
 - An error state with a human-readable explanation and a safe retry path where possible.
