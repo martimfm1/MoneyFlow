@@ -2,9 +2,9 @@ import Link from 'next/link'
 import { ArrowLeft, Languages } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { createClient } from '@/lib/supabase/server'
 import { createTranslator, normalizeLocale } from '@/lib/i18n'
-import { ThemeToggle } from '@/components/theme/theme-toggle'
 import { updateLocale } from './actions'
 
 export const dynamic = 'force-dynamic'
@@ -75,16 +75,18 @@ export default async function SettingsPage({
         <div className="grid gap-4">
           <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
             <div className="flex items-start gap-3">
-            <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
-              <Languages className="size-4" aria-hidden="true" />
-            </span>
-            <div>
-              <h2 className="font-medium">{t('settings.language')}</h2>
-              <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-                {t('settings.languageHint')}
-              </p>
+              <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
+                <Languages className="size-4" aria-hidden="true" />
+              </span>
+              <div>
+                <h2 className="font-medium">{t('settings.language')}</h2>
+                <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+                  {t('settings.languageHint')}
+                </p>
+              </div>
             </div>
           </section>
+
           <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -101,6 +103,7 @@ export default async function SettingsPage({
             </div>
           </section>
         </div>
+
         <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
           <form action={updateLocale} className="max-w-xl space-y-5">
             <label className="grid gap-2 text-sm font-medium">
