@@ -81,10 +81,18 @@ export default async function TransactionsPage({
   const currency = profile?.currency_code ?? 'EUR'
   const hasFilters =
     Boolean(q) || type !== 'all' || categoryId !== 'all' || accountId !== 'all'
-  const incomeTotal = (transactions ?? [])
+  const primaryCurrencyTransactions = (transactions ?? []).filter((transaction) => {
+    const account = Array.isArray(transaction.accounts)
+      ? transaction.accounts[0]
+      : transaction.accounts
+    return (account?.currency_code ?? currency) === currency
+  })
+  const transactionsInOtherCurrencies =
+    (transactions ?? []).length - primaryCurrencyTransactions.length
+  const incomeTotal = primaryCurrencyTransactions
     .filter((t) => t.transaction_type === 'income')
     .reduce((sum, t) => sum + Number(t.amount), 0)
-  const expenseTotal = (transactions ?? [])
+  const expenseTotal = primaryCurrencyTransactions
     .filter((t) => t.transaction_type === 'expense')
     .reduce((sum, t) => sum + Number(t.amount), 0)
 
@@ -152,6 +160,17 @@ export default async function TransactionsPage({
           </p>
         </article>
       </section>
+
+      {transactionsInOtherCurrencies > 0 ? (
+        <p className="mt-3 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+          Os totais incluem apenas movimentos em {currency}.{' '}
+          {transactionsInOtherCurrencies} movimento
+          {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
+          {transactionsInOtherCurrencies === 1 ? ' moeda não foi' : 's moedas não foram'}
+          {' '}convertido{transactionsInOtherCurrencies === 1 ? '' : 's'} nem
+          incluído{transactionsInOtherCurrencies === 1 ? '' : 's'} nos totais.
+        </p>
+      ) : null}
 
       <section className="mt-6 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:p-5">
         <form
