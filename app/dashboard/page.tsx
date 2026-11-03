@@ -19,6 +19,14 @@ import { signOut } from './actions'
 
 export const dynamic = 'force-dynamic'
 
+const accountTypeLabels: Record<string, string> = {
+  bank: 'Banco',
+  cash: 'Dinheiro',
+  card: 'Cartão',
+  savings: 'Poupança',
+  other: 'Outro',
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient()
   const {
@@ -136,12 +144,12 @@ export default async function DashboardPage() {
             </Button>
           </div>
           {accounts?.length ? (
-            <div className="mt-3 -mx-1 flex snap-x gap-2 overflow-x-auto px-1 pb-1 sm:grid sm:grid-cols-2 sm:overflow-visible xl:grid-cols-4">
+            <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
               {accounts.map((account) => (
                 <Link
                   key={account.id}
                   href={`/dashboard/accounts/${account.id}`}
-                  className="min-w-[15.5rem] snap-start rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm transition-colors active:bg-[hsl(var(--surface-muted))] sm:min-w-0"
+                  className="min-w-0 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm transition-colors hover:bg-[hsl(var(--surface-muted))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
                 >
                   <div className="flex items-center gap-3">
                     <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
@@ -150,7 +158,7 @@ export default async function DashboardPage() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{account.name}</p>
                       <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                        {account.account_type}
+                        {accountTypeLabels[account.account_type] ?? account.account_type}
                       </p>
                     </div>
                   </div>
