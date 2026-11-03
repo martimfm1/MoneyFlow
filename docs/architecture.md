@@ -84,6 +84,7 @@ Important principles:
 - Resolve identity from the authenticated Supabase session.
 - Validate mutations server-side with Zod.
 - Financial values should use exact numeric/decimal database types rather than floating point.
+- Do not aggregate balances or movements from different currencies without an explicit exchange-rate conversion and timestamp. When conversion is unavailable, group totals by currency or restrict each total to one currency and state that scope.
 - Destructive category operations must protect or explicitly reassign related records.
 - Goal contribution mutations must be transactional where multiple balances are affected.
 - Recurring expenses are planning records, not transactions.
