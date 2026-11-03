@@ -121,7 +121,8 @@ export function FinancialCharts({
           </h2>
         </div>
         {categories.length ? (
-          <div className="mt-6 h-72 w-full" aria-hidden="true">
+          <>
+            <div className="mt-6 h-72 w-full" aria-hidden="true">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -145,24 +146,25 @@ export function FinancialCharts({
                 />
               </PieChart>
             </ResponsiveContainer>
-          </div>
-          <table className="sr-only">
-            <caption>Despesas por categoria no período atual</caption>
-            <thead>
-              <tr>
-                <th scope="col">Categoria</th>
-                <th scope="col">Despesas</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((category) => (
-                <tr key={category.name}>
-                  <th scope="row">{category.name}</th>
-                  <td>{formatCurrency(category.value, currency)}</td>
+            </div>
+            <table className="sr-only">
+              <caption>Despesas por categoria no período atual</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Categoria</th>
+                  <th scope="col">Despesas</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {categories.map((category) => (
+                  <tr key={category.name}>
+                    <th scope="row">{category.name}</th>
+                    <td>{formatCurrency(category.value, currency)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
         ) : (
           <div className="mt-6 flex min-h-72 items-center justify-center rounded-[var(--radius-md)] border border-dashed px-6 text-center">
             <p className="max-w-xs text-sm leading-6 text-[hsl(var(--muted-foreground))]">
