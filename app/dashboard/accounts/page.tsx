@@ -53,7 +53,14 @@ export default async function AccountsPage({
   const currency = profile?.currency_code ?? 'EUR'
   const rows = accounts ?? []
   const active = rows.filter((item) => item.is_active)
-  const total = active.reduce((sum, item) => sum + Number(item.balance), 0)
+  const activeInPrimaryCurrency = active.filter(
+    (item) => (item.currency_code || currency) === currency,
+  )
+  const activeInOtherCurrencies = active.length - activeInPrimaryCurrency.length
+  const total = activeInPrimaryCurrency.reduce(
+    (sum, item) => sum + Number(item.balance),
+    0,
+  )
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
@@ -92,13 +99,22 @@ export default async function AccountsPage({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-xs text-muted-foreground">
-              Saldo total
+              Saldo total · {currency}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-semibold tabular-nums">
               {formatCurrency(total, currency)}
             </p>
+            {activeInOtherCurrencies > 0 ? (
+              <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                {activeInOtherCurrencies} conta
+                {activeInOtherCurrencies === 1 ? '' : 's'} ativa
+                {activeInOtherCurrencies === 1 ? '' : 's'} noutra moeda
+                {activeInOtherCurrencies === 1 ? '' : 's'} não incluída
+                {activeInOtherCurrencies === 1 ? '' : 's'} neste total.
+              </p>
+            ) : null}
           </CardContent>
         </Card>
         <Card>
