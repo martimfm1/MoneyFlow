@@ -100,7 +100,7 @@ export async function updateTransaction(formData: FormData) {
       `/dashboard/transactions/${parsed.data.id}/edit?error=Não%20foi%20possível%20atualizar%20o%20movimento.`,
     )
 
-  redirect('/dashboard/transactions')
+  redirect('/dashboard/transactions?toast=Movimento%20atualizado.')
 }
 
 export async function deleteTransaction(formData: FormData) {
@@ -120,5 +120,5 @@ export async function deleteTransaction(formData: FormData) {
       '/dashboard/transactions?error=Não%20foi%20possível%20eliminar%20o%20movimento.',
     )
 
-  redirect('/dashboard/transactions')
+  redirect('/dashboard/transactions?toast=Movimento%20eliminado.')
 }
