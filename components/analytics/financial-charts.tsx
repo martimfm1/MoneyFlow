@@ -152,7 +152,7 @@ export function FinancialCharts({
                   />
                 </PieChart>
               </ResponsiveContainer>
-              </div>
+            </div>
             <table className="sr-only">
               <caption>Despesas por categoria no período atual</caption>
               <thead>
@@ -172,8 +172,12 @@ export function FinancialCharts({
             </table>
           </>
         ) : (
-          <div className="mt-6 flex min-h-72 items-center justify-center rounded-[var(--radius-md)] border border-dashed px-6 text-center">
-            <p className="max-w-xs text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+          <div
+            className="mt-6 flex min-h-72 items-center justify-center rounded-[var(--radius-md)] border border-dashed px-6 text-center"
+          >
+            <p
+              className="max-w-xs text-sm leading-6 text-[hsl(var(--muted-foreground))]"
+            >
               Ainda não existem despesas categorizadas no mês atual.
             </p>
           </div>
