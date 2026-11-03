@@ -22,6 +22,8 @@ type SearchParams = {
   type?: string
   category?: string
   account?: string
+  toast?: string
+  error?: string
 }
 
 export default async function TransactionsPage({
@@ -106,6 +108,23 @@ export default async function TransactionsPage({
           </Link>
         </Button>
       </header>
+
+      {params.toast ? (
+        <p
+          role="status"
+          className="mt-5 rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.toast}
+        </p>
+      ) : null}
+      {params.error ? (
+        <p
+          role="alert"
+          className="mt-5 rounded-[var(--radius-md)] border border-[hsl(var(--danger)/0.25)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.error}
+        </p>
+      ) : null}
 
       <section className="mt-6 grid gap-3 sm:grid-cols-3">
         <article className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm">
