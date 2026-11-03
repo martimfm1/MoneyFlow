@@ -117,7 +117,10 @@ export function FinancialCharts({
 
       <section
         aria-labelledby="category-chart-title"
-        className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
+        className={cn(
+          'rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))]',
+          'p-5 shadow-sm sm:p-6',
+        )}
       >
         <div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
@@ -179,7 +182,8 @@ export function FinancialCharts({
           <div
             className={cn(
               'mt-6 flex min-h-72 items-center justify-center',
-              'rounded-[var(--radius-md)] border border-dashed px-6 text-center',
+              'rounded-[var(--radius-md)] border border-dashed',
+              'px-6 text-center',
             )}
           >
             <p
