@@ -42,7 +42,10 @@ export default async function DashboardLayout({
         <aside className="hidden lg:block">
           <div className="sticky top-0 flex h-screen flex-col py-6">
             <div className="flex items-start justify-between gap-3 px-3 pb-5">
-              <Link href="/dashboard" className="group flex items-center gap-2.5">
+              <Link
+                href="/dashboard"
+                className="group flex items-center gap-2.5"
+              >
                 <Image
                   src="/moneyflow-icon.svg"
                   alt=""
@@ -51,7 +54,9 @@ export default async function DashboardLayout({
                   className="rounded-[11px] shadow-md shadow-[hsl(var(--brand-green)/0.08)]"
                 />
                 <div>
-                  <p className="text-base font-semibold tracking-tight">MoneyFlow</p>
+                  <p className="text-base font-semibold tracking-tight">
+                    MoneyFlow
+                  </p>
                   <p className="mt-0.5 text-xs text-[hsl(var(--muted-foreground))]">
                     Track · Understand · Decide
                   </p>
@@ -69,7 +74,9 @@ export default async function DashboardLayout({
             </div>
             <DashboardNavigation locale={locale} variant="sidebar" />
             <div className="mt-auto px-3 pt-5 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
-              <p className="font-medium text-[hsl(var(--foreground))]">MoneyFlow</p>
+              <p className="font-medium text-[hsl(var(--foreground))]">
+                MoneyFlow
+              </p>
               <p>Finanças pessoais, com contexto.</p>
             </div>
           </div>
