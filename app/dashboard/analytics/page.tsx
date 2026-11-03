@@ -38,7 +38,7 @@ export default async function AnalyticsPage() {
     supabase
       .from('transactions')
       .select(
-        'transaction_type, amount, occurred_at, category_id, categories(name)',
+        'transaction_type, amount, occurred_at, category_id, categories(name), accounts(currency_code)',
       )
       .eq('user_id', user.id)
       .gte('occurred_at', start.toISOString())
@@ -63,7 +63,15 @@ export default async function AnalyticsPage() {
   const categoryMap = new Map<string, number>()
   let incomeTotal = 0
   let expenseTotal = 0
+  let transactionsInOtherCurrencies = 0
   for (const transaction of transactions ?? []) {
+    const account = Array.isArray(transaction.accounts)
+      ? transaction.accounts[0]
+      : transaction.accounts
+    if ((account?.currency_code ?? currency) !== currency) {
+      transactionsInOtherCurrencies += 1
+      continue
+    }
     const amount = Number(transaction.amount)
     const point = monthlyMap.get(transaction.occurred_at.slice(0, 7))
     if (transaction.transaction_type === 'income') {
@@ -100,7 +108,7 @@ export default async function AnalyticsPage() {
           </Link>
         </Button>
         <span className="text-sm text-[hsl(var(--muted-foreground))]">
-          Últimos 6 meses
+          Últimos 6 meses · {currency}
         </span>
       </div>
 
@@ -147,6 +155,16 @@ export default async function AnalyticsPage() {
         </article>
       </section>
 
+      {transactionsInOtherCurrencies > 0 ? (
+        <p className="mt-4 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+          {transactionsInOtherCurrencies} movimento
+          {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
+          {transactionsInOtherCurrencies === 1 ? ' moeda foi' : 's moedas foram'}
+          {' '}excluído{transactionsInOtherCurrencies === 1 ? '' : 's'} destes
+          cálculos. Não é feita conversão automática.
+        </p>
+      ) : null}
+
       <section className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm sm:p-6">
         <FinancialCharts
           monthly={monthly}
@@ -164,7 +182,7 @@ export default async function AnalyticsPage() {
             <h2 className="mt-1 text-lg font-semibold">O que os dados dizem</h2>
           </div>
           <span className="text-sm text-[hsl(var(--muted-foreground))]">
-            {transactions?.length ?? 0} movimentos
+            {(transactions?.length ?? 0) - transactionsInOtherCurrencies} movimentos
           </span>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
