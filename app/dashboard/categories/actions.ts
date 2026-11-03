@@ -52,7 +52,7 @@ export async function createCategory(formData: FormData) {
     redirect(
       '/dashboard/categories?error=Não%20foi%20possível%20criar%20a%20categoria.',
     )
-  redirect('/dashboard/categories')
+  redirect('/dashboard/categories?toast=Categoria%20adicionada.')
 }
 
 export async function updateCategory(formData: FormData) {
@@ -81,7 +81,7 @@ export async function updateCategory(formData: FormData) {
     redirect(
       '/dashboard/categories?error=Não%20foi%20possível%20editar%20a%20categoria.',
     )
-  redirect('/dashboard/categories')
+  redirect('/dashboard/categories?toast=Categoria%20atualizada.')
 }
 
 export async function deleteCategory(formData: FormData) {
@@ -107,7 +107,7 @@ export async function deleteCategory(formData: FormData) {
     redirect(
       '/dashboard/categories?error=Não%20foi%20possível%20apagar%20a%20categoria.',
     )
-  redirect('/dashboard/categories')
+  redirect('/dashboard/categories?toast=Categoria%20eliminada.')
 }
 
 export async function moveCategory(formData: FormData) {
@@ -167,5 +167,5 @@ export async function moveCategory(formData: FormData) {
     redirect(
       '/dashboard/categories?error=Não%20foi%20possível%20reordenar%20as%20categorias.',
     )
-  redirect('/dashboard/categories')
+  redirect('/dashboard/categories?toast=Ordem%20das%20categorias%20atualizada.')
 }
