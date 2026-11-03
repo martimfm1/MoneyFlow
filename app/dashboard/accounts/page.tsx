@@ -57,19 +57,30 @@ export default async function AccountsPage({
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
-      <header className="flex items-center justify-between gap-3">
+      <header className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
         <div>
           <p className="text-xs text-muted-foreground">Financeiro</p>
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
             Contas
           </h1>
+          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
+            Organiza os saldos dos teus bancos, cartões, dinheiro e poupanças.
+          </p>
         </div>
         <Button asChild>
           <Link href="/dashboard/accounts/new">
-            <Plus className="size-4" /> Nova
+            <Plus className="size-4" aria-hidden="true" /> Nova conta
           </Link>
         </Button>
       </header>
+      {params.toast ? (
+        <p
+          role="status"
+          className="mt-4 rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.toast}
+        </p>
+      ) : null}
       {params.error ? (
         <Card className="mt-4 border-destructive/30 bg-destructive/5">
           <CardContent className="pt-4 text-sm text-destructive" role="alert">
