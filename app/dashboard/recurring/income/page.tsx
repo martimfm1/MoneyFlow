@@ -62,7 +62,7 @@ function daysUntil(dateString: string) {
 export default async function RecurringIncomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>
+  searchParams: Promise<{ error?: string; toast?: string }>
 }) {
   const params = await searchParams
   const supabase = await createClient()
@@ -136,6 +136,14 @@ export default async function RecurringIncomePage({
         </div>
       </header>
 
+      {params.toast ? (
+        <p
+          role="status"
+          className="mt-4 rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
+        >
+          {params.toast}
+        </p>
+      ) : null}
       {params.error ? (
         <Card className="mt-4 border-destructive/30 bg-destructive/5">
           <CardContent className="pt-4 text-sm text-destructive" role="alert">
