@@ -107,7 +107,6 @@
 }
 
 html {
-  min-width: 320px;
   background: hsl(var(--background));
   color-scheme: dark;
   scroll-behavior: smooth;
