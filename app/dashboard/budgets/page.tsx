@@ -85,7 +85,7 @@ export default async function BudgetsPage({
       .eq('month_start', currentMonthDate),
     supabase
       .from('transactions')
-      .select('category_id, amount, transaction_type')
+      .select('category_id, amount, transaction_type, accounts(currency_code)')
       .eq('user_id', user.id)
       .eq('transaction_type', 'expense')
       .gte('occurred_at', start)
@@ -99,8 +99,18 @@ export default async function BudgetsPage({
       Number(budget.amount),
     ]),
   )
+  const transactionsInPrimaryCurrency = (transactions ?? []).filter(
+    (transaction) => {
+      const account = Array.isArray(transaction.accounts)
+        ? transaction.accounts[0]
+        : transaction.accounts
+      return (account?.currency_code ?? currency) === currency
+    },
+  )
+  const transactionsInOtherCurrencies =
+    (transactions ?? []).length - transactionsInPrimaryCurrency.length
   const spentByCategory = new Map<string, number>()
-  for (const transaction of transactions ?? []) {
+  for (const transaction of transactionsInPrimaryCurrency) {
     if (!transaction.category_id) continue
     spentByCategory.set(
       transaction.category_id,
@@ -206,6 +216,16 @@ export default async function BudgetsPage({
           </p>
         </article>
       </section>
+
+      {transactionsInOtherCurrencies > 0 ? (
+        <p className="mt-4 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+          {transactionsInOtherCurrencies} despesa
+          {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
+          {transactionsInOtherCurrencies === 1 ? ' moeda foi' : 's moedas foram'}
+          {' '}excluída{transactionsInOtherCurrencies === 1 ? '' : 's'} destes
+          cálculos. Não é feita conversão automática.
+        </p>
+      ) : null}
 
       <section className="mt-8">
         <div>
