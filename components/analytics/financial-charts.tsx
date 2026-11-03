@@ -12,6 +12,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
+import { cn } from '@/lib/utils'
 import { formatCurrency } from '@/lib/format'
 
 type MonthlyPoint = {
@@ -43,7 +44,10 @@ export function FinancialCharts({
     <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
       <section
         aria-labelledby="income-expense-chart-title"
-        className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
+        className={cn(
+          'rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))]',
+          'p-5 shadow-sm sm:p-6',
+        )}
       >
         <div>
           <p className="text-sm text-[hsl(var(--muted-foreground))]">
@@ -173,10 +177,13 @@ export function FinancialCharts({
           </>
         ) : (
           <div
-            className="mt-6 flex min-h-72 items-center justify-center rounded-[var(--radius-md)] border border-dashed px-6 text-center"
+            className={cn(
+              'mt-6 flex min-h-72 items-center justify-center',
+              'rounded-[var(--radius-md)] border border-dashed px-6 text-center',
+            )}
           >
             <p
-              className="max-w-xs text-sm leading-6 text-[hsl(var(--muted-foreground))]"
+              className="max-w-xs text-sm leading-6 text-muted-foreground"
             >
               Ainda não existem despesas categorizadas no mês atual.
             </p>
