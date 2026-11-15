@@ -14,6 +14,7 @@ import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { redirect } from 'next/navigation'
 import { DeleteTransactionButton } from './delete-button'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,6 +43,7 @@ export default async function TransactionsPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: profile }, { data: categories }, { data: accounts }] =
     await Promise.all([
@@ -54,12 +56,14 @@ export default async function TransactionsPage({
         .from('categories')
         .select('id, name')
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .order('sort_order', { ascending: true })
         .order('name', { ascending: true }),
       supabase
         .from('accounts')
         .select('id, name, is_active')
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .order('is_active', { ascending: false })
         .order('created_at', { ascending: true }),
     ])
@@ -70,6 +74,7 @@ export default async function TransactionsPage({
       'id, transaction_type, amount, description, occurred_at, accounts(name, currency_code), categories(id, name)',
     )
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .order('occurred_at', { ascending: false })
     .limit(100)
   if (type !== 'all') query = query.eq('transaction_type', type)
