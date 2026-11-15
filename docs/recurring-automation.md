@@ -14,7 +14,7 @@
 ## Configuração de produção
 
 1. Aplicar `supabase/migrations/0018_recurring_transaction_automation.sql`.
-2. Gerar um segredo aleatório forte e configurar a variável server-side `MONEYFLOW_RECURRING_CRON_SECRET` no ambiente Production da Vercel. Não usar prefixo `NEXT_PUBLIC_`.
+2. Gerar um segredo aleatório forte e configurar `MONEYFLOW_RECURRING_CRON_SECRET` e `CRON_SECRET` com o mesmo valor no ambiente Production da Vercel. O segundo permite à Vercel autenticar automaticamente os pedidos Cron; o primeiro é lido pela aplicação. Não usar prefixo `NEXT_PUBLIC_`.
 3. Guardar o mesmo valor no Supabase Vault com o nome exato `moneyflow_recurring_cron_secret`. Exemplo SQL (executar no SQL Editor com o valor real substituído localmente):
    `select vault.create_secret('<SEGREDO>', 'moneyflow_recurring_cron_secret');`
 4. Fazer deploy de produção para ativar o cron definido em `vercel.json` (`03:00 UTC), que chama `/api/cron/recurring-transactions`.
