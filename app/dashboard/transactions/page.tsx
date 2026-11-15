@@ -83,15 +83,18 @@ export default async function TransactionsPage({
   if (q) query = query.ilike('description', `%${q}%`)
 
   const { data: transactions } = await query
-  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
   const hasFilters =
     Boolean(q) || type !== 'all' || categoryId !== 'all' || accountId !== 'all'
-  const primaryCurrencyTransactions = (transactions ?? []).filter((transaction) => {
-    const account = Array.isArray(transaction.accounts)
-      ? transaction.accounts[0]
-      : transaction.accounts
-    return (account?.currency_code ?? currency) === currency
-  })
+  const primaryCurrencyTransactions = (transactions ?? []).filter(
+    (transaction) => {
+      const account = Array.isArray(transaction.accounts)
+        ? transaction.accounts[0]
+        : transaction.accounts
+      return (account?.currency_code ?? currency) === currency
+    },
+  )
   const transactionsInOtherCurrencies =
     (transactions ?? []).length - primaryCurrencyTransactions.length
   const incomeTotal = primaryCurrencyTransactions
@@ -171,8 +174,10 @@ export default async function TransactionsPage({
           Os totais incluem apenas movimentos em {currency}.{' '}
           {transactionsInOtherCurrencies} movimento
           {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
-          {transactionsInOtherCurrencies === 1 ? ' moeda não foi' : 's moedas não foram'}
-          {' '}convertido{transactionsInOtherCurrencies === 1 ? '' : 's'} nem
+          {transactionsInOtherCurrencies === 1
+            ? ' moeda não foi'
+            : 's moedas não foram'}{' '}
+          convertido{transactionsInOtherCurrencies === 1 ? '' : 's'} nem
           incluído{transactionsInOtherCurrencies === 1 ? '' : 's'} nos totais.
         </p>
       ) : null}
