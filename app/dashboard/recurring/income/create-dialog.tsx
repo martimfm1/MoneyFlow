@@ -50,7 +50,12 @@ export function RecurringIncomeCreateDialog({ currency, accounts }: Props) {
         <form action={createRecurringIncome} className="grid gap-4">
           <label className="grid gap-2 text-sm font-medium">
             Nome
-            <Input name="name" required maxLength={120} placeholder="Mesada, prendas, trabalhos..." />
+            <Input
+              name="name"
+              required
+              maxLength={120}
+              placeholder="Mesada, prendas, trabalhos..."
+            />
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium">
