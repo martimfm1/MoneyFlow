@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { addGoalContribution } from '../actions'
 import { DeleteGoalButton } from '../delete-goal-button'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,6 +41,7 @@ export default async function GoalDetailPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: profile }, { data: goal }, { data: contributions }] =
     await Promise.all([
@@ -55,12 +57,14 @@ export default async function GoalDetailPage({
         )
         .eq('id', id)
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .maybeSingle(),
       supabase
         .from('goal_contributions')
         .select('id, amount, contributed_at, note')
         .eq('goal_id', id)
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .order('contributed_at', { ascending: false }),
     ])
 
