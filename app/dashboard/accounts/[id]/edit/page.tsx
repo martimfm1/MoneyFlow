@@ -29,6 +29,14 @@ export default async function EditAccountPage({
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('active_finance_context')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (profile?.active_finance_context === 'general') redirect('/dashboard/accounts')
+
   const { data: account } = await supabase
     .from('accounts')
     .select('id, name, account_type, balance, currency_code, is_active')
