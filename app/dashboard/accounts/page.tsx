@@ -53,7 +53,7 @@ export default async function AccountsPage({
       .order('is_active', { ascending: false })
       .order('created_at'),
   ])
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
   const rows = accounts ?? []
   const active = rows.filter((item) => item.is_active)
   const activeInPrimaryCurrency = active.filter(
