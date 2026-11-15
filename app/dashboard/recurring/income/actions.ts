@@ -118,7 +118,9 @@ export async function createRecurringIncome(formData: FormData) {
       .eq('id', created.id)
       .eq('user_id', user.id)
       .eq('context_id', financialContext.id)
-    errorRedirect('Não foi possível ativar os lançamentos automáticos. O ganho não foi criado.')
+    errorRedirect(
+      'Não foi possível ativar os lançamentos automáticos. O ganho não foi criado.',
+    )
   }
 
   revalidatePath('/dashboard/recurring/income')
@@ -185,7 +187,9 @@ export async function updateRecurringIncome(formData: FormData) {
 
   if (error)
     redirect(
-      `/dashboard/recurring/income/${parsed.data.id}/edit?error=${encodeURIComponent('Não foi possível atualizar o ganho.')}`,
+      `/dashboard/recurring/income/${parsed.data.id}/edit?error=${encodeURIComponent(
+        'Não foi possível atualizar o ganho.',
+      )}`,
     )
 
   if (existing.auto_post_enabled) {
@@ -204,7 +208,9 @@ export async function updateRecurringIncome(formData: FormData) {
         .eq('id', parsed.data.id)
         .eq('user_id', user.id)
         .eq('context_id', financialContext.id)
-      errorRedirect('O ganho foi atualizado, mas a automatização foi pausada por segurança. Ativa-a novamente para continuar.')
+      errorRedirect(
+        'O ganho foi atualizado, mas a automatização foi pausada por segurança. Ativa-a novamente para continuar.',
+      )
     }
   }
 
@@ -234,7 +240,9 @@ export async function toggleRecurringIncome(formData: FormData) {
     .select('id, is_active, auto_post_enabled')
     .maybeSingle()
 
-  if (error || !data || data.is_active !== (parsed.data.isActive === 'true')) errorRedirect('Não foi possível atualizar.')
+  if (error || !data || data.is_active !== (parsed.data.isActive === 'true')) {
+    errorRedirect('Não foi possível atualizar.')
+  }
 
   if (parsed.data.isActive === 'true' && data.auto_post_enabled) {
     const { error: automationError } = await supabase.rpc(
@@ -252,15 +260,17 @@ export async function toggleRecurringIncome(formData: FormData) {
         .eq('id', parsed.data.id)
         .eq('user_id', user.id)
         .eq('context_id', financialContext.id)
-      errorRedirect('O ganho foi ativado, mas os lançamentos automáticos foram pausados por segurança.')
+      errorRedirect(
+        'O ganho foi ativado, mas os lançamentos automáticos foram pausados por segurança.',
+      )
     }
   }
 
   revalidatePath('/dashboard/recurring/income')
   revalidatePath('/dashboard')
-  redirect(
-    `/dashboard/recurring/income?toast=${parsed.data.isActive === 'true' ? 'Ganho%20ativado.' : 'Ganho%20pausado.'}`,
-  )
+  const toast =
+    parsed.data.isActive === 'true' ? 'Ganho%20ativado.' : 'Ganho%20pausado.'
+  redirect(`/dashboard/recurring/income?toast=${toast}`)
 }
 
 export async function deleteRecurringIncome(formData: FormData) {
@@ -298,7 +308,9 @@ export async function toggleRecurringIncomeAutomation(formData: FormData) {
 
   revalidatePath('/dashboard/recurring/income')
   revalidatePath('/dashboard')
-  redirect(
-    `/dashboard/recurring/income?toast=${parsed.data.enabled === 'true' ? 'Lançamentos%20automáticos%20ativados.%20O%20primeiro%20lançamento%20será%20na%20próxima%20data%20futura.' : 'Lançamentos%20automáticos%20pausados.'}`,
-  )
+  const toast =
+    parsed.data.enabled === 'true'
+      ? 'Lançamentos%20automáticos%20ativados.%20O%20primeiro%20lançamento%20será%20na%20próxima%20data%20futura.'
+      : 'Lançamentos%20automáticos%20pausados.'
+  redirect(`/dashboard/recurring/income?toast=${toast}`)
 }
