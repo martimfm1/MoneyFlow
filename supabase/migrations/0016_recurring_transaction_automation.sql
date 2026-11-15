@@ -148,7 +148,8 @@ $$;
 
 create or replace function public.process_due_recurring_transactions(
   p_as_of date default (now() at time zone 'Europe/Lisbon')::date,
-  p_limit integer default 250
+  p_limit integer default 250,
+  p_user_id uuid default null
 )
 returns jsonb
 language plpgsql
@@ -185,6 +186,7 @@ begin
     where r.is_active
       and r.account_id is not null
       and r.next_income_date <= p_as_of
+      and (p_user_id is null or r.user_id = p_user_id)
     order by r.next_income_date, r.created_at
     limit v_limit
     for update of r skip locked
@@ -271,6 +273,7 @@ begin
     where r.is_active
       and r.account_id is not null
       and r.next_due_date <= p_as_of
+      and (p_user_id is null or r.user_id = p_user_id)
     order by r.next_due_date, r.created_at
     limit v_limit
     for update of r skip locked
@@ -356,10 +359,36 @@ revoke all on function public.set_recurring_schedule_anchor()
   from public, anon, authenticated;
 revoke all on function public.recurring_date_at(date, text, integer)
   from public, anon, authenticated;
-revoke all on function public.process_due_recurring_transactions(date, integer)
+revoke all on function public.process_due_recurring_transactions(date, integer, uuid)
   from public, anon, authenticated;
-grant execute on function public.process_due_recurring_transactions(date, integer)
+grant execute on function public.process_due_recurring_transactions(date, integer, uuid)
   to service_role;
+
+create or replace function public.process_my_due_recurring_transactions()
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $
+declare
+  v_user_id uuid := auth.uid();
+begin
+  if v_user_id is null then
+    raise exception 'AUTHENTICATION_REQUIRED';
+  end if;
+
+  return public.process_due_recurring_transactions(
+    (now() at time zone 'Europe/Lisbon')::date,
+    250,
+    v_user_id
+  );
+end;
+$;
+
+revoke all on function public.process_my_due_recurring_transactions()
+  from public, anon;
+grant execute on function public.process_my_due_recurring_transactions()
+  to authenticated;
 
 -- Run shortly after local midnight in Portugal. The worker safely catches up
 -- missed dates, at most 120 occurrences per schedule per run.
@@ -368,7 +397,7 @@ create extension if not exists pg_cron with schema pg_catalog;
 select cron.schedule(
   'moneyflow-recurring-transactions-daily',
   '5 4 * * *',
-  $$select public.process_due_recurring_transactions((now() at time zone 'Europe/Lisbon')::date, 250);$$
+  $select public.process_due_recurring_transactions((now() at time zone 'Europe/Lisbon')::date, 250, null);$
 );
 
 notify pgrst, 'reload schema';
