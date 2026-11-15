@@ -28,7 +28,10 @@ export async function GET(request: Request) {
   }
 
   if (!isAuthorized(request, secret)) {
-    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 })
+    return NextResponse.json(
+      { error: 'Não autorizado.' },
+      { status: 401 },
+    )
   }
 
   const supabase = await createClient()
