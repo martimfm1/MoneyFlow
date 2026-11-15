@@ -170,6 +170,32 @@ alter table public.categories
   add constraint categories_user_context_name_key
   unique (user_id, context_id, name);
 
+-- The authenticated application only needs to read the user's available contexts.
+grant select on public.financial_contexts to authenticated;
+
+-- Existing users also receive their default category set in the new Silentra space.
+insert into public.categories (user_id, context_id, name, icon, color, sort_order)
+select
+  context.user_id,
+  context.id,
+  defaults.name,
+  defaults.icon,
+  defaults.color,
+  defaults.sort_order
+from public.financial_contexts as context
+cross join (values
+  ('Alimentação', 'Utensils', 'orange', 10),
+  ('Transportes', 'Car', 'blue', 20),
+  ('Casa', 'House', 'violet', 30),
+  ('Lazer', 'Gamepad2', 'pink', 40),
+  ('Compras', 'ShoppingBag', 'amber', 50),
+  ('Saúde', 'HeartPulse', 'rose', 60),
+  ('Subscrições', 'Repeat', 'cyan', 70),
+  ('Educação', 'GraduationCap', 'emerald', 80)
+) as defaults(name, icon, color, sort_order)
+where context.slug = 'silentra'
+on conflict (user_id, context_id, name) do nothing;
+
 create index accounts_context_idx
   on public.accounts(user_id, context_id, is_active);
 
@@ -343,3 +369,27 @@ create trigger recurring_incomes_validate_context
 create trigger recurring_expenses_validate_context
   before insert or update on public.recurring_expenses
   for each row execute procedure public.validate_financial_context_links();
+
+-- During onboarding, the selected primary currency is copied to both spaces.
+-- Each context can later evolve its currency independently in its own settings.
+create or replace function public.sync_financial_context_currency()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $
+begin
+  if new.currency_code is distinct from old.currency_code then
+    update public.financial_contexts
+    set currency_code = new.currency_code,
+        updated_at = timezone('utc', now())
+    where user_id = new.id;
+  end if;
+
+  return new;
+end;
+$;
+
+create trigger profiles_sync_financial_context_currency
+  after update of currency_code on public.profiles
+  for each row execute procedure public.sync_financial_context_currency();
