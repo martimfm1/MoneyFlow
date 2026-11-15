@@ -16,27 +16,19 @@ export default async function IntegrationsSettingsPage() {
 
   if (!user) redirect('/login')
 
-  const [{ data: profile }, { data: context }, { data: integration }] =
-    await Promise.all([
-      supabase
-        .from('profiles')
-        .select('locale, active_finance_context')
-        .eq('id', user.id)
-        .maybeSingle(),
-      supabase
-        .from('financial_contexts')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('slug', 'silentra')
-        .maybeSingle(),
-      supabase
-        .from('silentra_integrations')
-        .select('account_id, status, connected_at, last_synced_at')
-        .eq('user_id', user.id)
-        .eq('provider', 'silentra-for-barbers')
-        .eq('status', 'connected')
-        .maybeSingle(),
-    ])
+  const [{ data: profile }, { data: context }] = await Promise.all([
+    supabase
+      .from('profiles')
+      .select('locale, active_finance_context')
+      .eq('id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('financial_contexts')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('slug', 'silentra')
+      .maybeSingle(),
+  ])
 
   const locale = normalizeLocale(profile?.locale)
   const isEnglish = locale === 'en'
@@ -61,16 +53,15 @@ export default async function IntegrationsSettingsPage() {
       .maybeSingle(),
   ])
 
-  const initialConnection =
-    integration
-      ? {
-          account_id: integration.account_id,
-          account_name: integration.account_name,
-          currency_code: integration.currency_code,
-          connected_at: integration.connected_at,
-          last_synced_at: integration.last_synced_at,
-        }
-      : null
+  const initialConnection = integration
+    ? {
+        account_id: integration.account_id,
+        account_name: integration.account_name,
+        currency_code: integration.currency_code,
+        connected_at: integration.connected_at,
+        last_synced_at: integration.last_synced_at,
+      }
+    : null
 
   return (
     <div className="moneyflow-shell py-6 sm:py-8 lg:py-10">
