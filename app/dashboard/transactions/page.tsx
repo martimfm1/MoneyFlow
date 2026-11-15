@@ -2,6 +2,7 @@ import Link from 'next/link'
 import {
   ArrowDownLeft,
   ArrowUpRight,
+  FileSpreadsheet,
   Pencil,
   Plus,
   Search,
@@ -118,11 +119,18 @@ export default async function TransactionsPage({
             Pesquisa e filtra os movimentos por conta, tipo e categoria.
           </p>
         </div>
-        <Button asChild size="sm">
-          <Link href="/dashboard/transactions/new">
-            <Plus className="size-4" /> Novo
-          </Link>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard/transactions/import">
+              <FileSpreadsheet className="size-4" /> Importar CSV
+            </Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link href="/dashboard/transactions/new">
+              <Plus className="size-4" /> Novo
+            </Link>
+          </Button>
+        </div>
       </header>
 
       {params.toast ? (
