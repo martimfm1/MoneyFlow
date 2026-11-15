@@ -22,6 +22,14 @@ export default async function EditWishlistItemPage({
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('active_finance_context')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (profile?.active_finance_context === 'general') redirect('/dashboard/wishlist')
+
   const { data: item } = await supabase
     .from('wishlist_items')
     .select(
