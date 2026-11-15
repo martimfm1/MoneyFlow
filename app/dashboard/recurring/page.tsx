@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/empty'
 import { Separator } from '@/components/ui/separator'
 import { RecurringExpenseCreateDialog } from './create-dialog'
+import { RecurringTabs } from '@/components/dashboard/recurring-tabs'
 import { DeleteRecurringExpenseButton } from './delete-button'
 import { toggleRecurringExpense } from './actions'
 
@@ -130,9 +131,9 @@ export default async function RecurringExpensesPage({
         <div className="flex items-center gap-2">
           <CalendarClock className="size-5" />
           <div>
-            <p className="text-xs text-muted-foreground">Recorrentes</p>
+            <p className="text-xs text-muted-foreground">Planeamento</p>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Despesas
+              Saídas recorrentes
             </h1>
           </div>
         </div>
@@ -148,6 +149,7 @@ export default async function RecurringExpensesPage({
           />
         </div>
       </header>
+      <RecurringTabs active="expense" />
       {params.toast ? (
         <p
           role="status"
