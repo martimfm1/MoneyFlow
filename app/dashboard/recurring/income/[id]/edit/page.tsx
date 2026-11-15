@@ -66,12 +66,20 @@ export default async function EditRecurringIncomePage({
             </label>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-2 text-sm font-medium">
-                Origem
+                Categoria / origem
                 <Input
                   name="source"
                   maxLength={120}
                   defaultValue={income.source ?? ''}
+                  list="recurring-income-category-options"
                 />
+                <datalist id="recurring-income-category-options">
+                  <option value="Mesada" />
+                  <option value="Prendas" />
+                  <option value="Pequenos trabalhos" />
+                  <option value="Transferência da Silentra" />
+                  <option value="Outro rendimento" />
+                </datalist>
               </label>
               <label className="grid gap-2 text-sm font-medium">
                 Valor

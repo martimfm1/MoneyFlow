@@ -1,9 +1,7 @@
-import Link from 'next/link'
-import { ArrowDownLeft, CalendarClock, ChevronLeft } from 'lucide-react'
+import { ArrowDownLeft, CalendarClock } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -17,6 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { RecurringIncomeCreateDialog } from './create-dialog'
 import { RecurringIncomeActionMenu } from './action-menu'
+import { RecurringTabs } from '@/components/dashboard/recurring-tabs'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,8 +38,16 @@ const frequencyLabels = {
   yearly: 'Anual',
 } as const
 
-const yearlyMultipliers = { monthly: 12, quarterly: 4, yearly: 1 } as const
-const monthlyDivisors = { monthly: 1, quarterly: 3, yearly: 12 } as const
+const yearlyMultipliers = {
+  monthly: 12,
+  quarterly: 4,
+  yearly: 1,
+} as const
+const monthlyDivisors = {
+  monthly: 1,
+  quarterly: 3,
+  yearly: 12,
+} as const
 
 function monthlyIncome(income: RecurringIncome) {
   return Number(income.amount) / monthlyDivisors[income.frequency]
@@ -119,18 +126,11 @@ export default async function RecurringIncomePage({
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2">
-          <Button asChild size="icon" variant="ghost" aria-label="Voltar">
-            <Link href="/dashboard/recurring">
-              <ChevronLeft className="size-4" />
-            </Link>
-          </Button>
-          <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">Recorrentes</p>
-            <h1 className="truncate text-2xl font-semibold tracking-tight sm:text-3xl">
-              Ganhos
-            </h1>
-          </div>
+        <div className="min-w-0">
+          <p className="text-xs text-muted-foreground">Planeamento</p>
+          <h1 className="truncate text-2xl font-semibold tracking-tight sm:text-3xl">
+            Entradas recorrentes
+          </h1>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary">{items.length}</Badge>
@@ -140,6 +140,7 @@ export default async function RecurringIncomePage({
           />
         </div>
       </header>
+      <RecurringTabs active="income" />
 
       {params.toast ? (
         <p
@@ -188,8 +189,8 @@ export default async function RecurringIncomePage({
           {activeInOtherCurrencies === 1 ? '' : 's'} ativo
           {activeInOtherCurrencies === 1 ? '' : 's'} noutra moeda
           {activeInOtherCurrencies === 1 ? '' : 's'} não entra
-          {activeInOtherCurrencies === 1 ? '' : 'm'} nos totais apresentados.
-          Os valores não são convertidos.
+          {activeInOtherCurrencies === 1 ? '' : 'm'} nos totais apresentados. Os
+          valores não são convertidos.
         </p>
       ) : null}
 

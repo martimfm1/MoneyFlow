@@ -9,9 +9,9 @@ type CreateClientOptions = {
 
 export async function createClient(options: CreateClientOptions = {}) {
   const cookieStore = await cookies()
+  // Persist sessions by default. Only an explicit opt-out cookie disables it.
   const remember =
-    options.remember ??
-    cookieStore.get(REMEMBER_COOKIE)?.value === '1'
+    options.remember ?? cookieStore.get(REMEMBER_COOKIE)?.value !== '0'
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,11 +24,11 @@ export async function createClient(options: CreateClientOptions = {}) {
         setAll(cookiesToSet) {
           try {
             cookiesToSet.forEach(({ name, value, options: cookieOptions }) => {
-              const options =
+              const cookieOptionsWithPersistence =
                 remember && value
                   ? { ...cookieOptions, maxAge: SESSION_MAX_AGE }
                   : cookieOptions
-              cookieStore.set(name, value, options)
+              cookieStore.set(name, value, cookieOptionsWithPersistence)
             })
           } catch {
             // Server Components cannot always mutate cookies; middleware handles refreshes.

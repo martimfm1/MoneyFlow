@@ -1,10 +1,5 @@
 import Link from 'next/link'
-import {
-  CalendarClock,
-  CircleDollarSign,
-  ExternalLink,
-  RefreshCw,
-} from 'lucide-react'
+import { CalendarClock, CircleDollarSign, RefreshCw } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
@@ -22,6 +17,7 @@ import {
 } from '@/components/ui/empty'
 import { Separator } from '@/components/ui/separator'
 import { RecurringExpenseCreateDialog } from './create-dialog'
+import { RecurringTabs } from '@/components/dashboard/recurring-tabs'
 import { DeleteRecurringExpenseButton } from './delete-button'
 import { toggleRecurringExpense } from './actions'
 
@@ -46,8 +42,16 @@ const frequencyLabels = {
   quarterly: 'Trimestral',
   yearly: 'Anual',
 } as const
-const yearlyMultipliers = { monthly: 12, quarterly: 4, yearly: 1 } as const
-const monthlyDivisors = { monthly: 1, quarterly: 3, yearly: 12 } as const
+const yearlyMultipliers = {
+  monthly: 12,
+  quarterly: 4,
+  yearly: 1,
+} as const
+const monthlyDivisors = {
+  monthly: 1,
+  quarterly: 3,
+  yearly: 12,
+} as const
 const monthlyReserve = (item: RecurringExpense) =>
   Number(item.amount) / monthlyDivisors[item.frequency]
 const yearlyCost = (item: RecurringExpense) =>
@@ -130,24 +134,18 @@ export default async function RecurringExpensesPage({
         <div className="flex items-center gap-2">
           <CalendarClock className="size-5" />
           <div>
-            <p className="text-xs text-muted-foreground">Recorrentes</p>
+            <p className="text-xs text-muted-foreground">Planeamento</p>
             <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              Despesas
+              Saídas recorrentes
             </h1>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="outline">
-            <Link href="/dashboard/recurring/income">
-              <ExternalLink className="size-4" /> Ganhos
-            </Link>
-          </Button>
-          <RecurringExpenseCreateDialog
-            currency={currency}
-            accounts={accounts ?? []}
-          />
-        </div>
+        <RecurringExpenseCreateDialog
+          currency={currency}
+          accounts={accounts ?? []}
+        />
       </header>
+      <RecurringTabs active="expense" />
       {params.toast ? (
         <p
           role="status"

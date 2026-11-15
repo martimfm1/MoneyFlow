@@ -66,12 +66,21 @@ export default async function EditRecurringExpensePage({
             </label>
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-2 text-sm font-medium">
-                Fornecedor
+                Categoria / fornecedor
                 <Input
                   name="provider"
                   maxLength={120}
                   defaultValue={expense.provider ?? ''}
+                  list="recurring-expense-category-options"
                 />
+                <datalist id="recurring-expense-category-options">
+                  <option value="Subscrições" />
+                  <option value="Telemóvel" />
+                  <option value="Alojamento e infraestrutura" />
+                  <option value="Software e ferramentas" />
+                  <option value="Serviços" />
+                  <option value="Outro encargo" />
+                </datalist>
               </label>
               <label className="grid gap-2 text-sm font-medium">
                 Valor

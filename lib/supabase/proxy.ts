@@ -4,7 +4,7 @@ import { REMEMBER_COOKIE, SESSION_MAX_AGE } from '@/lib/supabase/session'
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request })
-  const remember = request.cookies.get(REMEMBER_COOKIE)?.value === '1'
+  const remember = request.cookies.get(REMEMBER_COOKIE)?.value !== '0'
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

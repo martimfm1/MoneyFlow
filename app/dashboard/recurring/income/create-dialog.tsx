@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { ChevronDown, Plus } from 'lucide-react'
 import {
   AccountCombobox,
@@ -34,6 +34,7 @@ const frequencies = [
 
 export function RecurringIncomeCreateDialog({ currency, accounts }: Props) {
   const [open, setOpen] = useState(false)
+  const categoryListId = useId()
   const [frequency, setFrequency] =
     useState<(typeof frequencies)[number]['value']>('monthly')
 
@@ -49,12 +50,29 @@ export function RecurringIncomeCreateDialog({ currency, accounts }: Props) {
         <form action={createRecurringIncome} className="grid gap-4">
           <label className="grid gap-2 text-sm font-medium">
             Nome
-            <Input name="name" required maxLength={120} placeholder="Salário" />
+            <Input
+              name="name"
+              required
+              maxLength={120}
+              placeholder="Mesada, prendas, trabalhos..."
+            />
           </label>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-2 text-sm font-medium">
-              Origem
-              <Input name="source" maxLength={120} placeholder="Empresa" />
+              Categoria / origem
+              <Input
+                name="source"
+                maxLength={120}
+                placeholder="Mesada, prendas, pequenos trabalhos..."
+                list={categoryListId}
+              />
+              <datalist id={categoryListId}>
+                <option value="Mesada" />
+                <option value="Prendas" />
+                <option value="Pequenos trabalhos" />
+                <option value="Transferência da Silentra" />
+                <option value="Outro rendimento" />
+              </datalist>
             </label>
             <label className="grid gap-2 text-sm font-medium">
               Valor
