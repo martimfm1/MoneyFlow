@@ -299,13 +299,19 @@ export default async function DashboardPage() {
             </Button>
           </div>
           {!goals?.length ? (
-            <Link
-              href="/dashboard/goals/new"
-              className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4"
-            >
-              <span className="font-medium">Criar primeiro objetivo</span>
-              <Target className="size-4" aria-hidden="true" />
-            </Link>
+            {readOnly ? (
+              <p className="mt-3 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-4 text-sm text-[hsl(var(--muted-foreground))]">
+                Ainda não existem objetivos nos contextos Pessoal ou Silentra.
+              </p>
+            ) : (
+              <Link
+                href="/dashboard/goals/new"
+                className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4"
+              >
+                <span className="font-medium">Criar primeiro objetivo</span>
+                <Target className="size-4" aria-hidden="true" />
+              </Link>
+            )}
           ) : (
             <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {goals.map((goal) => {
@@ -337,6 +343,11 @@ export default async function DashboardPage() {
                       <span>{formatCurrency(current, currency)}</span>
                       <span>{formatCurrency(target, currency)}</span>
                     </div>
+                    {readOnly ? (
+                      <p className="mt-2 text-xs text-[hsl(var(--muted-foreground))]">
+                        {goal.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                      </p>
+                    ) : null}
                   </Link>
                 )
               })}
@@ -346,10 +357,11 @@ export default async function DashboardPage() {
 
         <WishlistPreview currency={currency} />
 
-        <section
-          id="add"
-          className="mt-8 hidden gap-3 lg:grid lg:grid-cols-4 lg:mt-10"
-        >
+        {!readOnly ? (
+          <section
+            id="add"
+            className="mt-8 hidden gap-3 lg:grid lg:grid-cols-4 lg:mt-10"
+          >
           {[
             ['Despesa', '/dashboard/transactions/new?type=expense', Plus],
             [
@@ -371,7 +383,8 @@ export default async function DashboardPage() {
               <span className="font-medium">{title as string}</span>
             </Link>
           ))}
-        </section>
+          </section>
+        ) : null}
       </div>
     </main>
   )
