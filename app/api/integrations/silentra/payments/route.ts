@@ -73,3 +73,25 @@ export async function POST(request: Request) {
     headers: { 'Cache-Control': 'no-store' },
   })
 }
+
+export async function DELETE(request: Request) {
+  const authorization = request.headers.get('authorization') ?? ''
+  const match = authorization.match(/^Bearer ([a-f0-9]{64})$/i)
+  if (!match) {
+    return NextResponse.json({ ok: false, error: 'Credencial inválida.' }, { status: 401 })
+  }
+
+  const tokenHash = createHash('sha256').update(match[1].toLowerCase()).digest('hex')
+  const admin = createAdminClient()
+  const { data, error } = await admin.rpc('disconnect_silentra_integration', {
+    p_sync_token_hash: tokenHash,
+  })
+
+  if (error || data !== true) {
+    return NextResponse.json({ ok: false, error: 'A integração já não está ligada.' }, { status: 401 })
+  }
+
+  return NextResponse.json({ ok: true, connected: false }, {
+    headers: { 'Cache-Control': 'no-store' },
+  })
+}
