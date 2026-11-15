@@ -1,15 +1,18 @@
 {
+  "id": "/dashboard",
   "name": "MoneyFlow",
   "short_name": "MoneyFlow",
-  "description": "Gestão pessoal de dinheiro, objetivos e compras.",
+  "description": "As tuas finanças pessoais e da Silentra, num só lugar.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
   "background_color": "#fafafa",
   "theme_color": "#fafafa",
   "lang": "pt-PT",
   "categories": ["finance", "productivity"],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192.png",
