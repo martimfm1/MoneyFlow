@@ -7,6 +7,8 @@ import { updateWishlistItem } from '../../actions'
 
 export const dynamic = 'force-dynamic'
 
+import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
+
 export default async function EditWishlistItemPage({
   params,
   searchParams,
@@ -14,6 +16,7 @@ export default async function EditWishlistItemPage({
   params: Promise<{ id: string }>
   searchParams: Promise<{ error?: string }>
 }) {
+  await redirectIfGeneralFinanceContext()
   const { id } = await params
   const query = await searchParams
   const supabase = await createClient()
