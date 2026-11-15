@@ -45,13 +45,13 @@ export default async function GoalDetailPage({
     await Promise.all([
       supabase
         .from('profiles')
-        .select('currency_code')
+        .select('currency_code, active_finance_context')
         .eq('id', user.id)
         .maybeSingle(),
       supabase
         .from('goals')
         .select(
-          'id, name, target_amount, current_amount, target_date, priority, category, icon, wishlist_item_id',
+          'id, name, target_amount, current_amount, target_date, priority, category, icon, wishlist_item_id, finance_context',
         )
         .eq('id', id)
         .eq('user_id', user.id)
@@ -66,7 +66,7 @@ export default async function GoalDetailPage({
 
   if (!goal) notFound()
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = profile?.currency_code ?? 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
   const current = Number(goal.current_amount)
   const target = Number(goal.target_amount)
   const remaining = Math.max(0, target - current)
@@ -84,7 +84,7 @@ export default async function GoalDetailPage({
             <ArrowLeft className="size-4" /> Objetivos
           </Link>
         </Button>
-        <DeleteGoalButton goalId={goal.id} />
+        {!readOnly ? <DeleteGoalButton goalId={goal.id} /> : null}
       </div>
 
       <header className="mt-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -96,6 +96,9 @@ export default async function GoalDetailPage({
             <p className="text-sm text-[hsl(var(--muted-foreground))]">
               Objetivo · Prioridade{' '}
               {priorityLabels[goal.priority] ?? goal.priority}
+              {readOnly
+                ? ` · ${goal.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}`
+                : ''}
             </p>
             <h1 className="mt-1 text-2xl font-semibold tracking-tight lg:text-3xl">
               {goal.name}
@@ -188,7 +191,12 @@ export default async function GoalDetailPage({
         ) : null}
       </section>
 
-      {remaining > 0 ? (
+      {readOnly ? (
+        <section className="mt-6 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 text-sm text-[hsl(var(--muted-foreground))] shadow-sm sm:p-6">
+          O histórico está disponível em modo de leitura. Muda para o contexto
+          Pessoal ou Silentra deste objetivo para adicionar contribuições.
+        </section>
+      ) : remaining > 0 ? (
         <section className="mt-6 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6">
           <div>
             <h2 className="font-semibold">Adicionar contribuição</h2>
