@@ -60,7 +60,7 @@ export default async function EditTransactionPage({
 
   if (!transaction) notFound()
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
   const dateValue = transaction.occurred_at.slice(0, 10)
   const activeAccounts =
     accounts?.filter(
