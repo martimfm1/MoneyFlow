@@ -284,16 +284,16 @@ As fases devem ser entregues por marcos pequenos e verificáveis. As fases 0 e 1
 
 ## 5. Ordem de prioridade e dependências
 
-| Ordem | Entrega | Depende de | Prioridade |
-|---|---|---|---|
-| 1 | Descoberta e escolha do provedor (Fase 0) | Confirmação de elegibilidade/custos | Bloqueante |
-| 2 | Fundação de integrações (Fase 1) | Fase 0 | Bloqueante |
-| 3 | Preview e reforço de CSV (Fase 2) | Pode avançar em paralelo à Fase 1 | Alta |
-| 4 | Primeiro adaptador sandbox (Fase 3) | Fases 0 e 1 | Alta |
-| 5 | Sincronização e webhooks (Fase 4) | Fase 3 | Alta |
-| 6 | Reconciliação e sugestões (Fase 5) | Fases 2 e 4 | Média |
-| 7 | APIs públicas, FX e exportação (Fase 6) | Decisões de produto e segurança | Média / decisão |
-| 8 | Hardening e rollout (Fase 7) | Todas as fases em produção | Bloqueante para lançamento |
+| Ordem | Entrega                                   | Depende de                          | Prioridade                 |
+| ----- | ----------------------------------------- | ----------------------------------- | -------------------------- |
+| 1     | Descoberta e escolha do provedor (Fase 0) | Confirmação de elegibilidade/custos | Bloqueante                 |
+| 2     | Fundação de integrações (Fase 1)          | Fase 0                              | Bloqueante                 |
+| 3     | Preview e reforço de CSV (Fase 2)         | Pode avançar em paralelo à Fase 1   | Alta                       |
+| 4     | Primeiro adaptador sandbox (Fase 3)       | Fases 0 e 1                         | Alta                       |
+| 5     | Sincronização e webhooks (Fase 4)         | Fase 3                              | Alta                       |
+| 6     | Reconciliação e sugestões (Fase 5)        | Fases 2 e 4                         | Média                      |
+| 7     | APIs públicas, FX e exportação (Fase 6)   | Decisões de produto e segurança     | Média / decisão            |
+| 8     | Hardening e rollout (Fase 7)              | Todas as fases em produção          | Bloqueante para lançamento |
 
 ### Critérios globais de aceitação
 
