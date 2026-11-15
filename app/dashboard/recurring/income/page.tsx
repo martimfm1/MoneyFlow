@@ -82,7 +82,7 @@ export default async function RecurringIncomePage({
     await Promise.all([
       supabase
         .from('profiles')
-        .select('currency_code')
+        .select('currency_code, active_finance_context')
         .eq('id', user.id)
         .maybeSingle(),
       supabase
@@ -101,7 +101,7 @@ export default async function RecurringIncomePage({
         .order('name', { ascending: true }),
     ])
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = profile?.currency_code ?? 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
   const items = (incomes ?? []) as unknown as RecurringIncome[]
   const activeItems = items.filter((item) => item.is_active)
   const activeInPrimaryCurrency = activeItems.filter(
@@ -134,10 +134,14 @@ export default async function RecurringIncomePage({
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary">{items.length}</Badge>
-          <RecurringIncomeCreateDialog
-            currency={currency}
-            accounts={accounts ?? []}
-          />
+          {!readOnly ? (
+            <RecurringIncomeCreateDialog
+              currency={currency}
+              accounts={accounts ?? []}
+            />
+          ) : (
+            <Badge variant="outline">Geral · leitura</Badge>
+          )}
         </div>
       </header>
       <RecurringTabs active="income" />
@@ -205,12 +209,14 @@ export default async function RecurringIncomePage({
             <EmptyTitle>Sem ganhos recorrentes</EmptyTitle>
             <EmptyDescription>Adiciona o primeiro rendimento.</EmptyDescription>
           </EmptyHeader>
-          <EmptyContent>
-            <RecurringIncomeCreateDialog
-              currency={currency}
-              accounts={accounts ?? []}
-            />
-          </EmptyContent>
+          {!readOnly ? (
+            <EmptyContent>
+              <RecurringIncomeCreateDialog
+                currency={currency}
+                accounts={accounts ?? []}
+              />
+            </EmptyContent>
+          ) : null}
         </Empty>
       ) : (
         <section>
@@ -242,12 +248,19 @@ export default async function RecurringIncomePage({
                           {item.source || 'Sem origem'} ·{' '}
                           {frequencyLabels[item.frequency]}
                         </p>
+                        {readOnly ? (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {item.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                          </p>
+                        ) : null}
                       </div>
-                      <RecurringIncomeActionMenu
-                        id={item.id}
-                        name={item.name}
-                        isActive={item.is_active}
-                      />
+                      {!readOnly ? (
+                        <RecurringIncomeActionMenu
+                          id={item.id}
+                          name={item.name}
+                          isActive={item.is_active}
+                        />
+                      ) : null}
                     </div>
                   </CardHeader>
                   <CardContent>
