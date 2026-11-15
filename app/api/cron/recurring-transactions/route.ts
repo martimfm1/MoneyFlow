@@ -13,8 +13,7 @@ function isAuthorized(request: Request, secret: string) {
   const provided = Buffer.from(header.slice(7))
   const expected = Buffer.from(secret)
   return (
-    provided.length === expected.length &&
-    timingSafeEqual(provided, expected)
+    provided.length === expected.length && timingSafeEqual(provided, expected)
   )
 }
 
@@ -28,10 +27,7 @@ export async function GET(request: Request) {
   }
 
   if (!isAuthorized(request, secret)) {
-    return NextResponse.json(
-      { error: 'Não autorizado.' },
-      { status: 401 },
-    )
+    return NextResponse.json({ error: 'Não autorizado.' }, { status: 401 })
   }
 
   const supabase = await createClient()

@@ -158,7 +158,8 @@ export default async function RecurringExpensesPage({
       <p className="mt-3 max-w-2xl text-xs leading-5 text-muted-foreground">
         As novas recorrências criam movimentos reais quando chegam à data: as
         entradas somam ao saldo e as saídas subtraem. As recorrências antigas
-        continuam em modo de planeamento até ativares os lançamentos automáticos.
+        continuam em modo de planeamento até ativares os lançamentos
+        automáticos.
       </p>
       {params.toast ? (
         <p
@@ -270,7 +271,9 @@ export default async function RecurringExpensesPage({
                           {item.is_active ? 'Ativa' : 'Pausada'}
                         </Badge>
                         <Badge
-                          variant={item.auto_post_enabled ? 'default' : 'outline'}
+                          variant={
+                            item.auto_post_enabled ? 'default' : 'outline'
+                          }
                         >
                           {item.auto_post_enabled
                             ? 'Lançamento automático'
@@ -334,7 +337,9 @@ export default async function RecurringExpensesPage({
                         <Button
                           type="submit"
                           size="sm"
-                          variant={item.auto_post_enabled ? 'outline' : 'secondary'}
+                          variant={
+                            item.auto_post_enabled ? 'outline' : 'secondary'
+                          }
                         >
                           {item.auto_post_enabled
                             ? 'Pausar lançamentos'
