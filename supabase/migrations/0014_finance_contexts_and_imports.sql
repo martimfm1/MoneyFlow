@@ -488,7 +488,7 @@ for insert with check (
       select 1 from public.accounts a
       where a.id = account_id
         and a.user_id = auth.uid()
-        and a.finance_context = finance_context
+        and a.finance_context = public.recurring_incomes.finance_context
     )
   )
 );
@@ -506,7 +506,7 @@ with check (
       select 1 from public.accounts a
       where a.id = account_id
         and a.user_id = auth.uid()
-        and a.finance_context = finance_context
+        and a.finance_context = public.recurring_incomes.finance_context
     )
   )
 );
