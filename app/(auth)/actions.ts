@@ -33,6 +33,13 @@ export async function signIn(
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
     })
+    cookieStore.set(FINANCIAL_CONTEXT_COOKIE, 'personal', {
+      httpOnly: true,
+      maxAge: SESSION_MAX_AGE,
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    })
   }
 
   if (error)
