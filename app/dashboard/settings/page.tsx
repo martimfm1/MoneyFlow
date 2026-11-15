@@ -58,31 +58,49 @@ export default async function SettingsPage({
       </header>
 
       {params.saved ? (
-        <p role="status" className="mt-5 max-w-3xl rounded-xl border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-4 py-3 text-sm">
+        <p
+          role="status"
+          className="mt-5 max-w-3xl rounded-xl border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-4 py-3 text-sm"
+        >
           {t('settings.saved')}
         </p>
       ) : null}
       {errorMessage ? (
-        <p role="alert" className="mt-5 max-w-3xl rounded-xl border border-[hsl(var(--danger)/0.25)] bg-[hsl(var(--danger)/0.08)] px-4 py-3 text-sm">
+        <p
+          role="alert"
+          className="mt-5 max-w-3xl rounded-xl border border-[hsl(var(--danger)/0.25)] bg-[hsl(var(--danger)/0.08)] px-4 py-3 text-sm"
+        >
           {errorMessage}
         </p>
       ) : null}
 
       <div className="mt-8 grid max-w-5xl gap-4 xl:grid-cols-[minmax(16rem,0.8fr)_minmax(0,1.2fr)]">
-        <section className="overflow-hidden rounded-2xl border border-border/80 bg-card/75 shadow-sm" aria-labelledby="language-title">
+        <section
+          className="overflow-hidden rounded-2xl border border-border/80 bg-card/75 shadow-sm"
+          aria-labelledby="language-title"
+        >
           <div className="border-b border-border/70 p-5 sm:p-6">
             <span className="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <Languages className="size-[18px]" aria-hidden="true" />
             </span>
-            <h2 id="language-title" className="text-base font-semibold tracking-tight">
+            <h2
+              id="language-title"
+              className="text-base font-semibold tracking-tight"
+            >
               {t('settings.language')}
             </h2>
             <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
               {t('settings.languageHint')}
             </p>
           </div>
-          <form action={updateLocale} className="flex flex-col gap-3 p-5 sm:p-6">
-            <label className="text-xs font-semibold text-muted-foreground" htmlFor="settings-locale">
+          <form
+            action={updateLocale}
+            className="flex flex-col gap-3 p-5 sm:p-6"
+          >
+            <label
+              className="text-xs font-semibold text-muted-foreground"
+              htmlFor="settings-locale"
+            >
               {isEnglish ? 'Display language' : 'Idioma de apresentação'}
             </label>
             <select
@@ -100,12 +118,18 @@ export default async function SettingsPage({
           </form>
         </section>
 
-        <section className="overflow-hidden rounded-2xl border border-border/80 bg-card/75 shadow-sm" aria-labelledby="appearance-title">
+        <section
+          className="overflow-hidden rounded-2xl border border-border/80 bg-card/75 shadow-sm"
+          aria-labelledby="appearance-title"
+        >
           <div className="border-b border-border/70 p-5 sm:p-6">
             <span className="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <Palette className="size-[18px]" aria-hidden="true" />
             </span>
-            <h2 id="appearance-title" className="text-base font-semibold tracking-tight">
+            <h2
+              id="appearance-title"
+              className="text-base font-semibold tracking-tight"
+            >
               {isEnglish ? 'Appearance' : 'Aparência'}
             </h2>
             <p className="mt-1.5 text-sm leading-6 text-muted-foreground">

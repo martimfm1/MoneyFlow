@@ -48,10 +48,16 @@ export function FinancialContextSwitcher({ active, locale }: Props) {
           <option value="general">{isEnglish ? 'Overview' : 'Geral'}</option>
         </select>
         <span className="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-muted-foreground">
-          {isChanging ? <Check className="size-3.5 text-primary" aria-hidden="true" /> : <ChevronDown className="size-3.5" aria-hidden="true" />}
+          {isChanging ? (
+            <Check className="size-3.5 text-primary" aria-hidden="true" />
+          ) : (
+            <ChevronDown className="size-3.5" aria-hidden="true" />
+          )}
         </span>
         <span className="sr-only" aria-live="polite">
-          {isChanging ? (isEnglish ? 'Switching to ' : 'A mudar para ') + currentLabel : ''}
+          {isChanging
+            ? (isEnglish ? 'Switching to ' : 'A mudar para ') + currentLabel
+            : ''}
         </span>
       </form>
     </div>

@@ -55,7 +55,9 @@ export default async function DashboardPage() {
       .order('created_at', { ascending: true }),
     supabase
       .from('transactions')
-      .select('id, transaction_type, amount, description, occurred_at, accounts(name, currency_code)')
+      .select(
+        'id, transaction_type, amount, description, occurred_at, accounts(name, currency_code)',
+      )
       .eq('user_id', user.id)
       .eq('context_id', financialContext.id)
       .order('occurred_at', { ascending: false })
@@ -71,7 +73,8 @@ export default async function DashboardPage() {
   ])
 
   if (!profile?.onboarding_completed_at) redirect('/onboarding')
-  const currency = financialContext.currency_code || profile.currency_code || 'EUR'
+  const currency =
+    financialContext.currency_code || profile.currency_code || 'EUR'
   const accountsInPrimaryCurrency = (accounts ?? []).filter(
     (account) => (account.currency_code || currency) === currency,
   )
@@ -95,7 +98,8 @@ export default async function DashboardPage() {
             Olá{firstName ? `, ${firstName}` : ''}.
           </h1>
           <p className="mt-1.5 max-w-xl text-sm leading-6 text-muted-foreground">
-            Uma visão simples do que entra, do que sai e do que estás a construir.
+            Uma visão simples do que entra, do que sai e do que estás a
+            construir.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -113,10 +117,16 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <section className="mt-7 grid gap-3 lg:grid-cols-[minmax(0,1.55fr)_minmax(17rem,0.75fr)]" aria-label="Resumo do saldo">
+      <section
+        className="mt-7 grid gap-3 lg:grid-cols-[minmax(0,1.55fr)_minmax(17rem,0.75fr)]"
+        aria-label="Resumo do saldo"
+      >
         <article
           className="relative isolate min-h-[15.5rem] overflow-hidden rounded-[1.65rem] border border-white/10 p-5 text-white shadow-[0_24px_70px_hsl(225_35%_2%/0.26)] sm:p-7"
-          style={{ background: 'linear-gradient(118deg, #151e1c 0%, #1a2925 58%, #203b32 100%)' }}
+          style={{
+            background:
+              'linear-gradient(118deg, #151e1c 0%, #1a2925 58%, #203b32 100%)',
+          }}
         >
           <div className="pointer-events-none absolute -right-14 -top-28 -z-10 size-80 rounded-full border border-white/10" />
           <div className="pointer-events-none absolute -right-2 -top-16 -z-10 size-56 rounded-full border border-white/10" />
@@ -166,11 +176,18 @@ export default async function DashboardPage() {
               <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Wallet className="size-[17px]" aria-hidden="true" />
               </span>
-              <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+              <ChevronRight
+                className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
             </div>
             <div>
-              <p className="text-2xl font-semibold tracking-tight tabular-nums">{accounts?.length ?? 0}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">Contas ativas</p>
+              <p className="text-2xl font-semibold tracking-tight tabular-nums">
+                {accounts?.length ?? 0}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Contas ativas
+              </p>
             </div>
           </Link>
           <Link
@@ -181,11 +198,18 @@ export default async function DashboardPage() {
               <span className="flex size-9 items-center justify-center rounded-xl bg-[hsl(var(--info)/0.12)] text-[hsl(var(--info))]">
                 <Target className="size-[17px]" aria-hidden="true" />
               </span>
-              <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+              <ChevronRight
+                className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
             </div>
             <div>
-              <p className="text-2xl font-semibold tracking-tight tabular-nums">{goals?.length ?? 0}</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">Objetivos em destaque</p>
+              <p className="text-2xl font-semibold tracking-tight tabular-nums">
+                {goals?.length ?? 0}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Objetivos em destaque
+              </p>
             </div>
           </Link>
         </div>
@@ -198,12 +222,20 @@ export default async function DashboardPage() {
           <section id="transactions" aria-labelledby="transactions-title">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Atividade</p>
-                <h2 id="transactions-title" className="mt-1 text-lg font-semibold tracking-tight">Movimentos recentes</h2>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  Atividade
+                </p>
+                <h2
+                  id="transactions-title"
+                  className="mt-1 text-lg font-semibold tracking-tight"
+                >
+                  Movimentos recentes
+                </h2>
               </div>
               <Button asChild variant="ghost" size="sm">
                 <Link href="/dashboard/transactions">
-                  Ver todos <ChevronRight className="size-4" aria-hidden="true" />
+                  Ver todos{' '}
+                  <ChevronRight className="size-4" aria-hidden="true" />
                 </Link>
               </Button>
             </div>
@@ -213,10 +245,16 @@ export default async function DashboardPage() {
                 className="flex min-h-28 items-center justify-between rounded-2xl border border-dashed border-border bg-card/60 px-5 transition-colors hover:border-primary/40 hover:bg-card"
               >
                 <span>
-                  <span className="block text-sm font-semibold">Ainda não há movimentos</span>
-                  <span className="mt-1 block text-xs text-muted-foreground">Regista a primeira receita ou despesa.</span>
+                  <span className="block text-sm font-semibold">
+                    Ainda não há movimentos
+                  </span>
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    Regista a primeira receita ou despesa.
+                  </span>
                 </span>
-                <span className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary"><Plus className="size-4" aria-hidden="true" /></span>
+                <span className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Plus className="size-4" aria-hidden="true" />
+                </span>
               </Link>
             ) : (
               <div className="overflow-hidden rounded-2xl border border-border/80 bg-card/75 shadow-sm">
@@ -232,19 +270,45 @@ export default async function DashboardPage() {
                         href={`/dashboard/transactions/${transaction.id}`}
                         className="group flex min-h-[4.65rem] items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/45 sm:px-5"
                       >
-                        <span className={`inline-flex size-10 shrink-0 items-center justify-center rounded-xl ${isIncome ? 'bg-[hsl(var(--success)/0.11)] text-[hsl(var(--success))]' : 'bg-[hsl(var(--danger)/0.1)] text-[hsl(var(--danger))]'}`}>
-                          {isIncome ? <ArrowDownLeft className="size-[17px]" aria-hidden="true" /> : <ArrowUpRight className="size-[17px]" aria-hidden="true" />}
+                        <span
+                          className={`inline-flex size-10 shrink-0 items-center justify-center rounded-xl ${isIncome ? 'bg-[hsl(var(--success)/0.11)] text-[hsl(var(--success))]' : 'bg-[hsl(var(--danger)/0.1)] text-[hsl(var(--danger))]'}`}
+                        >
+                          {isIncome ? (
+                            <ArrowDownLeft
+                              className="size-[17px]"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <ArrowUpRight
+                              className="size-[17px]"
+                              aria-hidden="true"
+                            />
+                          )}
                         </span>
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold">{transaction.description || (isIncome ? 'Receita' : 'Despesa')}</p>
+                          <p className="truncate text-sm font-semibold">
+                            {transaction.description ||
+                              (isIncome ? 'Receita' : 'Despesa')}
+                          </p>
                           <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                            {account?.name ?? 'Conta'} <span className="px-1 text-border">·</span> {formatShortDate(transaction.occurred_at)}
+                            {account?.name ?? 'Conta'}{' '}
+                            <span className="px-1 text-border">·</span>{' '}
+                            {formatShortDate(transaction.occurred_at)}
                           </p>
                         </div>
-                        <p className={`shrink-0 text-sm font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}>
-                          {isIncome ? '+' : '−'}{formatCurrency(Number(transaction.amount), account?.currency_code || currency)}
+                        <p
+                          className={`shrink-0 text-sm font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}
+                        >
+                          {isIncome ? '+' : '−'}
+                          {formatCurrency(
+                            Number(transaction.amount),
+                            account?.currency_code || currency,
+                          )}
                         </p>
-                        <ChevronRight className="hidden size-4 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 sm:block" aria-hidden="true" />
+                        <ChevronRight
+                          className="hidden size-4 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 sm:block"
+                          aria-hidden="true"
+                        />
                       </Link>
                     )
                   })}
@@ -253,18 +317,30 @@ export default async function DashboardPage() {
             )}
           </section>
 
-          <WishlistPreview currency={currency} contextId={financialContext.id} />
+          <WishlistPreview
+            currency={currency}
+            contextId={financialContext.id}
+          />
         </div>
 
         <aside className="min-w-0 space-y-8">
           <section id="accounts" aria-labelledby="accounts-title">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Onde está o teu dinheiro</p>
-                <h2 id="accounts-title" className="mt-1 text-lg font-semibold tracking-tight">Contas</h2>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  Onde está o teu dinheiro
+                </p>
+                <h2
+                  id="accounts-title"
+                  className="mt-1 text-lg font-semibold tracking-tight"
+                >
+                  Contas
+                </h2>
               </div>
               <Button asChild variant="ghost" size="sm">
-                <Link href="/dashboard/accounts">Gerir <ChevronRight className="size-4" aria-hidden="true" /></Link>
+                <Link href="/dashboard/accounts">
+                  Gerir <ChevronRight className="size-4" aria-hidden="true" />
+                </Link>
               </Button>
             </div>
             {accounts?.length ? (
@@ -279,24 +355,44 @@ export default async function DashboardPage() {
                       <Wallet className="size-[17px]" aria-hidden="true" />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold">{account.name}</span>
-                      <span className="mt-0.5 block text-xs text-muted-foreground">{accountTypeLabels[account.account_type] ?? account.account_type}</span>
+                      <span className="block truncate text-sm font-semibold">
+                        {account.name}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
+                        {accountTypeLabels[account.account_type] ??
+                          account.account_type}
+                      </span>
                     </span>
                     <span className="shrink-0 text-right">
-                      <span className="block text-sm font-semibold tabular-nums">{formatCurrency(Number(account.balance), account.currency_code || currency)}</span>
-                      <span className="mt-0.5 block text-[10px] text-muted-foreground">{account.currency_code || currency}</span>
+                      <span className="block text-sm font-semibold tabular-nums">
+                        {formatCurrency(
+                          Number(account.balance),
+                          account.currency_code || currency,
+                        )}
+                      </span>
+                      <span className="mt-0.5 block text-[10px] text-muted-foreground">
+                        {account.currency_code || currency}
+                      </span>
                     </span>
                   </Link>
                 ))}
                 {accounts.length > 4 ? (
-                  <Link href="/dashboard/accounts" className="rounded-xl px-3 py-2 text-center text-xs font-semibold text-primary transition-colors hover:bg-primary/5">
+                  <Link
+                    href="/dashboard/accounts"
+                    className="rounded-xl px-3 py-2 text-center text-xs font-semibold text-primary transition-colors hover:bg-primary/5"
+                  >
                     +{accounts.length - 4} contas adicionais
                   </Link>
                 ) : null}
               </div>
             ) : (
-              <Link href="/dashboard/accounts/new" className="flex min-h-24 items-center justify-between rounded-2xl border border-dashed border-border bg-card/60 px-4 hover:border-primary/40">
-                <span className="text-sm font-semibold">Criar a primeira conta</span>
+              <Link
+                href="/dashboard/accounts/new"
+                className="flex min-h-24 items-center justify-between rounded-2xl border border-dashed border-border bg-card/60 px-4 hover:border-primary/40"
+              >
+                <span className="text-sm font-semibold">
+                  Criar a primeira conta
+                </span>
                 <Plus className="size-4 text-primary" aria-hidden="true" />
               </Link>
             )}
@@ -305,16 +401,31 @@ export default async function DashboardPage() {
           <section id="goals" aria-labelledby="goals-title">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">A construir</p>
-                <h2 id="goals-title" className="mt-1 text-lg font-semibold tracking-tight">Os teus objetivos</h2>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  A construir
+                </p>
+                <h2
+                  id="goals-title"
+                  className="mt-1 text-lg font-semibold tracking-tight"
+                >
+                  Os teus objetivos
+                </h2>
               </div>
               <Button asChild variant="ghost" size="sm">
-                <Link href="/dashboard/goals">Ver todos <ChevronRight className="size-4" aria-hidden="true" /></Link>
+                <Link href="/dashboard/goals">
+                  Ver todos{' '}
+                  <ChevronRight className="size-4" aria-hidden="true" />
+                </Link>
               </Button>
             </div>
             {!goals?.length ? (
-              <Link href="/dashboard/goals/new" className="flex min-h-24 items-center justify-between rounded-2xl border border-dashed border-border bg-card/60 px-4 hover:border-primary/40">
-                <span className="text-sm font-semibold">Define o teu primeiro objetivo</span>
+              <Link
+                href="/dashboard/goals/new"
+                className="flex min-h-24 items-center justify-between rounded-2xl border border-dashed border-border bg-card/60 px-4 hover:border-primary/40"
+              >
+                <span className="text-sm font-semibold">
+                  Define o teu primeiro objetivo
+                </span>
                 <Target className="size-4 text-primary" aria-hidden="true" />
               </Link>
             ) : (
@@ -322,15 +433,29 @@ export default async function DashboardPage() {
                 {goals.map((goal) => {
                   const current = Number(goal.current_amount)
                   const target = Number(goal.target_amount)
-                  const progress = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0
+                  const progress =
+                    target > 0
+                      ? Math.min(100, Math.round((current / target) * 100))
+                      : 0
                   return (
-                    <Link key={goal.id} href={`/dashboard/goals/${goal.id}`} className="rounded-2xl border border-border/80 bg-card/75 p-4 shadow-sm transition-colors hover:border-primary/30 hover:bg-card">
+                    <Link
+                      key={goal.id}
+                      href={`/dashboard/goals/${goal.id}`}
+                      className="rounded-2xl border border-border/80 bg-card/75 p-4 shadow-sm transition-colors hover:border-primary/30 hover:bg-card"
+                    >
                       <div className="flex items-center justify-between gap-3">
-                        <p className="truncate text-sm font-semibold">{goal.name}</p>
-                        <span className="text-xs font-semibold tabular-nums text-primary">{progress}%</span>
+                        <p className="truncate text-sm font-semibold">
+                          {goal.name}
+                        </p>
+                        <span className="text-xs font-semibold tabular-nums text-primary">
+                          {progress}%
+                        </span>
                       </div>
                       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
-                        <div className="h-full rounded-full bg-primary transition-[width]" style={{ width: `${progress}%` }} />
+                        <div
+                          className="h-full rounded-full bg-primary transition-[width]"
+                          style={{ width: `${progress}%` }}
+                        />
                       </div>
                       <div className="mt-2.5 flex items-center justify-between gap-3 text-xs text-muted-foreground">
                         <span>{formatCurrency(current, currency)}</span>
@@ -343,15 +468,25 @@ export default async function DashboardPage() {
             )}
           </section>
 
-          <Link href="/dashboard/recurring" className="group flex items-center gap-3 rounded-2xl border border-border/80 bg-card/65 p-4 transition-colors hover:border-primary/30 hover:bg-card">
+          <Link
+            href="/dashboard/recurring"
+            className="group flex items-center gap-3 rounded-2xl border border-border/80 bg-card/65 p-4 transition-colors hover:border-primary/30 hover:bg-card"
+          >
             <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
               <CalendarClock className="size-[17px]" aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block text-sm font-semibold">Movimentos recorrentes</span>
-              <span className="mt-0.5 block text-xs text-muted-foreground">Planeia receitas e despesas futuras</span>
+              <span className="block text-sm font-semibold">
+                Movimentos recorrentes
+              </span>
+              <span className="mt-0.5 block text-xs text-muted-foreground">
+                Planeia receitas e despesas futuras
+              </span>
             </span>
-            <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+            <ArrowRight
+              className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
           </Link>
         </aside>
       </div>

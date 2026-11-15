@@ -89,12 +89,17 @@ export async function MonthlyOverview({
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
             Acompanhamento
           </p>
-          <h2 id="monthly-overview-title" className="mt-1 text-lg font-semibold tracking-tight">
+          <h2
+            id="monthly-overview-title"
+            className="mt-1 text-lg font-semibold tracking-tight"
+          >
             Este mês
           </h2>
         </div>
         <span className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/70 px-3 py-1.5 text-xs font-semibold text-muted-foreground">
-          <span className={`size-1.5 rounded-full ${health !== null && health >= 60 ? 'bg-[hsl(var(--success))]' : 'bg-[hsl(var(--warning))]'}`} />
+          <span
+            className={`size-1.5 rounded-full ${health !== null && health >= 60 ? 'bg-[hsl(var(--success))]' : 'bg-[hsl(var(--warning))]'}`}
+          />
           Saúde {health === null ? '—' : `${health}/100`}
         </span>
       </div>

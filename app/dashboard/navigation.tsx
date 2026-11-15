@@ -33,7 +33,14 @@ type Item = {
   href: string
   icon: LucideIcon
   label: Record<MoneyFlowLocale, string>
-  key?: 'nav.home' | 'nav.accounts' | 'nav.transactions' | 'nav.goals' | 'nav.wishlist' | 'nav.recurring' | 'nav.settings'
+  key?:
+    | 'nav.home'
+    | 'nav.accounts'
+    | 'nav.transactions'
+    | 'nav.goals'
+    | 'nav.wishlist'
+    | 'nav.recurring'
+    | 'nav.settings'
 }
 
 const homeItem: Item = {
@@ -64,7 +71,10 @@ const wishlistItem: Item = {
   label: { 'pt-PT': 'Wishlist', en: 'Wishlist' },
 }
 
-const sidebarGroups: Array<{ label: Record<MoneyFlowLocale, string>; items: Item[] }> = [
+const sidebarGroups: Array<{
+  label: Record<MoneyFlowLocale, string>
+  items: Item[]
+}> = [
   {
     label: { 'pt-PT': 'Visão geral', en: 'Overview' },
     items: [
@@ -120,9 +130,11 @@ const sidebarGroups: Array<{ label: Record<MoneyFlowLocale, string>; items: Item
 ]
 
 const mobileItems = [homeItem, transactionsItem, goalsItem, wishlistItem]
-const moreItems = sidebarGroups.flatMap((group) => group.items).filter(
-  (item) => !mobileItems.some((mobileItem) => mobileItem.href === item.href),
-)
+const moreItems = sidebarGroups
+  .flatMap((group) => group.items)
+  .filter(
+    (item) => !mobileItems.some((mobileItem) => mobileItem.href === item.href),
+  )
 
 function isItemActive(pathname: string, href: string) {
   return href === '/dashboard' ? pathname === href : pathname.startsWith(href)
@@ -158,11 +170,19 @@ function ItemLink({
       aria-current={active ? 'page' : undefined}
       className={`group flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${active ? 'bg-primary/10 text-primary shadow-[inset_2px_0_0_hsl(var(--primary))]' : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground'} ${compact ? 'justify-center px-1' : ''}`}
     >
-      <span className={`flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors ${active ? 'bg-primary/12' : 'bg-transparent group-hover:bg-background/70'}`}>
+      <span
+        className={`flex size-8 shrink-0 items-center justify-center rounded-lg transition-colors ${active ? 'bg-primary/12' : 'bg-transparent group-hover:bg-background/70'}`}
+      >
         <Icon className="size-[17px]" aria-hidden="true" />
       </span>
-      {!compact ? <span className="min-w-0 flex-1 truncate">{label}</span> : <span className="sr-only">{label}</span>}
-      {!compact && active ? <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" /> : null}
+      {!compact ? (
+        <span className="min-w-0 flex-1 truncate">{label}</span>
+      ) : (
+        <span className="sr-only">{label}</span>
+      )}
+      {!compact && active ? (
+        <span className="size-1.5 rounded-full bg-primary" aria-hidden="true" />
+      ) : null}
     </Link>
   )
 }
@@ -174,7 +194,10 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: Props) {
 
   if (variant === 'sidebar') {
     return (
-      <nav aria-label={translator('nav.label')} className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-2 py-5">
+      <nav
+        aria-label={translator('nav.label')}
+        className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto px-2 py-5"
+      >
         {sidebarGroups.map((group) => (
           <div key={group.label.en}>
             <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground/65">
@@ -182,7 +205,12 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: Props) {
             </p>
             <div className="grid gap-1">
               {group.items.map((item) => (
-                <ItemLink key={item.href} item={item} pathname={pathname} locale={locale} />
+                <ItemLink
+                  key={item.href}
+                  item={item}
+                  pathname={pathname}
+                  locale={locale}
+                />
               ))}
             </div>
           </div>
@@ -200,9 +228,13 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: Props) {
       >
         <DialogHeader className="flex-row items-center justify-between gap-3 px-2 pb-1 pt-0.5">
           <div>
-            <DialogTitle className="text-sm font-semibold">{translator('nav.more')}</DialogTitle>
+            <DialogTitle className="text-sm font-semibold">
+              {translator('nav.more')}
+            </DialogTitle>
             <DialogDescription className="sr-only">
-              {locale === 'en' ? 'Additional areas of your MoneyFlow account.' : 'Outras áreas da tua conta MoneyFlow.'}
+              {locale === 'en'
+                ? 'Additional areas of your MoneyFlow account.'
+                : 'Outras áreas da tua conta MoneyFlow.'}
             </DialogDescription>
           </div>
           <DialogClose
@@ -247,7 +279,9 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: Props) {
                 aria-current={active ? 'page' : undefined}
                 className={`flex min-h-[3.6rem] flex-col items-center justify-center gap-1 rounded-xl px-1 text-[10px] font-semibold transition-colors ${active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
               >
-                <span className={`flex size-8 items-center justify-center rounded-xl ${active ? 'bg-primary/12' : ''}`}>
+                <span
+                  className={`flex size-8 items-center justify-center rounded-xl ${active ? 'bg-primary/12' : ''}`}
+                >
                   <Icon className="size-[18px]" aria-hidden="true" />
                 </span>
                 <span className="max-w-full truncate">{label}</span>
@@ -265,7 +299,9 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: Props) {
               />
             }
           >
-            <span className={`flex size-8 items-center justify-center rounded-xl ${moreOpen || moreActive ? 'bg-primary/12' : ''}`}>
+            <span
+              className={`flex size-8 items-center justify-center rounded-xl ${moreOpen || moreActive ? 'bg-primary/12' : ''}`}
+            >
               <MoreHorizontal className="size-[18px]" aria-hidden="true" />
             </span>
             <span>{translator('nav.more')}</span>
