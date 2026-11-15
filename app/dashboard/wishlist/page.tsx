@@ -54,7 +54,8 @@ export default async function WishlistPage({
       .order('created_at', { ascending: false }),
   ])
 
-  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
   const totalValue = (items ?? [])
     .filter((item) => item.status !== 'purchased')
     .reduce((sum, item) => sum + Number(item.price), 0)
@@ -216,7 +217,12 @@ export default async function WishlistPage({
                             <option value="purchased">Comprado</option>
                           </select>
                         </label>
-                        <Button type="submit" size="sm" variant="outline" className="min-h-11">
+                        <Button
+                          type="submit"
+                          size="sm"
+                          variant="outline"
+                          className="min-h-11"
+                        >
                           Guardar estado
                         </Button>
                       </form>
