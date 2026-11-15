@@ -12,11 +12,14 @@ import { updateRecurringExpense } from '../../actions'
 
 export const dynamic = 'force-dynamic'
 
+import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
+
 export default async function EditRecurringExpensePage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
+  await redirectIfGeneralFinanceContext()
   const { id } = await params
   const supabase = await createClient()
   const {
