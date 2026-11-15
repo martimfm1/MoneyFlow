@@ -49,7 +49,8 @@ export default async function AnalyticsPage() {
       .order('occurred_at', { ascending: true }),
   ])
 
-  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
   const monthlyMap = new Map<
     string,
     { label: string; income: number; expense: number }
@@ -162,8 +163,10 @@ export default async function AnalyticsPage() {
         <p className="mt-4 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
           {transactionsInOtherCurrencies} movimento
           {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
-          {transactionsInOtherCurrencies === 1 ? ' moeda foi' : 's moedas foram'}
-          {' '}excluído{transactionsInOtherCurrencies === 1 ? '' : 's'} destes
+          {transactionsInOtherCurrencies === 1
+            ? ' moeda foi'
+            : 's moedas foram'}{' '}
+          excluído{transactionsInOtherCurrencies === 1 ? '' : 's'} destes
           cálculos. Não é feita conversão automática.
         </p>
       ) : null}
@@ -185,7 +188,8 @@ export default async function AnalyticsPage() {
             <h2 className="mt-1 text-lg font-semibold">O que os dados dizem</h2>
           </div>
           <span className="text-sm text-[hsl(var(--muted-foreground))]">
-            {(transactions?.length ?? 0) - transactionsInOtherCurrencies} movimentos
+            {(transactions?.length ?? 0) - transactionsInOtherCurrencies}{' '}
+            movimentos
           </span>
         </div>
         <div className="mt-5 grid gap-3 md:grid-cols-3">
