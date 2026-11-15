@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { CalendarIcon, ChevronDown, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -35,6 +35,7 @@ type Props = { currency: string; accounts: AccountOption[] }
 
 export function RecurringExpenseCreateDialog({ currency, accounts }: Props) {
   const [open, setOpen] = useState(false)
+  const categoryListId = useId()
   const [frequency, setFrequency] =
     useState<(typeof frequencies)[number]['value']>('monthly')
   const [date, setDate] = useState(new Date())
@@ -61,8 +62,21 @@ export function RecurringExpenseCreateDialog({ currency, accounts }: Props) {
               />
             </label>
             <label className="grid gap-2 text-sm font-medium">
-              Fornecedor
-              <Input name="provider" maxLength={120} placeholder="Empresa" />
+              Categoria / fornecedor
+              <Input
+                name="provider"
+                maxLength={120}
+                placeholder="Subscrições, telemóvel, serviços..."
+                list={categoryListId}
+              />
+              <datalist id={categoryListId}>
+                <option value="Subscrições" />
+                <option value="Telemóvel" />
+                <option value="Alojamento e infraestrutura" />
+                <option value="Software e ferramentas" />
+                <option value="Serviços" />
+                <option value="Outro encargo" />
+              </datalist>
             </label>
           </div>
           <label className="grid gap-2 text-sm font-medium">
