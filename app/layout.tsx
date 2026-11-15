@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { RegisterServiceWorker } from '@/components/pwa/register-sw'
 import { QueryToaster } from '@/components/query-toaster'
+import { ThemeProvider } from '@/components/theme/theme-provider'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeLocale } from '@/lib/i18n'
 import { Geist } from 'next/font/google'
@@ -68,6 +69,7 @@ export default async function RootLayout({
       className={cn('font-sans', geist.variable)}
     >
       <body>
+        <ThemeProvider />
         <RegisterServiceWorker />
         <QueryToaster />
         {children}

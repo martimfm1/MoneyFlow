@@ -84,17 +84,28 @@ export async function MonthlyOverview({
 
   return (
     <section className="mt-7 lg:mt-10" aria-labelledby="monthly-overview-title">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h2 id="monthly-overview-title" className="text-base font-semibold">
-          Este mês
-        </h2>
-        <span className="text-xs text-[hsl(var(--muted-foreground))]">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+            Acompanhamento
+          </p>
+          <h2
+            id="monthly-overview-title"
+            className="mt-1 text-lg font-semibold tracking-tight"
+          >
+            Este mês
+          </h2>
+        </div>
+        <span className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/70 px-3 py-1.5 text-xs font-semibold text-muted-foreground">
+          <span
+            className={`size-1.5 rounded-full ${health !== null && health >= 60 ? 'bg-[hsl(var(--success))]' : 'bg-[hsl(var(--warning))]'}`}
+          />
           Saúde {health === null ? '—' : `${health}/100`}
         </span>
       </div>
 
-      <div className="grid gap-2 sm:grid-cols-3">
-        <article className="min-w-0 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
+      <div className="grid gap-3 sm:grid-cols-3">
+        <article className="min-w-0 rounded-2xl border border-border/80 bg-card/75 p-4 shadow-sm transition-colors hover:bg-card">
           <div className="flex items-center gap-2 text-xs font-medium text-[hsl(var(--muted-foreground))]">
             <TrendingUp className="size-4" aria-hidden="true" /> Receitas
           </div>
@@ -102,7 +113,7 @@ export async function MonthlyOverview({
             +{formatCurrency(income, currency)}
           </p>
         </article>
-        <article className="min-w-0 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
+        <article className="min-w-0 rounded-2xl border border-border/80 bg-card/75 p-4 shadow-sm transition-colors hover:bg-card">
           <div className="flex items-center gap-2 text-xs font-medium text-[hsl(var(--muted-foreground))]">
             <TrendingDown className="size-4" aria-hidden="true" /> Despesas
           </div>
@@ -110,7 +121,7 @@ export async function MonthlyOverview({
             -{formatCurrency(expenses, currency)}
           </p>
         </article>
-        <article className="min-w-0 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm">
+        <article className="min-w-0 rounded-2xl border border-border/80 bg-card/75 p-4 shadow-sm transition-colors hover:bg-card">
           <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">
             Poupado
           </p>
@@ -133,7 +144,7 @@ export async function MonthlyOverview({
         </p>
       ) : null}
 
-      <details className="mt-3 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] px-4 py-3 shadow-sm">
+      <details className="mt-3 rounded-2xl border border-border/80 bg-card/60 px-4 py-3 shadow-sm">
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
           <span>Saúde financeira</span>
           <span className="inline-flex items-center gap-1 text-xs text-[hsl(var(--muted-foreground))]">

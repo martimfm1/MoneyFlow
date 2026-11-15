@@ -2,9 +2,9 @@ import Link from 'next/link'
 import {
   ArrowDownLeft,
   ArrowUpRight,
+  ArrowRight,
   CalendarClock,
   ChevronRight,
-  LogOut,
   Plus,
   Target,
   Wallet,
@@ -15,7 +15,6 @@ import { Button } from '@/components/ui/button'
 import { formatCurrency, formatShortDate } from '@/lib/format'
 import { MonthlyOverview } from '@/components/dashboard/monthly-overview'
 import { WishlistPreview } from '@/components/dashboard/wishlist-preview'
-import { signOut } from './actions'
 import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
@@ -89,273 +88,408 @@ export default async function DashboardPage() {
   const firstName = profile.display_name?.trim()?.split(/\s+/)[0] ?? ''
 
   return (
-    <main className="min-h-screen pb-24">
-      <div className="moneyflow-shell py-5 sm:py-8 lg:py-10">
-        <header className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="truncate text-sm text-[hsl(var(--muted-foreground))]">
-              Olá{firstName ? `, ${firstName}` : ''}
-            </p>
-            <h1 className="mt-0.5 text-2xl font-semibold tracking-tight sm:text-3xl">
-              O teu dinheiro
-            </h1>
-          </div>
-          <form action={signOut}>
-            <Button
-              type="submit"
-              variant="ghost"
-              size="icon"
-              aria-label="Terminar sessão"
-            >
-              <LogOut className="size-4" aria-hidden="true" />
-            </Button>
-          </form>
-        </header>
+    <div className="moneyflow-shell py-6 sm:py-8 lg:py-10">
+      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <div className="min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+            O teu espaço financeiro
+          </p>
+          <h1 className="mt-2 text-[clamp(1.8rem,4vw,2.65rem)] font-semibold tracking-[-0.045em] text-foreground">
+            Olá{firstName ? `, ${firstName}` : ''}.
+          </h1>
+          <p className="mt-1.5 max-w-xl text-sm leading-6 text-muted-foreground">
+            Uma visão simples do que entra, do que sai e do que estás a
+            construir.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline" size="sm" className="bg-card/70">
+            <Link href="/dashboard/analytics">
+              Ver análise <ArrowRight className="size-4" aria-hidden="true" />
+            </Link>
+          </Button>
+          <Button asChild size="sm" className="shadow-lg shadow-primary/10">
+            <Link href="/dashboard/transactions/new">
+              <Plus className="size-4" aria-hidden="true" />
+              Novo movimento
+            </Link>
+          </Button>
+        </div>
+      </header>
 
-        <section className="mt-5 rounded-[1.35rem] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6 lg:p-8">
-          <div className="flex items-end justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-xs font-medium uppercase tracking-wide text-[hsl(var(--muted-foreground))]">
-                Saldo total
-              </p>
-              <p className="mt-1 truncate text-[clamp(2.5rem,10vw,4rem)] font-semibold tracking-tight tabular-nums">
-                {formatCurrency(totalBalance, currency)}
-              </p>
-              {accountsInOtherCurrencies > 0 ? (
-                <p className="mt-2 max-w-lg text-xs leading-5 text-[hsl(var(--muted-foreground))]">
-                  {accountsInOtherCurrencies} conta
-                  {accountsInOtherCurrencies === 1 ? '' : 's'} noutra
-                  {accountsInOtherCurrencies === 1 ? ' moeda' : 's moedas'} não
-                  incluída{accountsInOtherCurrencies === 1 ? '' : 's'} neste
-                  total. Não é feita conversão automática.
-                </p>
-              ) : null}
-            </div>
-            <Button
-              asChild
-              size="icon"
-              className="size-12 shrink-0 rounded-full lg:size-default lg:rounded-[var(--radius-md)]"
+      <section
+        className="mt-7 grid gap-3 lg:grid-cols-[minmax(0,1.55fr)_minmax(17rem,0.75fr)]"
+        aria-label="Resumo do saldo"
+      >
+        <article
+          className="relative isolate min-h-[15.5rem] overflow-hidden rounded-[1.65rem] border border-white/10 p-5 text-white shadow-[0_24px_70px_hsl(225_35%_2%/0.26)] sm:p-7"
+          style={{
+            background:
+              'linear-gradient(118deg, #151e1c 0%, #1a2925 58%, #203b32 100%)',
+          }}
+        >
+          <div className="pointer-events-none absolute -right-14 -top-28 -z-10 size-80 rounded-full border border-white/10" />
+          <div className="pointer-events-none absolute -right-2 -top-16 -z-10 size-56 rounded-full border border-white/10" />
+          <div className="pointer-events-none absolute -bottom-24 right-20 -z-10 size-64 rounded-full bg-primary/10 blur-3xl" />
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/65">
+              Saldo total
+            </p>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-[11px] font-medium text-white/75">
+              <span className="size-1.5 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary))]" />
+              {financialContext.name}
+            </span>
+          </div>
+          <p className="mt-4 break-words text-[clamp(2.25rem,6vw,4rem)] font-semibold tracking-[-0.055em] tabular-nums">
+            {formatCurrency(totalBalance, currency)}
+          </p>
+          <p className="mt-2 max-w-md text-xs leading-5 text-white/55">
+            {accountsInPrimaryCurrency.length
+              ? `Com base em ${accountsInPrimaryCurrency.length} ${accountsInPrimaryCurrency.length === 1 ? 'conta ativa' : 'contas ativas'} em ${currency}.`
+              : 'Adiciona uma conta para começares a acompanhar o teu saldo.'}
+            {accountsInOtherCurrencies > 0
+              ? ` ${accountsInOtherCurrencies} ${accountsInOtherCurrencies === 1 ? 'conta está' : 'contas estão'} noutra moeda e não ${accountsInOtherCurrencies === 1 ? 'está incluída' : 'estão incluídas'} neste total.`
+              : ''}
+          </p>
+          <div className="mt-7 flex flex-wrap items-center gap-2">
+            <Link
+              href="/dashboard/accounts"
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-white px-3.5 text-xs font-semibold text-[#15231d] transition hover:bg-white/90"
             >
+              Ver contas <ArrowRight className="size-3.5" aria-hidden="true" />
+            </Link>
+            <Link
+              href="/dashboard/transactions"
+              className="inline-flex min-h-10 items-center rounded-lg border border-white/15 px-3.5 text-xs font-semibold text-white/80 transition hover:bg-white/10 hover:text-white"
+            >
+              Histórico
+            </Link>
+          </div>
+        </article>
+
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-1">
+          <Link
+            href="/dashboard/accounts"
+            className="group flex min-h-[7.25rem] flex-col justify-between rounded-2xl border border-border/80 bg-card/80 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md sm:p-5"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Wallet className="size-[17px]" aria-hidden="true" />
+              </span>
+              <ChevronRight
+                className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </div>
+            <div>
+              <p className="text-2xl font-semibold tracking-tight tabular-nums">
+                {accounts?.length ?? 0}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Contas ativas
+              </p>
+            </div>
+          </Link>
+          <Link
+            href="/dashboard/goals"
+            className="group flex min-h-[7.25rem] flex-col justify-between rounded-2xl border border-border/80 bg-card/80 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md sm:p-5"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="flex size-9 items-center justify-center rounded-xl bg-[hsl(var(--info)/0.12)] text-[hsl(var(--info))]">
+                <Target className="size-[17px]" aria-hidden="true" />
+              </span>
+              <ChevronRight
+                className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                aria-hidden="true"
+              />
+            </div>
+            <div>
+              <p className="text-2xl font-semibold tracking-tight tabular-nums">
+                {goals?.length ?? 0}
+              </p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Objetivos em destaque
+              </p>
+            </div>
+          </Link>
+        </div>
+      </section>
+
+      <MonthlyOverview currency={currency} contextId={financialContext.id} />
+
+      <div className="mt-8 grid items-start gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.85fr)]">
+        <div className="min-w-0 space-y-8">
+          <section id="transactions" aria-labelledby="transactions-title">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  Atividade
+                </p>
+                <h2
+                  id="transactions-title"
+                  className="mt-1 text-lg font-semibold tracking-tight"
+                >
+                  Movimentos recentes
+                </h2>
+              </div>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/dashboard/transactions">
+                  Ver todos{' '}
+                  <ChevronRight className="size-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
+            {!transactions?.length ? (
               <Link
                 href="/dashboard/transactions/new"
-                aria-label="Adicionar movimento"
+                className="flex min-h-28 items-center justify-between rounded-2xl border border-dashed border-border bg-card/60 px-5 transition-colors hover:border-primary/40 hover:bg-card"
               >
-                <Plus className="size-5" aria-hidden="true" />
-                <span className="hidden lg:inline">Adicionar movimento</span>
+                <span>
+                  <span className="block text-sm font-semibold">
+                    Ainda não há movimentos
+                  </span>
+                  <span className="mt-1 block text-xs text-muted-foreground">
+                    Regista a primeira receita ou despesa.
+                  </span>
+                </span>
+                <span className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Plus className="size-4" aria-hidden="true" />
+                </span>
               </Link>
-            </Button>
-          </div>
-          <Link
-            href="#accounts"
-            className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))] lg:hidden"
-          >
-            Ver contas <ChevronRight className="size-4" aria-hidden="true" />
-          </Link>
-        </section>
+            ) : (
+              <div className="overflow-hidden rounded-2xl border border-border/80 bg-card/75 shadow-sm">
+                <div className="divide-y divide-border/70">
+                  {transactions.map((transaction) => {
+                    const isIncome = transaction.transaction_type === 'income'
+                    const account = Array.isArray(transaction.accounts)
+                      ? transaction.accounts[0]
+                      : transaction.accounts
+                    return (
+                      <Link
+                        key={transaction.id}
+                        href={`/dashboard/transactions/${transaction.id}`}
+                        className="group flex min-h-[4.65rem] items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/45 sm:px-5"
+                      >
+                        <span
+                          className={`inline-flex size-10 shrink-0 items-center justify-center rounded-xl ${isIncome ? 'bg-[hsl(var(--success)/0.11)] text-[hsl(var(--success))]' : 'bg-[hsl(var(--danger)/0.1)] text-[hsl(var(--danger))]'}`}
+                        >
+                          {isIncome ? (
+                            <ArrowDownLeft
+                              className="size-[17px]"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <ArrowUpRight
+                              className="size-[17px]"
+                              aria-hidden="true"
+                            />
+                          )}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold">
+                            {transaction.description ||
+                              (isIncome ? 'Receita' : 'Despesa')}
+                          </p>
+                          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                            {account?.name ?? 'Conta'}{' '}
+                            <span className="px-1 text-border">·</span>{' '}
+                            {formatShortDate(transaction.occurred_at)}
+                          </p>
+                        </div>
+                        <p
+                          className={`shrink-0 text-sm font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}
+                        >
+                          {isIncome ? '+' : '−'}
+                          {formatCurrency(
+                            Number(transaction.amount),
+                            account?.currency_code || currency,
+                          )}
+                        </p>
+                        <ChevronRight
+                          className="hidden size-4 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5 sm:block"
+                          aria-hidden="true"
+                        />
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </section>
 
-        <MonthlyOverview currency={currency} contextId={financialContext.id} />
+          <WishlistPreview
+            currency={currency}
+            contextId={financialContext.id}
+          />
+        </div>
 
-        <section id="accounts" className="mt-8 lg:mt-10">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-base font-semibold">Contas</h2>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/dashboard/accounts">
-                Ver todas <ChevronRight className="size-4" aria-hidden="true" />
-              </Link>
-            </Button>
-          </div>
-          {accounts?.length ? (
-            <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-              {accounts.map((account) => (
-                <Link
-                  key={account.id}
-                  href={`/dashboard/accounts/${account.id}`}
-                  className="min-w-0 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 shadow-sm transition-colors hover:bg-[hsl(var(--surface-muted))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+        <aside className="min-w-0 space-y-8">
+          <section id="accounts" aria-labelledby="accounts-title">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  Onde está o teu dinheiro
+                </p>
+                <h2
+                  id="accounts-title"
+                  className="mt-1 text-lg font-semibold tracking-tight"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
-                      <Wallet className="size-4" aria-hidden="true" />
+                  Contas
+                </h2>
+              </div>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/dashboard/accounts">
+                  Gerir <ChevronRight className="size-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
+            {accounts?.length ? (
+              <div className="grid gap-2">
+                {accounts.slice(0, 4).map((account) => (
+                  <Link
+                    key={account.id}
+                    href={`/dashboard/accounts/${account.id}`}
+                    className="group flex min-w-0 items-center gap-3 rounded-2xl border border-border/80 bg-card/75 p-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
+                  >
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-colors group-hover:bg-primary/10 group-hover:text-primary">
+                      <Wallet className="size-[17px]" aria-hidden="true" />
                     </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate font-medium">{account.name}</p>
-                      <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-semibold">
+                        {account.name}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">
                         {accountTypeLabels[account.account_type] ??
                           account.account_type}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="mt-4 text-xl font-semibold tabular-nums">
-                    {formatCurrency(
-                      Number(account.balance),
-                      account.currency_code || currency,
-                    )}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <Link
-              href="/dashboard/accounts/new"
-              className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4"
-            >
-              <span className="font-medium">Criar a primeira conta</span>
-              <Plus className="size-4" aria-hidden="true" />
-            </Link>
-          )}
-        </section>
-
-        <section className="mt-8 lg:mt-10">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-base font-semibold">Movimentos</h2>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/dashboard/transactions">
-                Ver todos <ChevronRight className="size-4" aria-hidden="true" />
-              </Link>
-            </Button>
-          </div>
-          {!transactions?.length ? (
-            <Link
-              href="/dashboard/transactions/new"
-              className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4"
-            >
-              <span className="font-medium">Adicionar primeiro movimento</span>
-              <Plus className="size-4" aria-hidden="true" />
-            </Link>
-          ) : (
-            <div className="mt-3 overflow-hidden rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] shadow-sm">
-              <div className="divide-y">
-                {transactions.map((transaction) => {
-                  const isIncome = transaction.transaction_type === 'income'
-                  const account = Array.isArray(transaction.accounts)
-                    ? transaction.accounts[0]
-                    : transaction.accounts
-                  return (
-                    <Link
-                      key={transaction.id}
-                      href={`/dashboard/transactions/${transaction.id}`}
-                      className="flex min-h-16 items-center gap-3 px-3 py-3 transition-colors active:bg-[hsl(var(--surface-muted))] sm:px-4"
-                    >
-                      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))]">
-                        {isIncome ? (
-                          <ArrowDownLeft
-                            className="size-4"
-                            aria-hidden="true"
-                          />
-                        ) : (
-                          <ArrowUpRight className="size-4" aria-hidden="true" />
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-right">
+                      <span className="block text-sm font-semibold tabular-nums">
+                        {formatCurrency(
+                          Number(account.balance),
+                          account.currency_code || currency,
                         )}
                       </span>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">
-                          {transaction.description ||
-                            (isIncome ? 'Receita' : 'Despesa')}
+                      <span className="mt-0.5 block text-[10px] text-muted-foreground">
+                        {account.currency_code || currency}
+                      </span>
+                    </span>
+                  </Link>
+                ))}
+                {accounts.length > 4 ? (
+                  <Link
+                    href="/dashboard/accounts"
+                    className="rounded-xl px-3 py-2 text-center text-xs font-semibold text-primary transition-colors hover:bg-primary/5"
+                  >
+                    +{accounts.length - 4} contas adicionais
+                  </Link>
+                ) : null}
+              </div>
+            ) : (
+              <Link
+                href="/dashboard/accounts/new"
+                className="flex min-h-24 items-center justify-between rounded-2xl border border-dashed border-border bg-card/60 px-4 hover:border-primary/40"
+              >
+                <span className="text-sm font-semibold">
+                  Criar a primeira conta
+                </span>
+                <Plus className="size-4 text-primary" aria-hidden="true" />
+              </Link>
+            )}
+          </section>
+
+          <section id="goals" aria-labelledby="goals-title">
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                  A construir
+                </p>
+                <h2
+                  id="goals-title"
+                  className="mt-1 text-lg font-semibold tracking-tight"
+                >
+                  Os teus objetivos
+                </h2>
+              </div>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/dashboard/goals">
+                  Ver todos{' '}
+                  <ChevronRight className="size-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
+            {!goals?.length ? (
+              <Link
+                href="/dashboard/goals/new"
+                className="flex min-h-24 items-center justify-between rounded-2xl border border-dashed border-border bg-card/60 px-4 hover:border-primary/40"
+              >
+                <span className="text-sm font-semibold">
+                  Define o teu primeiro objetivo
+                </span>
+                <Target className="size-4 text-primary" aria-hidden="true" />
+              </Link>
+            ) : (
+              <div className="grid gap-2">
+                {goals.map((goal) => {
+                  const current = Number(goal.current_amount)
+                  const target = Number(goal.target_amount)
+                  const progress =
+                    target > 0
+                      ? Math.min(100, Math.round((current / target) * 100))
+                      : 0
+                  return (
+                    <Link
+                      key={goal.id}
+                      href={`/dashboard/goals/${goal.id}`}
+                      className="rounded-2xl border border-border/80 bg-card/75 p-4 shadow-sm transition-colors hover:border-primary/30 hover:bg-card"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="truncate text-sm font-semibold">
+                          {goal.name}
                         </p>
-                        <p className="truncate text-xs text-[hsl(var(--muted-foreground))]">
-                          {account?.name ?? 'Conta'} ·{' '}
-                          {formatShortDate(transaction.occurred_at)}
-                        </p>
+                        <span className="text-xs font-semibold tabular-nums text-primary">
+                          {progress}%
+                        </span>
                       </div>
-                      <p
-                        className={`shrink-0 text-sm font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}
-                      >
-                        {isIncome ? '+' : '-'}
-                        {formatCurrency(
-                          Number(transaction.amount),
-                          account?.currency_code || currency,
-                        )}
-                      </p>
+                      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted">
+                        <div
+                          className="h-full rounded-full bg-primary transition-[width]"
+                          style={{ width: `${progress}%` }}
+                        />
+                      </div>
+                      <div className="mt-2.5 flex items-center justify-between gap-3 text-xs text-muted-foreground">
+                        <span>{formatCurrency(current, currency)}</span>
+                        <span>{formatCurrency(target, currency)}</span>
+                      </div>
                     </Link>
                   )
                 })}
               </div>
-            </div>
-          )}
-        </section>
+            )}
+          </section>
 
-        <section className="mt-8 lg:mt-10">
-          <div className="flex items-center justify-between gap-3">
-            <h2 className="text-base font-semibold">Objetivos</h2>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/dashboard/goals">
-                Ver todos <ChevronRight className="size-4" aria-hidden="true" />
-              </Link>
-            </Button>
-          </div>
-          {!goals?.length ? (
-            <Link
-              href="/dashboard/goals/new"
-              className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4"
-            >
-              <span className="font-medium">Criar primeiro objetivo</span>
-              <Target className="size-4" aria-hidden="true" />
-            </Link>
-          ) : (
-            <div className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {goals.map((goal) => {
-                const current = Number(goal.current_amount)
-                const target = Number(goal.target_amount)
-                const progress =
-                  target > 0
-                    ? Math.min(100, Math.round((current / target) * 100))
-                    : 0
-                return (
-                  <Link
-                    key={goal.id}
-                    href={`/dashboard/goals/${goal.id}`}
-                    className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 transition-colors active:bg-[hsl(var(--surface-muted))]"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="truncate font-medium">{goal.name}</p>
-                      <span className="text-xs font-semibold tabular-nums">
-                        {progress}%
-                      </span>
-                    </div>
-                    <div className="mt-3 h-2 overflow-hidden rounded-full bg-[hsl(var(--surface-muted))]">
-                      <div
-                        className="h-full rounded-full bg-[hsl(var(--primary))]"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
-                    <div className="mt-2 flex items-center justify-between text-xs text-[hsl(var(--muted-foreground))]">
-                      <span>{formatCurrency(current, currency)}</span>
-                      <span>{formatCurrency(target, currency)}</span>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          )}
-        </section>
-
-        <WishlistPreview currency={currency} contextId={financialContext.id} />
-
-        <section
-          id="add"
-          className="mt-8 hidden gap-3 lg:grid lg:grid-cols-4 lg:mt-10"
-        >
-          {[
-            ['Despesa', '/dashboard/transactions/new?type=expense', Plus],
-            [
-              'Receita',
-              '/dashboard/transactions/new?type=income',
-              ArrowDownLeft,
-            ],
-            ['Objetivo', '/dashboard/goals/new', Target],
-            ['Recorrente', '/dashboard/recurring', CalendarClock],
-          ].map(([title, href, Icon]) => (
-            <Link
-              key={title as string}
-              href={href as string}
-              className="flex items-center gap-3 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-4 transition hover:-translate-y-0.5 hover:shadow-sm"
-            >
-              <span className="inline-flex size-9 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))]">
-                <Icon className="size-4" aria-hidden="true" />
+          <Link
+            href="/dashboard/recurring"
+            className="group flex items-center gap-3 rounded-2xl border border-border/80 bg-card/65 p-4 transition-colors hover:border-primary/30 hover:bg-card"
+          >
+            <span className="flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <CalendarClock className="size-[17px]" aria-hidden="true" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold">
+                Movimentos recorrentes
               </span>
-              <span className="font-medium">{title as string}</span>
-            </Link>
-          ))}
-        </section>
+              <span className="mt-0.5 block text-xs text-muted-foreground">
+                Planeia receitas e despesas futuras
+              </span>
+            </span>
+            <ArrowRight
+              className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </Link>
+        </aside>
       </div>
-    </main>
+    </div>
   )
 }
