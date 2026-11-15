@@ -126,7 +126,7 @@ begin
   end if;
 
   v_anchor_day := greatest(1, least(31, coalesce(p_anchor_day, extract(day from p_current_date)::integer)));
-  v_days_in_month := extract(day from (v_month_start + interval '1 month - 1 day'))::integer;
+  v_days_in_month := extract(day from (v_month_start + interval '1 month' - interval '1 day'))::integer;
 
   return v_month_start + (least(v_anchor_day, v_days_in_month) - 1);
 end;
@@ -180,7 +180,7 @@ begin
   end if;
 
   if p_enabled then
-    while v_next_date <= v_today loop
+    while v_next_date < v_today loop
       v_next_date := public.advance_recurring_date(
         v_next_date,
         v_frequency,
