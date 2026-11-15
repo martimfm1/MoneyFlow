@@ -40,17 +40,17 @@ export default async function AccountsPage({
   const [{ data: profile }, { data: accounts }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('currency_code')
+      .select('currency_code, active_finance_context')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
       .from('accounts')
-      .select('id, name, account_type, balance, currency_code, is_active')
+      .select('id, name, account_type, balance, currency_code, is_active, finance_context')
       .eq('user_id', user.id)
       .order('is_active', { ascending: false })
       .order('created_at'),
   ])
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = profile?.currency_code ?? 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
   const rows = accounts ?? []
   const active = rows.filter((item) => item.is_active)
   const activeInPrimaryCurrency = active.filter(
@@ -74,11 +74,15 @@ export default async function AccountsPage({
             Organiza os saldos dos teus bancos, cartões, dinheiro e poupanças.
           </p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/accounts/new">
-            <Plus className="size-4" aria-hidden="true" /> Nova conta
-          </Link>
-        </Button>
+        {readOnly ? (
+          <Badge variant="outline">Geral · leitura</Badge>
+        ) : (
+          <Button asChild>
+            <Link href="/dashboard/accounts/new">
+              <Plus className="size-4" aria-hidden="true" /> Nova conta
+            </Link>
+          </Button>
+        )}
       </header>
       {params.toast ? (
         <p
@@ -157,6 +161,11 @@ export default async function AccountsPage({
                     <p className="mt-1 text-sm text-muted-foreground">
                       {labels[account.account_type] ?? account.account_type}
                     </p>
+                    {readOnly ? (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {account.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                      </p>
+                    ) : null}
                   </div>
                   <Badge
                     variant={account.is_active ? 'secondary' : 'outline'}
@@ -175,34 +184,36 @@ export default async function AccountsPage({
                   </p>
                 </div>
 
-                <div className="mt-5 flex flex-wrap items-center gap-2 border-t pt-4">
-                  <Button asChild size="sm" variant="outline">
-                    <Link href={`/dashboard/accounts/${account.id}/edit`}>
-                      <Pencil className="size-4" aria-hidden="true" />
-                      Editar
-                    </Link>
-                  </Button>
-                  <form action={toggleAccountStatus}>
-                    <input type="hidden" name="id" value={account.id} />
-                    <input
-                      type="hidden"
-                      name="isActive"
-                      value={account.is_active ? 'false' : 'true'}
-                    />
-                    <Button type="submit" size="sm" variant="ghost">
-                      {account.is_active ? (
-                        <Archive className="size-4" aria-hidden="true" />
-                      ) : (
-                        <ArchiveRestore
-                          className="size-4"
-                          aria-hidden="true"
-                        />
-                      )}
-                      {account.is_active ? 'Arquivar' : 'Reativar'}
+                {!readOnly ? (
+                  <div className="mt-5 flex flex-wrap items-center gap-2 border-t pt-4">
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/dashboard/accounts/${account.id}/edit`}>
+                        <Pencil className="size-4" aria-hidden="true" />
+                        Editar
+                      </Link>
                     </Button>
-                  </form>
-                  <DeleteAccountButton id={account.id} name={account.name} />
-                </div>
+                    <form action={toggleAccountStatus}>
+                      <input type="hidden" name="id" value={account.id} />
+                      <input
+                        type="hidden"
+                        name="isActive"
+                        value={account.is_active ? 'false' : 'true'}
+                      />
+                      <Button type="submit" size="sm" variant="ghost">
+                        {account.is_active ? (
+                          <Archive className="size-4" aria-hidden="true" />
+                        ) : (
+                          <ArchiveRestore
+                            className="size-4"
+                            aria-hidden="true"
+                          />
+                        )}
+                        {account.is_active ? 'Arquivar' : 'Reativar'}
+                      </Button>
+                    </form>
+                    <DeleteAccountButton id={account.id} name={account.name} />
+                  </div>
+                ) : null}
               </article>
             ))}
           </div>
@@ -216,11 +227,13 @@ export default async function AccountsPage({
             <EmptyTitle>Sem contas</EmptyTitle>
             <EmptyDescription>Adiciona a primeira conta.</EmptyDescription>
           </EmptyHeader>
-          <EmptyContent>
-            <Button asChild>
-              <Link href="/dashboard/accounts/new">Criar conta</Link>
-            </Button>
-          </EmptyContent>
+          {!readOnly ? (
+            <EmptyContent>
+              <Button asChild>
+                <Link href="/dashboard/accounts/new">Criar conta</Link>
+              </Button>
+            </EmptyContent>
+          ) : null}
         </Empty>
       )}
     </main>
