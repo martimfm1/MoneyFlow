@@ -1,4 +1,7 @@
--- Automatic recurring postings and secure Silentra for Barbers revenue sync.
+-- Automatic recurring postings.
+-- Supabase Vault stores the server-only cron secret.
+create extension if not exists supabase_vault with schema vault;
+
 -- Existing recurring entries remain planning-only until the owner explicitly enables posting.
 -- New entries are enabled by the application when created.
 
