@@ -40,11 +40,11 @@ export default async function AccountDetailPage({
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const [{ data: account }, { data: transactions }] = await Promise.all([
+  const [{ data: account }, { data: transactions }, { data: profile }] = await Promise.all([
     supabase
       .from('accounts')
       .select(
-        'id, name, account_type, balance, currency_code, is_active, created_at, updated_at',
+        'id, name, account_type, balance, currency_code, is_active, created_at, updated_at, finance_context',
       )
       .eq('id', id)
       .eq('user_id', user.id)
@@ -58,11 +58,16 @@ export default async function AccountDetailPage({
       .eq('user_id', user.id)
       .order('occurred_at', { ascending: false })
       .limit(50),
+    supabase
+      .from('profiles')
+      .select('active_finance_context')
+      .eq('id', user.id)
+      .maybeSingle(),
   ])
 
   if (!account) notFound()
 
-  const currency = account.currency_code || 'EUR'
+  const currency = account.currency_code || 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
   const items = transactions ?? []
   const incomeTotal = items
     .filter((item) => item.transaction_type === 'income')
@@ -79,14 +84,16 @@ export default async function AccountDetailPage({
             <ArrowLeft className="size-4" /> Contas
           </Link>
         </Button>
-        <div className="flex items-center gap-2">
-          <Button asChild size="sm" variant="outline">
-            <Link href={`/dashboard/accounts/${account.id}/edit`}>
-              <Pencil className="size-4" /> Editar
-            </Link>
-          </Button>
-          <DeleteAccountButton id={account.id} name={account.name} />
-        </div>
+        {!readOnly ? (
+          <div className="flex items-center gap-2">
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/dashboard/accounts/${account.id}/edit`}>
+                <Pencil className="size-4" /> Editar
+              </Link>
+            </Button>
+            <DeleteAccountButton id={account.id} name={account.name} />
+          </div>
+        ) : null}
       </div>
 
       {query.error ? (
