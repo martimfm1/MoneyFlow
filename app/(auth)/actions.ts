@@ -20,29 +20,18 @@ export async function signIn(
   if (!parsed.success)
     return { error: parsed.error.issues[0]?.message ?? 'Dados inválidos.' }
 
-  const remember = formData.get('remember') === 'on'
-  const supabase = await createClient({ remember })
+  const supabase = await createClient({ remember: true })
   const { error } = await supabase.auth.signInWithPassword(parsed.data)
 
   if (!error) {
     const cookieStore = await cookies()
-    if (remember) {
-      cookieStore.set(REMEMBER_COOKIE, '1', {
-        httpOnly: true,
-        maxAge: SESSION_MAX_AGE,
-        path: '/',
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-      })
-    } else {
-      cookieStore.set(REMEMBER_COOKIE, '', {
-        httpOnly: true,
-        maxAge: 0,
-        path: '/',
-        sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
-      })
-    }
+    cookieStore.set(REMEMBER_COOKIE, '1', {
+      httpOnly: true,
+      maxAge: SESSION_MAX_AGE,
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    })
   }
 
   if (error)
@@ -81,6 +70,16 @@ export async function signUp(
   if (error)
     return { error: 'Não foi possível criar a conta. Tenta novamente.' }
 
-  if (data.session) redirect('/onboarding')
+  if (data.session) {
+    const cookieStore = await cookies()
+    cookieStore.set(REMEMBER_COOKIE, '1', {
+      httpOnly: true,
+      maxAge: SESSION_MAX_AGE,
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    })
+    redirect('/onboarding')
+  }
   redirect('/login?message=Confirma%20o%20teu%20email%20para%20continuar.')
 }
