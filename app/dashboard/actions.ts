@@ -31,7 +31,6 @@ export async function signOut() {
   redirect('/login')
 }
 
-
 export async function switchFinancialContext(formData: FormData) {
   const value = formData.get('slug')
   if (value !== 'personal' && value !== 'silentra') {
