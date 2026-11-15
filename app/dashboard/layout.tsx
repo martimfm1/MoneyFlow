@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { ArrowUpRight, Plus } from 'lucide-react'
+import { Plus, Settings } from 'lucide-react'
 import { DashboardNavigation } from './navigation'
 import { SilentraCredit } from '@/components/silentra-credit'
 import { QuickAdd } from '@/components/dashboard/quick-add'
@@ -122,7 +122,7 @@ export default async function DashboardLayout({
                   aria-label={t('nav.settings')}
                   className="inline-flex size-9 items-center justify-center rounded-lg border border-border/70 bg-card/70 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
                 >
-                  <ArrowUpRight className="size-4" aria-hidden="true" />
+                  <Settings className="size-4" aria-hidden="true" />
                 </Link>
               </div>
             </div>
