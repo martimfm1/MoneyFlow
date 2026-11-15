@@ -47,7 +47,7 @@ export default async function DashboardLayout({
       </a>
 
       <div className="mx-auto min-h-screen max-w-[1720px] lg:grid lg:grid-cols-[16.5rem_minmax(0,1fr)]">
-        <aside className="hidden border-r border-sidebar-border/80 bg-sidebar/70 lg:block">
+        <aside className="hidden border-r border-sidebar-border bg-sidebar lg:block">
           <div className="sticky top-0 flex h-screen flex-col px-4 py-6">
             <Link
               href="/dashboard"
@@ -70,7 +70,7 @@ export default async function DashboardLayout({
               </span>
             </Link>
 
-            <div className="mx-2 mt-7 rounded-xl border border-sidebar-border/80 bg-background/35 px-3 py-3">
+            <div className="glass-panel mx-2 mt-7 rounded-xl px-3 py-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                 {isEnglish ? 'Your workspace' : 'O teu espaço'}
               </p>
@@ -94,7 +94,7 @@ export default async function DashboardLayout({
 
             <DashboardNavigation locale={locale} variant="sidebar" />
 
-            <div className="mt-auto rounded-xl border border-sidebar-border/70 bg-background/35 p-3">
+            <div className="glass-panel mt-auto rounded-xl p-3">
               <div className="flex items-center gap-2">
                 <span className="size-2 rounded-full bg-primary shadow-[0_0_12px_hsl(var(--primary)/0.8)]" />
                 <p className="text-xs font-semibold text-sidebar-foreground">
@@ -128,8 +128,8 @@ export default async function DashboardLayout({
         </aside>
 
         <div className="min-w-0">
-          <div className="sticky top-0 z-30 border-b border-border/70 bg-background/82 backdrop-blur-xl">
-            <div className="moneyflow-shell flex min-h-[4.25rem] items-center justify-between gap-3">
+          <div className="glass-header sticky top-0 z-30 pt-[max(0.75rem,env(safe-area-inset-top))]">
+            <div className="moneyflow-shell flex min-h-[4.25rem] items-center justify-between gap-3 pb-2">
               <div className="flex min-w-0 items-center gap-3">
                 <div className="lg:hidden">
                   <Link href="/dashboard" className="flex items-center gap-2.5">
