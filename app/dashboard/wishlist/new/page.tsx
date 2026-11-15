@@ -3,9 +3,12 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createWishlistItem } from '../actions'
 
+import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
+
 export default async function NewWishlistItemPage({
   searchParams,
 }: {
+  await redirectIfGeneralFinanceContext()
   searchParams: Promise<{ error?: string }>
 }) {
   const params = await searchParams
