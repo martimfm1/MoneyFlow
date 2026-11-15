@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { getFinancialContext } from '@/lib/financial-context'
 
 const budgetSchema = z.object({
   categoryId: z.uuid(),
@@ -62,12 +63,14 @@ export async function upsertBudget(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const { data: category } = await supabase
     .from('categories')
     .select('id')
     .eq('id', parsed.data.categoryId)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .maybeSingle()
 
   if (!category) {
@@ -78,6 +81,7 @@ export async function upsertBudget(formData: FormData) {
   const { error } = await supabase.from('budgets').upsert(
     {
       user_id: user.id,
+      context_id: financialContext.id,
       category_id: parsed.data.categoryId,
       month_start: monthStartDate,
       amount: parsed.data.amount,
