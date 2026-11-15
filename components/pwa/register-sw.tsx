@@ -5,7 +5,10 @@ import { Download, RefreshCw, Share, X } from 'lucide-react'
 
 type InstallPromptEvent = Event & {
   prompt: () => Promise<void>
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
+  userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed'
+    platform: string
+  }>
 }
 
 const subscribeInstalled = (onStoreChange: () => void) => {
@@ -146,7 +149,9 @@ export function RegisterServiceWorker() {
   return (
     <>
       {waitingWorker ? (
-        <div className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[70] mx-auto flex max-w-md items-center gap-3 rounded-2xl border bg-background p-3 shadow-xl lg:bottom-4">
+        <div
+        className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[70] mx-auto flex max-w-md items-center gap-3 rounded-2xl border bg-background p-3 shadow-xl lg:bottom-4"
+      >
           <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted">
             <RefreshCw className="size-4" aria-hidden="true" />
           </span>
@@ -158,7 +163,9 @@ export function RegisterServiceWorker() {
           </div>
           <button
             type="button"
-            onClick={() => waitingWorker.postMessage({ type: 'SKIP_WAITING' })}
+            onClick={() =>
+              waitingWorker.postMessage({ type: 'SKIP_WAITING' })
+            }
             className="min-h-10 rounded-xl bg-primary px-3 text-sm font-medium text-primary-foreground"
           >
             Atualizar
@@ -167,7 +174,9 @@ export function RegisterServiceWorker() {
       ) : null}
 
       {installVisible ? (
-        <div className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[60] mx-auto flex max-w-md items-start gap-3 rounded-2xl border bg-background p-3 shadow-xl lg:bottom-4">
+        <div
+          className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[60] mx-auto flex max-w-md items-start gap-3 rounded-2xl border bg-background p-3 shadow-xl lg:bottom-4"
+        >
           <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted">
             {isIos ? (
               <Share className="size-4" aria-hidden="true" />
