@@ -38,8 +38,16 @@ const frequencyLabels = {
   yearly: 'Anual',
 } as const
 
-const yearlyMultipliers = { monthly: 12, quarterly: 4, yearly: 1 } as const
-const monthlyDivisors = { monthly: 1, quarterly: 3, yearly: 12 } as const
+const yearlyMultipliers = {
+  monthly: 12,
+  quarterly: 4,
+  yearly: 1,
+} as const
+const monthlyDivisors = {
+  monthly: 1,
+  quarterly: 3,
+  yearly: 12,
+} as const
 
 function monthlyIncome(income: RecurringIncome) {
   return Number(income.amount) / monthlyDivisors[income.frequency]
