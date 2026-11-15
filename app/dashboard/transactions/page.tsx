@@ -47,18 +47,18 @@ export default async function TransactionsPage({
     await Promise.all([
       supabase
         .from('profiles')
-        .select('currency_code')
+        .select('currency_code, active_finance_context')
         .eq('id', user.id)
         .maybeSingle(),
       supabase
         .from('categories')
-        .select('id, name')
+        .select('id, name, finance_context')
         .eq('user_id', user.id)
         .order('sort_order', { ascending: true })
         .order('name', { ascending: true }),
       supabase
         .from('accounts')
-        .select('id, name, is_active')
+        .select('id, name, is_active, finance_context')
         .eq('user_id', user.id)
         .order('is_active', { ascending: false })
         .order('created_at', { ascending: true }),
@@ -67,7 +67,7 @@ export default async function TransactionsPage({
   let query = supabase
     .from('transactions')
     .select(
-      'id, transaction_type, amount, description, occurred_at, accounts(name, currency_code), categories(id, name)',
+      'id, finance_context, transaction_type, amount, description, occurred_at, accounts(name, currency_code), categories(id, name)',
     )
     .eq('user_id', user.id)
     .order('occurred_at', { ascending: false })
@@ -110,11 +110,24 @@ export default async function TransactionsPage({
             Pesquisa e filtra os movimentos por conta, tipo e categoria.
           </p>
         </div>
-        <Button asChild size="sm">
-          <Link href="/dashboard/transactions/new">
-            <Plus className="size-4" /> Novo
-          </Link>
-        </Button>
+        {profile?.active_finance_context === 'general' ? (
+          <span className="rounded-full border px-3 py-2 text-xs text-[hsl(var(--muted-foreground))]">
+            Geral · leitura
+          </span>
+        ) : (
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild size="sm" variant="outline">
+              <Link href="/dashboard/transactions/import">
+                <FileSpreadsheet className="size-4" /> Importar CSV
+              </Link>
+            </Button>
+            <Button asChild size="sm">
+              <Link href="/dashboard/transactions/new">
+                <Plus className="size-4" /> Novo
+              </Link>
+            </Button>
+          </div>
+        )}
       </header>
 
       {params.toast ? (
@@ -199,6 +212,9 @@ export default async function TransactionsPage({
               {accounts?.map((account) => (
                 <option key={account.id} value={account.id}>
                   {account.name}
+                  {profile?.active_finance_context === 'general'
+                    ? ` · ${account.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}`
+                    : ''}
                   {account.is_active ? '' : ' · Arquivada'}
                 </option>
               ))}
@@ -229,6 +245,9 @@ export default async function TransactionsPage({
               {categories?.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
+                  {profile?.active_finance_context === 'general'
+                    ? ` · ${category.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}`
+                    : ''}
                 </option>
               ))}
             </select>
@@ -264,7 +283,7 @@ export default async function TransactionsPage({
               ? 'Tenta alterar os filtros para encontrares outros movimentos.'
               : 'Regista a tua primeira despesa ou receita para começares a perceber o teu dinheiro.'}
           </p>
-          {!hasFilters ? (
+          {!hasFilters && profile?.active_finance_context !== 'general' ? (
             <Button asChild className="mt-5">
               <Link href="/dashboard/transactions/new">
                 Adicionar movimento
@@ -314,6 +333,9 @@ export default async function TransactionsPage({
                       <p className="mt-1 truncate text-xs text-[hsl(var(--muted-foreground))]">
                         {account?.name ?? 'Conta'} ·{' '}
                         {category?.name ?? 'Sem categoria'}
+                        {profile?.active_finance_context === 'general'
+                          ? ` · ${transaction.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}`
+                          : ''}
                       </p>
                       <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))] lg:hidden">
                         {formatDate(transaction.occurred_at)}
@@ -332,20 +354,24 @@ export default async function TransactionsPage({
                       {formatDate(transaction.occurred_at)}
                     </p>
                   </Link>
-                  <Button
-                    asChild
-                    size="icon"
-                    variant="ghost"
-                    aria-label={`Editar ${label}`}
-                    title="Editar movimento"
-                  >
-                    <Link
-                      href={`/dashboard/transactions/${transaction.id}/edit`}
-                    >
-                      <Pencil className="size-4" />
-                    </Link>
-                  </Button>
-                  <DeleteTransactionButton id={transaction.id} label={label} />
+                  {profile?.active_finance_context !== 'general' ? (
+                    <>
+                      <Button
+                        asChild
+                        size="icon"
+                        variant="ghost"
+                        aria-label={`Editar ${label}`}
+                        title="Editar movimento"
+                      >
+                        <Link
+                          href={`/dashboard/transactions/${transaction.id}/edit`}
+                        >
+                          <Pencil className="size-4" />
+                        </Link>
+                      </Button>
+                      <DeleteTransactionButton id={transaction.id} label={label} />
+                    </>
+                  ) : null}
                 </article>
               )
             })}
