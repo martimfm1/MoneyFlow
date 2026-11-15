@@ -3,6 +3,7 @@ import { ArrowLeft, Archive, ArchiveRestore } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
+import { getFinancialContext } from '@/lib/financial-context'
 import { toggleAccountStatus, updateAccount } from '../../actions'
 
 export const dynamic = 'force-dynamic'
@@ -28,12 +29,14 @@ export default async function EditAccountPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const { data: account } = await supabase
     .from('accounts')
     .select('id, name, account_type, balance, currency_code, is_active')
     .eq('id', id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .maybeSingle()
 
   if (!account) notFound()
