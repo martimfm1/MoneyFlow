@@ -37,28 +37,25 @@ export default async function FinancialOverviewPage() {
   const nextMonthStart = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1),
   )
-  const [
-    { data: contexts },
-    { data: accounts },
-    { data: transactions },
-  ] = await Promise.all([
-    supabase
-      .from('financial_contexts')
-      .select('id, slug, name, context_type, currency_code')
-      .eq('user_id', user.id)
-      .order('slug'),
-    supabase
-      .from('accounts')
-      .select('id, context_id, balance, currency_code, is_active')
-      .eq('user_id', user.id)
-      .eq('is_active', true),
-    supabase
-      .from('transactions')
-      .select('context_id, transaction_type, amount, accounts(currency_code)')
-      .eq('user_id', user.id)
-      .gte('occurred_at', monthStart.toISOString())
-      .lt('occurred_at', nextMonthStart.toISOString()),
-  ])
+  const [{ data: contexts }, { data: accounts }, { data: transactions }] =
+    await Promise.all([
+      supabase
+        .from('financial_contexts')
+        .select('id, slug, name, context_type, currency_code')
+        .eq('user_id', user.id)
+        .order('slug'),
+      supabase
+        .from('accounts')
+        .select('id, context_id, balance, currency_code, is_active')
+        .eq('user_id', user.id)
+        .eq('is_active', true),
+      supabase
+        .from('transactions')
+        .select('context_id, transaction_type, amount, accounts(currency_code)')
+        .eq('user_id', user.id)
+        .gte('occurred_at', monthStart.toISOString())
+        .lt('occurred_at', nextMonthStart.toISOString()),
+    ])
 
   const monthlyByContext = new Map<string, MonthlyFlow>()
   for (const transaction of transactions ?? []) {

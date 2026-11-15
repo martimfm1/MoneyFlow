@@ -114,7 +114,9 @@ export default async function DashboardLayout({
         </div>
       </div>
 
-      {user && activeContext !== 'general' ? <QuickAdd locale={locale} /> : null}
+      {user && activeContext !== 'general' ? (
+        <QuickAdd locale={locale} />
+      ) : null}
       <div className="lg:hidden">
         <DashboardNavigation locale={locale} />
       </div>

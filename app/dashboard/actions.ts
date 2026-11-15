@@ -33,11 +33,7 @@ export async function signOut() {
 
 export async function switchFinancialContext(formData: FormData) {
   const value = formData.get('slug')
-  if (
-    value !== 'personal' &&
-    value !== 'silentra' &&
-    value !== 'general'
-  ) {
+  if (value !== 'personal' && value !== 'silentra' && value !== 'general') {
     redirect('/dashboard?error=Espaço%20financeiro%20inválido.')
   }
 
@@ -71,7 +67,9 @@ export async function switchFinancialContext(formData: FormData) {
     .eq('id', user.id)
 
   if (error) {
-    redirect('/dashboard?error=Não%20foi%20possível%20alterar%20o%20espaço%20financeiro.')
+    redirect(
+      '/dashboard?error=Não%20foi%20possível%20alterar%20o%20espaço%20financeiro.',
+    )
   }
 
   const cookieStore = await cookies()

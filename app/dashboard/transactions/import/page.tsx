@@ -91,8 +91,8 @@ export default async function ImportTransactionsPage({
               </select>
               {!accounts?.length ? (
                 <span className="text-xs font-normal text-[hsl(var(--muted-foreground))]">
-                  Ainda não tens contas ativas neste espaço. Cria primeiro
-                  uma conta para poderes importar movimentos.
+                  Ainda não tens contas ativas neste espaço. Cria primeiro uma
+                  conta para poderes importar movimentos.
                 </span>
               ) : null}
             </label>
@@ -108,12 +108,16 @@ export default async function ImportTransactionsPage({
               />
               <span className="text-xs font-normal leading-5 text-[hsl(var(--muted-foreground))]">
                 Até 2,5 MB e 2.000 movimentos por importação. São ignorados
-                movimentos pendentes, revertidos, de outras moedas e já importados.
+                movimentos pendentes, revertidos, de outras moedas e já
+                importados.
               </span>
             </label>
 
             <div className="flex items-start gap-2 rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
-              <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+              <ShieldCheck
+                className="mt-0.5 size-4 shrink-0"
+                aria-hidden="true"
+              />
               <p>
                 O ficheiro é processado para registar os movimentos. Não
                 guardamos credenciais bancárias nem o ficheiro original.

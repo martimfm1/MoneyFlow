@@ -71,7 +71,8 @@ function parseCsv(input: string, delimiter: string): string[][] {
     field += character
   }
 
-  if (quoted) throw new Error('CSV contém uma célula entre aspas que não foi fechada.')
+  if (quoted)
+    throw new Error('CSV contém uma célula entre aspas que não foi fechada.')
 
   if (field.length > 0 || row.length > 0) {
     row.push(field)
@@ -197,20 +198,32 @@ function makeReference(
 ) {
   const basis = externalId.trim()
     ? `external-id:${externalId.trim()}`
-    : [occurredAt, amount.toFixed(2), description.trim(), currency, occurrence].join('|')
+    : [
+        occurredAt,
+        amount.toFixed(2),
+        description.trim(),
+        currency,
+        occurrence,
+      ].join('|')
 
   return createHash('sha256').update(basis).digest('hex')
 }
 
 function importError(message: string): never {
-  redirect(`/dashboard/transactions/import?error=${encodeURIComponent(message)}`)
+  redirect(
+    `/dashboard/transactions/import?error=${encodeURIComponent(message)}`,
+  )
 }
 
 export async function importRevolutCsv(formData: FormData) {
   const file = formData.get('file')
   const accountId = formData.get('accountId')
 
-  if (!(file instanceof File) || file.size === 0 || file.size > 2.5 * 1024 * 1024) {
+  if (
+    !(file instanceof File) ||
+    file.size === 0 ||
+    file.size > 2.5 * 1024 * 1024
+  ) {
     importError('Escolhe um ficheiro CSV válido (máximo 2,5 MB).')
   }
 
@@ -235,7 +248,9 @@ export async function importRevolutCsv(formData: FormData) {
     .maybeSingle()
 
   if (!account || !account.is_active) {
-    importError('A conta escolhida não existe ou está arquivada neste espaço financeiro.')
+    importError(
+      'A conta escolhida não existe ou está arquivada neste espaço financeiro.',
+    )
   }
 
   const content = await file.text()
@@ -248,12 +263,16 @@ export async function importRevolutCsv(formData: FormData) {
     const cleanContent = content.replace(/^\uFEFF/, '')
     rows = parseCsv(cleanContent, detectCsvDelimiter(cleanContent))
   } catch {
-    importError('O CSV não é válido. Verifica as aspas e o separador do ficheiro.')
+    importError(
+      'O CSV não é válido. Verifica as aspas e o separador do ficheiro.',
+    )
   }
 
   if (rows.length < 2) importError('O CSV não contém movimentos para importar.')
   if (rows.length > 2001) {
-    importError('O ficheiro contém demasiadas linhas. Importa até 2.000 movimentos de cada vez.')
+    importError(
+      'O ficheiro contém demasiadas linhas. Importa até 2.000 movimentos de cada vez.',
+    )
   }
 
   const headers = rows[0].map(normalizeHeader)
@@ -316,7 +335,11 @@ export async function importRevolutCsv(formData: FormData) {
     const currency =
       currencyIndex >= 0
         ? (row[currencyIndex] ?? '').trim().toUpperCase()
-        : (account.currency_code || financialContext.currency_code || 'EUR').toUpperCase()
+        : (
+            account.currency_code ||
+            financialContext.currency_code ||
+            'EUR'
+          ).toUpperCase()
 
     const accountCurrency = (
       account.currency_code ||
@@ -411,7 +434,9 @@ export async function importRevolutCsv(formData: FormData) {
   )
 
   if (newRows.length === 0) {
-    importError('Estes movimentos já tinham sido importados. Não foram criadas duplicações.')
+    importError(
+      'Estes movimentos já tinham sido importados. Não foram criadas duplicações.',
+    )
   }
 
   let importedCount = 0
@@ -426,13 +451,17 @@ export async function importRevolutCsv(formData: FormData) {
       .select('id')
 
     if (error) {
-      importError('A importação foi interrompida. Verifica a conta e volta a tentar.')
+      importError(
+        'A importação foi interrompida. Verifica a conta e volta a tentar.',
+      )
     }
     importedCount += data?.length ?? 0
   }
 
   if (importedCount === 0) {
-    importError('Estes movimentos já tinham sido importados. Não foram criadas duplicações.')
+    importError(
+      'Estes movimentos já tinham sido importados. Não foram criadas duplicações.',
+    )
   }
 
   const ignoredCount = skipped + existing.size + newRows.length - importedCount
