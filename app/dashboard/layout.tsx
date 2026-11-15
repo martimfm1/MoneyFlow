@@ -8,7 +8,7 @@ import { QuickAdd } from '@/components/dashboard/quick-add'
 import { createClient } from '@/lib/supabase/server'
 import { createTranslator, normalizeLocale } from '@/lib/i18n'
 import { FinancialContextSwitcher } from '@/components/dashboard/financial-context-switcher'
-import { getFinancialContext, getFinancialContextSelection } from '@/lib/financial-context'
+import { getFinancialContextSelection } from '@/lib/financial-context'
 
 export default async function DashboardLayout({
   children,
@@ -30,9 +30,6 @@ export default async function DashboardLayout({
   const t = createTranslator(locale)
   const activeContext = user
     ? await getFinancialContextSelection(supabase, user.id)
-    : null
-  const financialContext = user && activeContext !== 'general'
-    ? await getFinancialContext(supabase, user.id)
     : null
 
   return (
