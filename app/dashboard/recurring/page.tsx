@@ -99,7 +99,8 @@ export default async function RecurringExpensesPage({
         .eq('is_active', true)
         .order('name'),
     ])
-  const currency = profile?.currency_code ?? 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
+  const currency = profile?.currency_code ?? 'EUR'
+  const readOnly = profile?.active_finance_context === 'general'
   const items = (expenses ?? []) as unknown as RecurringExpense[]
   const active = items.filter((item) => item.is_active)
   const activeInPrimaryCurrency = active.filter(
