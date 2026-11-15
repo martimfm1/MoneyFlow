@@ -1,5 +1,11 @@
 {
   "git": {
     "deploymentEnabled": false
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/recurring-transactions",
+      "schedule": "15 0 * * *"
+    }
+  ]
 }
