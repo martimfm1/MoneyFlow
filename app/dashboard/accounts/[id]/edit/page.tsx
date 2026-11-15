@@ -15,6 +15,8 @@ const labels: Record<string, string> = {
   other: 'Outro',
 }
 
+import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
+
 export default async function EditAccountPage({
   params,
   searchParams,
@@ -22,6 +24,7 @@ export default async function EditAccountPage({
   params: Promise<{ id: string }>
   searchParams: Promise<{ error?: string }>
 }) {
+  await redirectIfGeneralFinanceContext()
   const [{ id }, query] = await Promise.all([params, searchParams])
   const supabase = await createClient()
   const {
