@@ -16,6 +16,7 @@ import { formatCurrency, formatShortDate } from '@/lib/format'
 import { MonthlyOverview } from '@/components/dashboard/monthly-overview'
 import { WishlistPreview } from '@/components/dashboard/wishlist-preview'
 import { signOut } from './actions'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,6 +34,7 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [
     { data: profile },
@@ -49,6 +51,7 @@ export default async function DashboardPage() {
       .from('accounts')
       .select('id, name, account_type, balance, currency_code')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .eq('is_active', true)
       .order('created_at', { ascending: true }),
     supabase
@@ -57,12 +60,14 @@ export default async function DashboardPage() {
         'id, transaction_type, amount, description, occurred_at, accounts(name, currency_code)',
       )
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('occurred_at', { ascending: false })
       .limit(5),
     supabase
       .from('goals')
       .select('id, name, target_amount, current_amount, target_date, priority')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('priority', { ascending: true })
       .order('created_at', { ascending: false })
       .limit(3),
@@ -147,7 +152,10 @@ export default async function DashboardPage() {
           </Link>
         </section>
 
-        <MonthlyOverview currency={currency} />
+        <MonthlyOverview
+          currency={currency}
+          contextId={financialContext.id}
+        />
 
         <section id="accounts" className="mt-8 lg:mt-10">
           <div className="flex items-center justify-between gap-3">
@@ -320,7 +328,10 @@ export default async function DashboardPage() {
           )}
         </section>
 
-        <WishlistPreview currency={currency} />
+        <WishlistPreview
+          currency={currency}
+          contextId={financialContext.id}
+        />
 
         <section
           id="add"
