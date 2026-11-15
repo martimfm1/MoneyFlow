@@ -53,7 +53,8 @@ export default async function AccountsPage({
       .order('is_active', { ascending: false })
       .order('created_at'),
   ])
-  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
   const rows = accounts ?? []
   const active = rows.filter((item) => item.is_active)
   const activeInPrimaryCurrency = active.filter(
@@ -161,9 +162,7 @@ export default async function AccountsPage({
                       {labels[account.account_type] ?? account.account_type}
                     </p>
                   </div>
-                  <Badge
-                    variant={account.is_active ? 'secondary' : 'outline'}
-                  >
+                  <Badge variant={account.is_active ? 'secondary' : 'outline'}>
                     {account.is_active ? 'Ativa' : 'Arquivada'}
                   </Badge>
                 </div>
@@ -196,10 +195,7 @@ export default async function AccountsPage({
                       {account.is_active ? (
                         <Archive className="size-4" aria-hidden="true" />
                       ) : (
-                        <ArchiveRestore
-                          className="size-4"
-                          aria-hidden="true"
-                        />
+                        <ArchiveRestore className="size-4" aria-hidden="true" />
                       )}
                       {account.is_active ? 'Arquivar' : 'Reativar'}
                     </Button>
