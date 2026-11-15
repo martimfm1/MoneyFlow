@@ -109,8 +109,6 @@ export default async function CategoriesPage({
           </section>
         )}
 
-</section>
-
         <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] shadow-sm">
           <div className="flex items-center justify-between gap-3 border-b px-5 py-4 sm:px-6">
             <div>
@@ -140,31 +138,23 @@ export default async function CategoriesPage({
                     <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))] text-xs font-semibold">
                       {index + 1}
                     </span>
-                    <p className="truncate font-medium">{category.name}</p>
-                  </div>
-                  <div className="flex min-w-0 items-center justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))] text-xs font-semibold">
-                        {index + 1}
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate font-medium">{category.name}</p>
-                        {readOnly ? (
-                          <p className="mt-0.5 text-xs text-[hsl(var(--muted-foreground))]">
-                            {category.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
-                          </p>
-                        ) : null}
-                      </div>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{category.name}</p>
+                      {readOnly ? (
+                        <p className="mt-0.5 text-xs text-[hsl(var(--muted-foreground))]">
+                          {category.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                        </p>
+                      ) : null}
                     </div>
-                    {!readOnly ? (
-                      <CategoryActions
-                        id={category.id}
-                        name={category.name}
-                        canMoveUp={index > 0}
-                        canMoveDown={index < categories.length - 1}
-                      />
-                    ) : null}
                   </div>
+                  {!readOnly ? (
+                    <CategoryActions
+                      id={category.id}
+                      name={category.name}
+                      canMoveUp={index > 0}
+                      canMoveDown={index < categories.length - 1}
+                    />
+                  ) : null}
                 </div>
               ))}
             </div>
