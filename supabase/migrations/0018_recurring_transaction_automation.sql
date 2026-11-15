@@ -160,7 +160,10 @@ begin
   if v_user_id is null then
     raise exception using errcode = '42501', message = 'AUTH_REQUIRED';
   end if;
-  if p_recurrence_id is null or p_recurrence_type not in ('income', 'expense') then
+  if p_recurrence_id is null
+    or p_recurrence_type is null
+    or p_recurrence_type not in ('income', 'expense')
+    or p_enabled is null then
     raise exception using errcode = '22023', message = 'INVALID_RECURRING_ENTRY';
   end if;
 
@@ -268,8 +271,8 @@ begin
       and auto_post_enabled = true
       and next_income_date <= p_as_of
     order by next_income_date, created_at
-    for update skip locked
     limit v_limit
+    for update skip locked
   loop
     if v_income.account_id is null or not exists (
       select 1
@@ -357,8 +360,8 @@ begin
       and auto_post_enabled = true
       and next_due_date <= p_as_of
     order by next_due_date, created_at
-    for update skip locked
     limit v_limit
+    for update skip locked
   loop
     if v_expense.account_id is null or not exists (
       select 1
