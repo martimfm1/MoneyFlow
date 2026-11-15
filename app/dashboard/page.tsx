@@ -69,7 +69,8 @@ export default async function DashboardPage() {
   ])
 
   if (!profile?.onboarding_completed_at) redirect('/onboarding')
-  const currency = profile.currency_code ?? 'EUR'\n  const readOnly = profile.active_finance_context === 'general'
+  const currency = profile.currency_code ?? 'EUR'
+  const readOnly = profile.active_finance_context === 'general'
   const accountsInPrimaryCurrency = (accounts ?? []).filter(
     (account) => (account.currency_code || currency) === currency,
   )
