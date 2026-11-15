@@ -56,7 +56,7 @@ export function QuickAdd({ locale }: { locale: MoneyFlowLocale }) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         showCloseButton={false}
-        className="top-auto bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-1/2 w-[calc(100%-1.5rem)] max-w-sm -translate-x-1/2 translate-y-0 gap-2 rounded-[1.5rem] p-3 shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom-3 lg:hidden"
+        className="glass-dialog mf-enter top-auto bottom-[calc(4.5rem+env(safe-area-inset-bottom))] left-1/2 w-[calc(100%-1.5rem)] max-w-sm -translate-x-1/2 translate-y-0 gap-2 rounded-[1.5rem] p-3 shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom-3 lg:hidden"
       >
         <DialogHeader className="flex-row items-center justify-between gap-3 px-2 pb-1">
           <div>
