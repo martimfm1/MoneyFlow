@@ -151,6 +151,11 @@ export default async function RecurringExpensesPage({
         />
       </header>
       <RecurringTabs active="expense" />
+      <p className="mt-3 rounded-xl border border-primary/15 bg-primary/[0.04] px-3.5 py-3 text-xs leading-5 text-muted-foreground">
+        Quando a data prevista chega, o movimento é registado automaticamente
+        na conta associada e o saldo é atualizado uma única vez. Podes pausar
+        a recorrência a qualquer momento.
+      </p>
       <p className="mt-3 rounded-xl border border-border/70 bg-muted/30 px-3 py-2.5 text-xs leading-5 text-muted-foreground">
         As saídas ativas são lançadas automaticamente na conta na data prevista e reduzem o saldo. Podes pausar uma recorrência para impedir os próximos lançamentos.
       </p>
