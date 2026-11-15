@@ -268,8 +268,12 @@ export default async function RecurringIncomePage({
                       <Badge variant={item.is_active ? 'secondary' : 'outline'}>
                         {item.is_active ? 'Ativo' : 'Pausado'}
                       </Badge>
-                      <Badge variant={item.auto_post_enabled ? 'default' : 'outline'}>
-                        {item.auto_post_enabled ? 'Lançamento automático' : 'Só planeamento'}
+                      <Badge
+                        variant={item.auto_post_enabled ? 'default' : 'outline'}
+                      >
+                        {item.auto_post_enabled
+                          ? 'Lançamento automático'
+                          : 'Só planeamento'}
                       </Badge>
                     </div>
                     <p className="mt-4 text-2xl font-semibold tabular-nums">
@@ -297,7 +301,10 @@ export default async function RecurringIncomePage({
                         ) : null}
                       </div>
                     </div>
-                    <form action={toggleRecurringIncomeAutomation} className="mt-4">
+                    <form
+                      action={toggleRecurringIncomeAutomation}
+                      className="mt-4"
+                    >
                       <input type="hidden" name="id" value={item.id} />
                       <input
                         type="hidden"
@@ -310,7 +317,9 @@ export default async function RecurringIncomePage({
                         variant={item.auto_post_enabled ? 'outline' : 'secondary'}
                         className="w-full"
                       >
-                        {item.auto_post_enabled ? 'Pausar lançamentos automáticos' : 'Ativar lançamentos automáticos'}
+                        {item.auto_post_enabled
+                          ? 'Pausar lançamentos automáticos'
+                          : 'Ativar lançamentos automáticos'}
                       </Button>
                     </form>
                   </CardContent>
