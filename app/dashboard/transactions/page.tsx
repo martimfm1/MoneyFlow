@@ -83,7 +83,7 @@ export default async function TransactionsPage({
   if (q) query = query.ilike('description', `%${q}%`)
 
   const { data: transactions } = await query
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
   const hasFilters =
     Boolean(q) || type !== 'all' || categoryId !== 'all' || accountId !== 'all'
   const primaryCurrencyTransactions = (transactions ?? []).filter((transaction) => {
