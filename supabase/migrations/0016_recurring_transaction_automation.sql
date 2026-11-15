@@ -390,7 +390,7 @@ revoke all on function public.process_my_due_recurring_transactions()
 grant execute on function public.process_my_due_recurring_transactions()
   to authenticated;
 
--- Run shortly after local midnight in Portugal. The worker safely catches up
+-- Run in a low-traffic Portugal hour. The worker safely catches up
 -- missed dates, at most 120 occurrences per schedule per run.
 create extension if not exists pg_cron with schema pg_catalog;
 
