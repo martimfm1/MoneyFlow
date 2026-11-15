@@ -2,10 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react'
 import { FileSpreadsheet, ShieldCheck } from 'lucide-react'
-import {
-  previewCsvImport,
-  importRevolutCsv,
-} from './actions'
+import { previewCsvImport, importRevolutCsv } from './actions'
 import type {
   CsvColumnKey,
   CsvColumnMapping,
@@ -95,7 +92,9 @@ export function CsvImportForm({ accounts, contextName, error }: Props) {
   function handleMappingChange(key: CsvColumnKey, value: string) {
     const index = Number(value)
     setMapping((current) =>
-      current ? { ...current, [key]: Number.isInteger(index) ? index : -1 } : current,
+      current
+        ? { ...current, [key]: Number.isInteger(index) ? index : -1 }
+        : current,
     )
     setPreview(null)
   }
@@ -160,8 +159,7 @@ export function CsvImportForm({ accounts, contextName, error }: Props) {
             />
             <span className="text-xs font-normal leading-5 text-[hsl(var(--muted-foreground))]">
               Até 2,5 MB e 2.000 movimentos por importação. São ignorados
-              movimentos pendentes, inválidos, de outras moedas e já
-              importados.
+              movimentos pendentes, inválidos, de outras moedas e já importados.
             </span>
           </label>
 
@@ -225,7 +223,10 @@ export function CsvImportForm({ accounts, contextName, error }: Props) {
           ) : null}
 
           {successfulPreview ? (
-            <section className="grid gap-3 rounded-[var(--radius-md)] border p-3" aria-live="polite">
+            <section
+              className="grid gap-3 rounded-[var(--radius-md)] border p-3"
+              aria-live="polite"
+            >
               <div>
                 <h3 className="text-sm font-semibold">Pré-visualização</h3>
                 <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
@@ -235,28 +236,52 @@ export function CsvImportForm({ accounts, contextName, error }: Props) {
 
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">Prontos a importar</p>
-                  <p className="mt-1 text-lg font-semibold tabular-nums">{successfulPreview.summary.ready}</p>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                    Prontos a importar
+                  </p>
+                  <p className="mt-1 text-lg font-semibold tabular-nums">
+                    {successfulPreview.summary.ready}
+                  </p>
                 </div>
                 <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">Já importados</p>
-                  <p className="mt-1 text-lg font-semibold tabular-nums">{successfulPreview.summary.alreadyImported}</p>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                    Já importados
+                  </p>
+                  <p className="mt-1 text-lg font-semibold tabular-nums">
+                    {successfulPreview.summary.alreadyImported}
+                  </p>
                 </div>
                 <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">Duplicados no ficheiro</p>
-                  <p className="mt-1 text-lg font-semibold tabular-nums">{successfulPreview.summary.duplicateInFile}</p>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                    Duplicados no ficheiro
+                  </p>
+                  <p className="mt-1 text-lg font-semibold tabular-nums">
+                    {successfulPreview.summary.duplicateInFile}
+                  </p>
                 </div>
                 <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">Pendentes / não concluídos</p>
-                  <p className="mt-1 text-lg font-semibold tabular-nums">{successfulPreview.summary.pendingOrUnsettled}</p>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                    Pendentes / não concluídos
+                  </p>
+                  <p className="mt-1 text-lg font-semibold tabular-nums">
+                    {successfulPreview.summary.pendingOrUnsettled}
+                  </p>
                 </div>
                 <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">Linhas inválidas</p>
-                  <p className="mt-1 text-lg font-semibold tabular-nums">{successfulPreview.summary.invalid}</p>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                    Linhas inválidas
+                  </p>
+                  <p className="mt-1 text-lg font-semibold tabular-nums">
+                    {successfulPreview.summary.invalid}
+                  </p>
                 </div>
                 <div className="rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))] p-3">
-                  <p className="text-xs text-[hsl(var(--muted-foreground))]">Moeda diferente</p>
-                  <p className="mt-1 text-lg font-semibold tabular-nums">{successfulPreview.summary.currencyMismatch}</p>
+                  <p className="text-xs text-[hsl(var(--muted-foreground))]">
+                    Moeda diferente
+                  </p>
+                  <p className="mt-1 text-lg font-semibold tabular-nums">
+                    {successfulPreview.summary.currencyMismatch}
+                  </p>
                 </div>
               </div>
 
@@ -272,7 +297,9 @@ export function CsvImportForm({ accounts, contextName, error }: Props) {
                         className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm"
                       >
                         <div className="min-w-0">
-                          <p className="truncate font-medium">{item.description}</p>
+                          <p className="truncate font-medium">
+                            {item.description}
+                          </p>
                           <p className="text-xs text-[hsl(var(--muted-foreground))]">
                             {formatDate(item.occurred_at)}
                           </p>
@@ -289,9 +316,11 @@ export function CsvImportForm({ accounts, contextName, error }: Props) {
                       </li>
                     ))}
                   </ul>
-                  {successfulPreview.summary.ready > successfulPreview.sample.length ? (
+                  {successfulPreview.summary.ready >
+                  successfulPreview.sample.length ? (
                     <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                      A mostrar {successfulPreview.sample.length} de {successfulPreview.summary.ready} movimentos.
+                      A mostrar {successfulPreview.sample.length} de{' '}
+                      {successfulPreview.summary.ready} movimentos.
                     </p>
                   ) : null}
                 </div>
@@ -349,8 +378,8 @@ export function CsvImportForm({ accounts, contextName, error }: Props) {
             />
             <p>
               O ficheiro é analisado antes de gravar. A importação volta a
-              validar os dados no servidor e não guarda o ficheiro original
-              nem credenciais bancárias.
+              validar os dados no servidor e não guarda o ficheiro original nem
+              credenciais bancárias.
             </p>
           </div>
         </form>

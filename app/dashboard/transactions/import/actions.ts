@@ -113,11 +113,7 @@ async function createImportPlan(formData: FormData): Promise<ImportPlanResult> {
   const file = formData.get('file')
   const accountId = formData.get('accountId')
 
-  if (
-    !(file instanceof File) ||
-    file.size === 0 ||
-    file.size > MAX_FILE_SIZE
-  ) {
+  if (!(file instanceof File) || file.size === 0 || file.size > MAX_FILE_SIZE) {
     return {
       kind: 'error',
       message: 'Escolhe um ficheiro CSV válido (máximo 2,5 MB).',
@@ -250,8 +246,7 @@ export async function previewCsvImport(
     },
     sample: plan.newRows.slice(0, 5).map((item) => ({
       transaction_type: item.transaction_type,
-      amount:
-        item.transaction_type === 'expense' ? -item.amount : item.amount,
+      amount: item.transaction_type === 'expense' ? -item.amount : item.amount,
       description: item.description,
       occurred_at: item.occurred_at,
       currency_code: item.currency_code,

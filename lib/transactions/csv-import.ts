@@ -1,12 +1,7 @@
 import { createHash } from 'node:crypto'
 
 export type CsvColumnKey =
-  | 'date'
-  | 'description'
-  | 'amount'
-  | 'currency'
-  | 'status'
-  | 'id'
+  'date' | 'description' | 'amount' | 'currency' | 'status' | 'id'
 
 export type CsvColumnMapping = Record<CsvColumnKey, number>
 
@@ -162,7 +157,9 @@ function resolveColumn(
 ): number {
   const override = overrides?.[key]
   if (typeof override === 'number') {
-    return Number.isInteger(override) && override >= 0 && override < headers.length
+    return Number.isInteger(override) &&
+      override >= 0 &&
+      override < headers.length
       ? override
       : -1
   }
@@ -314,9 +311,7 @@ export function analyzeCsvImport(
   const rows = parseCsv(cleanContent, detectCsvDelimiter(cleanContent))
 
   if (rows.length < 2) {
-    throw new CsvImportParseError(
-      'O CSV não contém movimentos para analisar.',
-    )
+    throw new CsvImportParseError('O CSV não contém movimentos para analisar.')
   }
   if (rows.length > 2001) {
     throw new CsvImportParseError(
@@ -326,35 +321,42 @@ export function analyzeCsvImport(
 
   const headers = rows[0].map(normalizeHeader)
   const mapping: CsvColumnMapping = {
-    date: resolveColumn(headers, 'date', [
-      'completed date',
-      'started date',
+    date: resolveColumn(
+      headers,
       'date',
-      'data',
-      'data de conclusao',
-    ], overrides),
-    description: resolveColumn(headers, 'description', [
+      ['completed date', 'started date', 'date', 'data', 'data de conclusao'],
+      overrides,
+    ),
+    description: resolveColumn(
+      headers,
       'description',
-      'merchant',
-      'counterparty',
-      'descricao',
-      'detalhes',
-    ], overrides),
-    amount: resolveColumn(headers, 'amount', [
+      ['description', 'merchant', 'counterparty', 'descricao', 'detalhes'],
+      overrides,
+    ),
+    amount: resolveColumn(
+      headers,
       'amount',
-      'valor',
-      'montante',
-      'amount eur',
-      'montante eur',
-    ], overrides),
-    currency: resolveColumn(headers, 'currency', ['currency', 'moeda'], overrides),
-    status: resolveColumn(headers, 'status', ['state', 'status', 'estado'], overrides),
-    id: resolveColumn(headers, 'id', [
+      ['amount', 'valor', 'montante', 'amount eur', 'montante eur'],
+      overrides,
+    ),
+    currency: resolveColumn(
+      headers,
+      'currency',
+      ['currency', 'moeda'],
+      overrides,
+    ),
+    status: resolveColumn(
+      headers,
+      'status',
+      ['state', 'status', 'estado'],
+      overrides,
+    ),
+    id: resolveColumn(
+      headers,
       'id',
-      'transaction id',
-      'transaction reference',
-      'referencia',
-    ], overrides),
+      ['id', 'transaction id', 'transaction reference', 'referencia'],
+      overrides,
+    ),
   }
 
   const needsMapping =
@@ -379,8 +381,7 @@ export function analyzeCsvImport(
   const fallbackOccurrences = new Map<string, number>()
 
   for (const row of rows.slice(1)) {
-    const rawStatus =
-      mapping.status >= 0 ? (row[mapping.status] ?? '') : ''
+    const rawStatus = mapping.status >= 0 ? (row[mapping.status] ?? '') : ''
     if (!isCompletedStatus(rawStatus)) {
       analysis.pendingOrUnsettled += 1
       continue
