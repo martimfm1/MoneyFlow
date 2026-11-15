@@ -70,7 +70,9 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { ok: false, error: 'A integração não aceitou este pagamento.' },
         {
-          status: error?.message?.includes('not connected') ? 401 : 400,
+          status: /SILENTRA_INTEGRATION_NOT_CONNECTED/i.test(error?.message ?? '')
+            ? 401
+            : 400,
           headers: { 'Cache-Control': 'no-store' },
         },
       )
