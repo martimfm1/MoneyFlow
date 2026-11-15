@@ -83,7 +83,10 @@ export async function MonthlyOverview({
   const health = calculateHealth(income, expenses, recurringReserve)
 
   return (
-    <section className="mt-7 lg:mt-10" aria-labelledby="monthly-overview-title">
+    <section
+      className="mf-enter-delayed mt-7 lg:mt-10"
+      aria-labelledby="monthly-overview-title"
+    >
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
@@ -105,7 +108,7 @@ export async function MonthlyOverview({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-3">
-        <article className="min-w-0 rounded-2xl border border-border/80 bg-card/75 p-4 shadow-sm transition-colors hover:bg-card">
+        <article className="min-w-0 glass-card rounded-2xl p-4 shadow-sm transition-colors hover:bg-card">
           <div className="flex items-center gap-2 text-xs font-medium text-[hsl(var(--muted-foreground))]">
             <TrendingUp className="size-4" aria-hidden="true" /> Receitas
           </div>
@@ -113,7 +116,7 @@ export async function MonthlyOverview({
             +{formatCurrency(income, currency)}
           </p>
         </article>
-        <article className="min-w-0 rounded-2xl border border-border/80 bg-card/75 p-4 shadow-sm transition-colors hover:bg-card">
+        <article className="min-w-0 glass-card rounded-2xl p-4 shadow-sm transition-colors hover:bg-card">
           <div className="flex items-center gap-2 text-xs font-medium text-[hsl(var(--muted-foreground))]">
             <TrendingDown className="size-4" aria-hidden="true" /> Despesas
           </div>
@@ -121,7 +124,7 @@ export async function MonthlyOverview({
             -{formatCurrency(expenses, currency)}
           </p>
         </article>
-        <article className="min-w-0 rounded-2xl border border-border/80 bg-card/75 p-4 shadow-sm transition-colors hover:bg-card">
+        <article className="min-w-0 glass-card rounded-2xl p-4 shadow-sm transition-colors hover:bg-card">
           <p className="text-xs font-medium text-[hsl(var(--muted-foreground))]">
             Poupado
           </p>
@@ -144,7 +147,7 @@ export async function MonthlyOverview({
         </p>
       ) : null}
 
-      <details className="mt-3 rounded-2xl border border-border/80 bg-card/60 px-4 py-3 shadow-sm">
+      <details className="glass-card mt-3 rounded-2xl px-4 py-3 shadow-sm">
         <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium">
           <span>Saúde financeira</span>
           <span className="inline-flex items-center gap-1 text-xs text-[hsl(var(--muted-foreground))]">

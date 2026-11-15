@@ -224,7 +224,7 @@ export function DashboardNavigation({ locale, variant = 'mobile' }: Props) {
     <Dialog open={moreOpen} onOpenChange={setMoreOpen}>
       <DialogContent
         showCloseButton={false}
-        className="top-auto bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-1/2 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 translate-y-0 gap-2 rounded-2xl border-border/80 bg-popover p-3 shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom-3"
+        className="glass-dialog mf-enter top-auto bottom-[calc(5.75rem+env(safe-area-inset-bottom))] left-1/2 w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 translate-y-0 gap-2 rounded-2xl border-border/80 bg-popover p-3 shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-bottom-3"
       >
         <DialogHeader className="flex-row items-center justify-between gap-3 px-2 pb-1 pt-0.5">
           <div>

@@ -422,3 +422,218 @@ select {
     font-family: var(--font-sans);
   }
 }
+
+/* Glassmorphism: solid, layered glass instead of scattered low-opacity panels. */
+.glass-panel,
+.glass-card,
+.glass-header,
+.glass-nav,
+.glass-dialog {
+  isolation: isolate;
+  border: 1px solid hsl(var(--foreground) / 0.12);
+  background: linear-gradient(
+    145deg,
+    hsl(var(--surface) / 0.97),
+    hsl(var(--surface-muted) / 0.9)
+  );
+  box-shadow:
+    0 18px 48px hsl(225 35% 2% / 0.22),
+    inset 0 1px 0 hsl(var(--foreground) / 0.1),
+    inset 0 -1px 0 hsl(var(--foreground) / 0.025);
+  backdrop-filter: blur(26px) saturate(155%);
+  -webkit-backdrop-filter: blur(26px) saturate(155%);
+}
+
+.glass-card {
+  border-color: hsl(var(--foreground) / 0.1);
+  background: linear-gradient(
+    150deg,
+    hsl(var(--surface) / 0.98),
+    hsl(var(--surface-muted) / 0.94)
+  );
+  box-shadow:
+    0 12px 34px hsl(225 35% 2% / 0.16),
+    inset 0 1px 0 hsl(var(--foreground) / 0.09);
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
+}
+
+.glass-card:hover {
+  border-color: hsl(var(--foreground) / 0.18);
+  box-shadow:
+    0 18px 42px hsl(225 35% 2% / 0.2),
+    inset 0 1px 0 hsl(var(--foreground) / 0.13);
+}
+
+.glass-header {
+  border-top: 0;
+  border-right: 0;
+  border-left: 0;
+  border-bottom-color: hsl(var(--foreground) / 0.13);
+  background: linear-gradient(
+    180deg,
+    hsl(var(--surface) / 0.99),
+    hsl(var(--background) / 0.95)
+  );
+  box-shadow:
+    0 10px 32px hsl(225 35% 2% / 0.12),
+    inset 0 1px 0 hsl(var(--foreground) / 0.08);
+  backdrop-filter: blur(30px) saturate(160%);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+}
+
+.glass-nav {
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 0;
+  border-top-color: hsl(var(--foreground) / 0.16);
+  background: linear-gradient(
+    180deg,
+    hsl(var(--surface) / 0.98),
+    hsl(var(--background) / 0.97)
+  );
+  box-shadow:
+    0 -18px 42px hsl(225 35% 2% / 0.2),
+    inset 0 1px 0 hsl(var(--foreground) / 0.1);
+  backdrop-filter: blur(28px) saturate(155%);
+  -webkit-backdrop-filter: blur(28px) saturate(155%);
+}
+
+.glass-hero {
+  border: 1px solid hsl(0 0% 100% / 0.22);
+  background:
+    radial-gradient(
+      circle at 85% 12%,
+      hsl(var(--primary) / 0.22),
+      transparent 34%
+    ),
+    linear-gradient(
+      130deg,
+      hsl(162 27% 12% / 0.98),
+      hsl(158 28% 17% / 0.96) 58%,
+      hsl(157 32% 22% / 0.94)
+    );
+  box-shadow:
+    0 28px 72px hsl(225 35% 2% / 0.3),
+    inset 0 1px 0 hsl(0 0% 100% / 0.26),
+    inset 0 -1px 0 hsl(0 0% 100% / 0.05);
+  backdrop-filter: blur(28px) saturate(145%);
+  -webkit-backdrop-filter: blur(28px) saturate(145%);
+}
+
+html[data-theme='light'] .glass-panel,
+html[data-theme='light'] .glass-card,
+html[data-theme='light'] .glass-header,
+html[data-theme='light'] .glass-nav,
+html[data-theme='light'] .glass-dialog {
+  border-color: hsl(220 25% 100% / 0.82);
+  background: linear-gradient(
+    145deg,
+    hsl(0 0% 100% / 0.96),
+    hsl(220 28% 96% / 0.9)
+  );
+  box-shadow:
+    0 16px 42px hsl(225 28% 35% / 0.09),
+    inset 0 1px 0 hsl(0 0% 100% / 0.96),
+    inset 0 -1px 0 hsl(225 25% 65% / 0.08);
+}
+
+html[data-theme='light'] .glass-header,
+html[data-theme='light'] .glass-nav {
+  background: linear-gradient(
+    180deg,
+    hsl(0 0% 100% / 0.99),
+    hsl(220 25% 97% / 0.97)
+  );
+}
+
+html[data-theme='light'] .glass-card:hover {
+  box-shadow:
+    0 20px 44px hsl(225 28% 35% / 0.12),
+    inset 0 1px 0 hsl(0 0% 100% / 0.98);
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  .glass-panel,
+  .glass-card,
+  .glass-header,
+  .glass-nav,
+  .glass-dialog {
+    background: hsl(var(--surface));
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .glass-panel,
+  .glass-card,
+  .glass-header,
+  .glass-nav,
+  .glass-dialog {
+    background: hsl(var(--surface));
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+/* Press feedback and short, spring-like entrances inspired by Animate UI v1. */
+a,
+button,
+[role='button'],
+select,
+summary {
+  -webkit-tap-highlight-color: transparent;
+  transform-origin: center;
+}
+
+a:active,
+button:active,
+[role='button']:active,
+select:active,
+summary:active {
+  transform: scale(0.985);
+  filter: brightness(1.06);
+  transition-duration: 90ms;
+}
+
+.mf-enter {
+  animation: mf-enter 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.mf-enter-delayed {
+  animation: mf-enter 620ms cubic-bezier(0.16, 1, 0.3, 1) 90ms both;
+}
+
+@keyframes mf-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0) scale(0.99);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-enter,
+  .mf-enter-delayed {
+    animation: none;
+  }
+}
+
+@media (prefers-contrast: more), (forced-colors: active) {
+  .glass-panel,
+  .glass-card,
+  .glass-header,
+  .glass-nav,
+  .glass-dialog {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: hsl(var(--foreground) / 0.3);
+  }
+}
