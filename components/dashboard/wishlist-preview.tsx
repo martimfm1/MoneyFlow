@@ -6,7 +6,13 @@ import { Button } from '@/components/ui/button'
 
 const priorityRank = { high: 0, medium: 1, low: 2 } as const
 
-export async function WishlistPreview({ currency }: { currency: string }) {
+export async function WishlistPreview({
+  currency,
+  contextId,
+}: {
+  currency: string
+  contextId: string
+}) {
   const supabase = await createClient()
   const {
     data: { user },
@@ -17,6 +23,7 @@ export async function WishlistPreview({ currency }: { currency: string }) {
     .from('wishlist_items')
     .select('id, name, price, priority, status, url, desired_date')
     .eq('user_id', user.id)
+    .eq('context_id', contextId)
     .neq('status', 'purchased')
     .limit(12)
 
