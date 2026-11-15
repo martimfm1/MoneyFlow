@@ -128,12 +128,12 @@ export default async function DashboardLayout({
             </div>
           </div>
 
-          <main id="main-content" tabIndex={-1} className="min-w-0 pb-24 outline-none lg:pb-10">
+          <div id="main-content" tabIndex={-1} className="min-w-0 pb-24 outline-none lg:pb-10">
             {children}
             <div className="moneyflow-shell pb-5 pt-5">
               <SilentraCredit className="border-t border-border/60 pt-5" />
             </div>
-          </main>
+          </div>
         </div>
       </div>
 
