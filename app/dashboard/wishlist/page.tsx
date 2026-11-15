@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation'
 import { createGoalFromWishlist, updateWishlistStatus } from './actions'
 import { DeleteWishlistItemButton } from './delete-button'
 import { formatCurrency, formatDate } from '@/lib/format'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -33,6 +34,7 @@ export default async function WishlistPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: profile }, { data: items }] = await Promise.all([
     supabase
@@ -46,6 +48,7 @@ export default async function WishlistPage({
         'id, name, price, category, priority, status, url, image_url, desired_date, notes',
       )
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('status', { ascending: true })
       .order('priority', { ascending: true })
       .order('created_at', { ascending: false }),
