@@ -212,6 +212,8 @@ drop policy if exists transactions_select_own on public.transactions;
 drop policy if exists transactions_delete_own on public.transactions;
 drop policy if exists transactions_insert_own on public.transactions;
 drop policy if exists transactions_update_own on public.transactions;
+drop policy if exists transactions_account_and_category_own on public.transactions;
+drop policy if exists transactions_account_and_category_own_update on public.transactions;
 create policy transactions_select_own_context on public.transactions
 for select using (
   auth.uid() = user_id
@@ -225,7 +227,7 @@ for insert with check (
     select 1 from public.accounts a
     where a.id = account_id
       and a.user_id = auth.uid()
-      and a.finance_context = finance_context
+      and a.finance_context = public.transactions.finance_context
   )
   and (
     category_id is null
@@ -233,7 +235,7 @@ for insert with check (
       select 1 from public.categories c
       where c.id = category_id
         and c.user_id = auth.uid()
-        and c.finance_context = finance_context
+        and c.finance_context = public.transactions.finance_context
     )
   )
 );
@@ -257,7 +259,7 @@ with check (
       select 1 from public.categories c
       where c.id = category_id
         and c.user_id = auth.uid()
-        and c.finance_context = finance_context
+        and c.finance_context = public.transactions.finance_context
     )
   )
 );
@@ -297,6 +299,8 @@ drop policy if exists goals_select_own on public.goals;
 drop policy if exists goals_delete_own on public.goals;
 drop policy if exists goals_insert_own on public.goals;
 drop policy if exists goals_update_own on public.goals;
+drop policy if exists goals_wishlist_own on public.goals;
+drop policy if exists goals_wishlist_own_update on public.goals;
 create policy goals_select_own_context on public.goals
 for select using (
   auth.uid() = user_id
@@ -312,7 +316,7 @@ for insert with check (
       select 1 from public.wishlist_items w
       where w.id = wishlist_item_id
         and w.user_id = auth.uid()
-        and w.finance_context = finance_context
+        and w.finance_context = public.goals.finance_context
     )
   )
 );
@@ -344,6 +348,8 @@ drop policy if exists goal_contributions_select_own on public.goal_contributions
 drop policy if exists goal_contributions_delete_own on public.goal_contributions;
 drop policy if exists goal_contributions_insert_own on public.goal_contributions;
 drop policy if exists goal_contributions_update_own on public.goal_contributions;
+drop policy if exists goal_contributions_goal_own on public.goal_contributions;
+drop policy if exists goal_contributions_goal_own_update on public.goal_contributions;
 create policy goal_contributions_select_own_context on public.goal_contributions
 for select using (
   auth.uid() = user_id
@@ -357,7 +363,7 @@ for insert with check (
     select 1 from public.goals g
     where g.id = goal_id
       and g.user_id = auth.uid()
-      and g.finance_context = finance_context
+      and g.finance_context = public.goal_contributions.finance_context
   )
 );
 create policy goal_contributions_update_own_context on public.goal_contributions
