@@ -377,7 +377,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path = public
-as $
+as $sync_financial_context_currency$
 begin
   if new.currency_code is distinct from old.currency_code then
     update public.financial_contexts
@@ -388,7 +388,7 @@ begin
 
   return new;
 end;
-$;
+$sync_financial_context_currency$;
 
 create trigger profiles_sync_financial_context_currency
   after update of currency_code on public.profiles
