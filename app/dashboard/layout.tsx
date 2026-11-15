@@ -8,7 +8,7 @@ import { QuickAdd } from '@/components/dashboard/quick-add'
 import { createClient } from '@/lib/supabase/server'
 import { createTranslator, normalizeLocale } from '@/lib/i18n'
 import { FinancialContextSwitcher } from '@/components/dashboard/financial-context-switcher'
-import { getFinancialContext } from '@/lib/financial-context'
+import { getFinancialContext, getFinancialContextSelection } from '@/lib/financial-context'
 
 export default async function DashboardLayout({
   children,
@@ -21,14 +21,17 @@ export default async function DashboardLayout({
   const { data: profile } = user
     ? await supabase
         .from('profiles')
-        .select('locale')
+        .select('locale, active_finance_context')
         .eq('id', user.id)
         .maybeSingle()
     : { data: null }
 
   const locale = normalizeLocale(profile?.locale)
   const t = createTranslator(locale)
-  const financialContext = user
+  const activeContext = user
+    ? await getFinancialContextSelection(supabase, user.id)
+    : null
+  const financialContext = user && activeContext !== 'general'
     ? await getFinancialContext(supabase, user.id)
     : null
 
@@ -92,12 +95,19 @@ export default async function DashboardLayout({
           tabIndex={-1}
           className="min-w-0 pb-20 outline-none lg:pb-10"
         >
-          {financialContext ? (
+          {activeContext ? (
             <div className="px-4 pt-4 sm:px-6 lg:px-0">
               <FinancialContextSwitcher
-                active={financialContext.slug}
+                active={activeContext}
                 locale={locale}
               />
+              {activeContext === 'general' ? (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  {locale === 'en'
+                    ? 'This overview is read-only. Select Personal or Silentra to add and manage records.'
+                    : 'A visão Geral é apenas de leitura. Seleciona Pessoal ou Silentra para criar e gerir registos.'}
+                </p>
+              ) : null}
             </div>
           ) : null}
           {children}
@@ -107,7 +117,7 @@ export default async function DashboardLayout({
         </div>
       </div>
 
-      {user ? <QuickAdd locale={locale} /> : null}
+      {user && activeContext !== 'general' ? <QuickAdd locale={locale} /> : null}
       <div className="lg:hidden">
         <DashboardNavigation locale={locale} />
       </div>
