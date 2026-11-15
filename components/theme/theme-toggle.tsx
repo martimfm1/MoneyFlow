@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { Laptop, Moon, Palette, Sun } from 'lucide-react'
 import type { MoneyFlowLocale } from '@/lib/i18n'
 
@@ -9,6 +9,7 @@ type Accent = 'mint' | 'blue' | 'violet' | 'amber'
 
 const THEME_KEY = 'moneyflow-theme'
 const ACCENT_KEY = 'moneyflow-accent'
+const PREFERENCES_EVENT = 'moneyflow-preferences-change'
 
 const themeOptions: Record<MoneyFlowLocale, Array<{ value: Theme; label: string }>> = {
   'pt-PT': [
@@ -30,6 +31,33 @@ const accentOptions: Array<{ value: Accent; color: string; label: Record<MoneyFl
   { value: 'amber', color: '#edb955', label: { 'pt-PT': 'Âmbar', en: 'Amber' } },
 ]
 
+function subscribePreferences(callback: () => void) {
+  window.addEventListener('storage', callback)
+  window.addEventListener(PREFERENCES_EVENT, callback)
+  return () => {
+    window.removeEventListener('storage', callback)
+    window.removeEventListener(PREFERENCES_EVENT, callback)
+  }
+}
+
+function getThemeSnapshot(): Theme {
+  const value = window.localStorage.getItem(THEME_KEY)
+  return value === 'light' || value === 'dark' || value === 'system' ? value : 'system'
+}
+
+function getThemeServerSnapshot(): Theme {
+  return 'system'
+}
+
+function getAccentSnapshot(): Accent {
+  const value = window.localStorage.getItem(ACCENT_KEY)
+  return value === 'blue' || value === 'violet' || value === 'amber' || value === 'mint' ? value : 'mint'
+}
+
+function getAccentServerSnapshot(): Accent {
+  return 'mint'
+}
+
 function resolveTheme(theme: Theme): 'light' | 'dark' {
   if (theme !== 'system') return theme
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
@@ -42,31 +70,17 @@ function applyPreferences(theme: Theme, accent: Accent) {
   document.documentElement.style.colorScheme = resolved
 }
 
-function readTheme(): Theme {
-  const value = window.localStorage.getItem(THEME_KEY)
-  return value === 'light' || value === 'dark' || value === 'system' ? value : 'system'
-}
-
-function readAccent(): Accent {
-  const value = window.localStorage.getItem(ACCENT_KEY)
-  return value === 'blue' || value === 'violet' || value === 'amber' || value === 'mint' ? value : 'mint'
+function savePreference(key: string, value: string) {
+  window.localStorage.setItem(key, value)
+  window.dispatchEvent(new Event(PREFERENCES_EVENT))
 }
 
 export function ThemeToggle({ locale }: { locale: MoneyFlowLocale }) {
-  const [theme, setTheme] = useState<Theme>('system')
-  const [accent, setAccent] = useState<Accent>('mint')
+  const theme = useSyncExternalStore(subscribePreferences, getThemeSnapshot, getThemeServerSnapshot)
+  const accent = useSyncExternalStore(subscribePreferences, getAccentSnapshot, getAccentServerSnapshot)
   const isEnglish = locale === 'en'
 
   useEffect(() => {
-    const storedTheme = readTheme()
-    const storedAccent = readAccent()
-    setTheme(storedTheme)
-    setAccent(storedAccent)
-    applyPreferences(storedTheme, storedAccent)
-  }, [])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
     applyPreferences(theme, accent)
     const media = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => {
@@ -75,16 +89,6 @@ export function ThemeToggle({ locale }: { locale: MoneyFlowLocale }) {
     media.addEventListener('change', handleChange)
     return () => media.removeEventListener('change', handleChange)
   }, [theme, accent])
-
-  function changeTheme(value: Theme) {
-    setTheme(value)
-    window.localStorage.setItem(THEME_KEY, value)
-  }
-
-  function changeAccent(value: Accent) {
-    setAccent(value)
-    window.localStorage.setItem(ACCENT_KEY, value)
-  }
 
   return (
     <div className="w-full space-y-5">
@@ -102,7 +106,7 @@ export function ThemeToggle({ locale }: { locale: MoneyFlowLocale }) {
                 key={option.value}
                 type="button"
                 aria-pressed={selected}
-                onClick={() => changeTheme(option.value)}
+                onClick={() => savePreference(THEME_KEY, option.value)}
                 className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-2 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${selected ? 'bg-card text-foreground shadow-sm ring-1 ring-border' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 <Icon className="size-3.5" aria-hidden="true" />
@@ -127,7 +131,7 @@ export function ThemeToggle({ locale }: { locale: MoneyFlowLocale }) {
                 type="button"
                 aria-label={option.label[locale]}
                 aria-pressed={selected}
-                onClick={() => changeAccent(option.value)}
+                onClick={() => savePreference(ACCENT_KEY, option.value)}
                 className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-3 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${selected ? 'border-primary/60 bg-primary/10 text-foreground ring-1 ring-primary/30' : 'border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground'}`}
               >
                 <span className="size-3 rounded-full ring-2 ring-background" style={{ backgroundColor: option.color }} />
