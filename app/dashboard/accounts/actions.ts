@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export type AccountActionState = {
   error?: string
@@ -21,6 +22,16 @@ const updateSchema = z.object({
 
 const deleteSchema = z.object({ id: z.uuid() })
 
+async function getUserContext() {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
+  return { supabase, user, financialContext }
+}
+
 export async function toggleAccountStatus(formData: FormData) {
   const parsed = toggleSchema.safeParse({
     id: formData.get('id'),
@@ -28,17 +39,14 @@ export async function toggleAccountStatus(formData: FormData) {
   })
   if (!parsed.success) redirect('/dashboard/accounts?error=Conta%20inválida.')
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user, financialContext } = await getUserContext()
 
   const { error } = await supabase
     .from('accounts')
     .update({ is_active: parsed.data.isActive === 'true' })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error)
     redirect(
@@ -59,11 +67,7 @@ export async function updateAccount(formData: FormData) {
       `/dashboard/accounts/${formData.get('id')}/edit?error=Dados%20inválidos.`,
     )
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user, financialContext } = await getUserContext()
 
   const { error } = await supabase
     .from('accounts')
@@ -74,6 +78,7 @@ export async function updateAccount(formData: FormData) {
     })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error)
     redirect(
@@ -90,17 +95,14 @@ export async function deleteAccount(
   const parsed = deleteSchema.safeParse({ id: formData.get('id') })
   if (!parsed.success) return { error: 'Conta inválida.' }
 
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user, financialContext } = await getUserContext()
 
   const { data: account, error: accountError } = await supabase
     .from('accounts')
     .select('id')
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .maybeSingle()
 
   if (accountError) return { error: 'Não foi possível verificar a conta.' }
@@ -111,6 +113,7 @@ export async function deleteAccount(
     .select('id', { count: 'exact', head: true })
     .eq('account_id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (countError) return { error: 'Não foi possível verificar os movimentos.' }
 
@@ -122,6 +125,7 @@ export async function deleteAccount(
     .delete()
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error)
     return { error: error.message || 'Não foi possível apagar a conta.' }
