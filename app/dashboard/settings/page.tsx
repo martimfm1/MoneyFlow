@@ -168,6 +168,26 @@ export default async function SettingsPage({
         </Link>
       </section>
 
+      <Link
+        href="/dashboard/settings/integrations"
+        className="mt-6 flex max-w-5xl items-center gap-3 rounded-2xl border border-border/80 bg-card/75 p-4 transition-colors hover:border-primary/35 hover:bg-muted/30"
+      >
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <Sparkles className="size-[18px]" aria-hidden="true" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold">
+            {isEnglish ? 'Integrations' : 'Integrações'}
+          </span>
+          <span className="mt-0.5 block text-xs text-muted-foreground">
+            {isEnglish
+              ? 'Connect Silentra for Barbers and other trusted services.'
+              : 'Liga o Silentra for Barbers e outros serviços de confiança.'}
+          </span>
+        </span>
+        <ArrowLeft className="size-4 rotate-180 text-muted-foreground" aria-hidden="true" />
+      </Link>
+
       <div className="mt-6 flex max-w-5xl items-start gap-3 rounded-2xl border border-border/70 bg-muted/35 p-4">
         <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-background text-primary">
           <Sparkles className="size-4" aria-hidden="true" />
