@@ -369,7 +369,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = ''
-as $
+as $worker$
 declare
   v_user_id uuid := auth.uid();
 begin
@@ -383,7 +383,7 @@ begin
     v_user_id
   );
 end;
-$;
+$worker$;
 
 revoke all on function public.process_my_due_recurring_transactions()
   from public, anon;
@@ -397,7 +397,7 @@ create extension if not exists pg_cron with schema pg_catalog;
 select cron.schedule(
   'moneyflow-recurring-transactions-daily',
   '5 4 * * *',
-  $select public.process_due_recurring_transactions((now() at time zone 'Europe/Lisbon')::date, 250, null);$
+  $cron$select public.process_due_recurring_transactions((now() at time zone 'Europe/Lisbon')::date, 250, null);$cron$
 );
 
 notify pgrst, 'reload schema';
