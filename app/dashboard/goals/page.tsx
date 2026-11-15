@@ -30,18 +30,18 @@ export default async function GoalsPage({
   const [{ data: profile }, { data: goals }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('currency_code')
+      .select('currency_code, active_finance_context')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
       .from('goals')
-      .select('id, name, target_amount, current_amount, target_date, priority')
+      .select('id, name, target_amount, current_amount, target_date, priority, finance_context')
       .eq('user_id', user.id)
       .order('priority', { ascending: true })
       .order('created_at', { ascending: false }),
   ])
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = profile?.currency_code ?? 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10 lg:py-12">
@@ -57,11 +57,13 @@ export default async function GoalsPage({
             Define metas de poupança e acompanha o progresso com contribuições.
           </p>
         </div>
-        <Button asChild size="sm">
-          <Link href="/dashboard/goals/new">
-            <Plus className="size-4" aria-hidden="true" /> Novo objetivo
-          </Link>
-        </Button>
+        {!readOnly ? (
+          <Button asChild size="sm">
+            <Link href="/dashboard/goals/new">
+              <Plus className="size-4" aria-hidden="true" /> Novo objetivo
+            </Link>
+          </Button>
+        ) : null}
       </header>
 
       {params.toast ? (
@@ -89,9 +91,11 @@ export default async function GoalsPage({
             Cria um objetivo para começar a dar um propósito concreto ao
             dinheiro que queres guardar.
           </p>
-          <Button asChild className="mt-5">
-            <Link href="/dashboard/goals/new">Criar objetivo</Link>
-          </Button>
+          {!readOnly ? (
+            <Button asChild className="mt-5">
+              <Link href="/dashboard/goals/new">Criar objetivo</Link>
+            </Button>
+          ) : null}
         </section>
       ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -115,6 +119,11 @@ export default async function GoalsPage({
                       Prioridade{' '}
                       {priorityLabels[goal.priority] ?? goal.priority}
                     </p>
+                    {readOnly ? (
+                      <p className="mt-1 text-xs text-[hsl(var(--muted-foreground))]">
+                        {goal.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                      </p>
+                    ) : null}
                   </div>
                   <p className="shrink-0 text-sm font-semibold tabular-nums">
                     {progress}%
@@ -154,7 +163,7 @@ export default async function GoalsPage({
                 ) : null}
 
                 <div className="mt-auto pt-5">
-                  {remaining > 0 ? (
+                  {!readOnly && remaining > 0 ? (
                     <form
                       action={addGoalContribution}
                       className="flex min-w-0 gap-2"
@@ -188,7 +197,7 @@ export default async function GoalsPage({
                         Ver objetivo
                       </Link>
                     </Button>
-                    <DeleteGoalButton goalId={goal.id} />
+                    {!readOnly ? <DeleteGoalButton goalId={goal.id} /> : null}
                   </div>
                 </div>
               </article>
