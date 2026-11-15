@@ -69,18 +69,18 @@ export default async function BudgetsPage({
   ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('currency_code')
+      .select('currency_code, active_finance_context')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
       .from('categories')
-      .select('id, name')
+      .select('id, name, finance_context')
       .eq('user_id', user.id)
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true }),
     supabase
       .from('budgets')
-      .select('id, category_id, amount')
+      .select('id, category_id, amount, finance_context')
       .eq('user_id', user.id)
       .eq('month_start', currentMonthDate),
     supabase
@@ -92,7 +92,7 @@ export default async function BudgetsPage({
       .lt('occurred_at', nextStart),
   ])
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = profile?.currency_code ?? 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
   const budgetsByCategory = new Map(
     (budgets ?? []).map((budget) => [
       budget.category_id,
@@ -310,70 +310,80 @@ export default async function BudgetsPage({
         )}
       </section>
 
-      <section
-        id="novo-orcamento"
-        className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
-      >
-        <div>
-          <p className="text-sm text-[hsl(var(--muted-foreground))]">
-            Configuração
-          </p>
-          <h2 className="mt-1 text-lg font-semibold">Definir orçamento</h2>
-          <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
-            Guardar outra vez a mesma categoria neste mês atualiza o limite
-            existente.
-          </p>
-        </div>
-        {availableCategories.length ? (
-          <form
-            action={upsertBudget}
-            className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
-          >
-            <input type="hidden" name="month" value={currentMonth} />
-            <label className="grid gap-2 text-sm font-medium">
-              Categoria
-              <select
-                name="categoryId"
-                required
-                className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-              >
-                <option value="">Selecionar categoria</option>
-                {availableCategories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="grid gap-2 text-sm font-medium">
-              Limite mensal
-              <input
-                name="amount"
-                type="text"
-                inputMode="decimal"
-                autoComplete="off"
-                placeholder="Ex.: 150,00"
-                required
-                className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-              />
-            </label>
-            <Button type="submit" className="w-full sm:w-auto">
-              Guardar
-            </Button>
-          </form>
-        ) : (
-          <div className="mt-5 flex flex-col gap-3 rounded-xl border border-dashed p-4 sm:flex-row sm:items-center sm:justify-between">
+      {readOnly ? (
+        <section className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 text-sm text-[hsl(var(--muted-foreground))] shadow-sm sm:p-6">
+          Os orçamentos são apresentados em conjunto no contexto Geral. Para
+          criar ou alterar limites, muda para Pessoal ou Silentra.
+        </section>
+      ) : (
+        <section
+          id="novo-orcamento"
+          className="mt-8 rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6"
+        >
+          <div>
             <p className="text-sm text-[hsl(var(--muted-foreground))]">
-              Cria primeiro uma categoria para poderes definir um orçamento.
+              Configuração
             </p>
-            <Button asChild variant="outline">
-              <Link href="/dashboard/categories">
-                <Plus className="size-4" /> Criar categoria
-              </Link>
-            </Button>
+            <h2 className="mt-1 text-lg font-semibold">Definir orçamento</h2>
+            <p className="mt-1 text-sm text-[hsl(var(--muted-foreground))]">
+              Guardar outra vez a mesma categoria neste mês atualiza o limite
+              existente.
+            </p>
           </div>
-        )}
-      </section>
+          {availableCategories.length ? (
+            <form
+              action={upsertBudget}
+              className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto] sm:items-end"
+            >
+              <input type="hidden" name="month" value={currentMonth} />
+              <label className="grid gap-2 text-sm font-medium">
+                Categoria
+                <select
+                  name="categoryId"
+                  required
+                  className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+                >
+                  <option value="">Selecionar categoria</option>
+                  {availableCategories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                      {readOnly
+                        ? ` · ${category.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}`
+                        : ''}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="grid gap-2 text-sm font-medium">
+                Limite mensal
+                <input
+                  name="amount"
+                  type="text"
+                  inputMode="decimal"
+                  autoComplete="off"
+                  placeholder="Ex.: 150,00"
+                  required
+                  className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+                />
+              </label>
+              <Button type="submit" className="w-full sm:w-auto">
+                Guardar
+              </Button>
+            </form>
+          ) : (
+            <div className="mt-5 flex flex-col gap-3 rounded-xl border border-dashed p-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-[hsl(var(--muted-foreground))]">
+                Cria primeiro uma categoria para poderes definir um orçamento.
+              </p>
+              <Button asChild variant="outline">
+                <Link href="/dashboard/categories">
+                  <Plus className="size-4" /> Criar categoria
+                </Link>
+              </Button>
+            </div>
+          )}
+        </section>
+      )}
     </main>
   )
 }
