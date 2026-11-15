@@ -48,12 +48,13 @@ export default async function EditTransactionPage({
       .order('name', { ascending: true }),
     supabase
       .from('profiles')
-      .select('currency_code')
+      .select('currency_code, active_finance_context')
       .eq('id', user.id)
       .maybeSingle(),
   ])
 
   if (!transaction) notFound()
+  if (profile?.active_finance_context === 'general') redirect(`/dashboard/transactions/${id}`)
 
   const currency = profile?.currency_code ?? 'EUR'
   const dateValue = transaction.occurred_at.slice(0, 10)
