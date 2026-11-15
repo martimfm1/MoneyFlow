@@ -19,7 +19,10 @@ import { Separator } from '@/components/ui/separator'
 import { RecurringExpenseCreateDialog } from './create-dialog'
 import { RecurringTabs } from '@/components/dashboard/recurring-tabs'
 import { DeleteRecurringExpenseButton } from './delete-button'
-import { toggleRecurringExpense } from './actions'
+import {
+  toggleRecurringExpense,
+  toggleRecurringExpenseAutomation,
+} from './actions'
 import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
@@ -35,6 +38,7 @@ type RecurringExpense = {
   account_id: string | null
   account?: { name: string; currency_code: string } | null
   is_active: boolean
+  auto_post_enabled: boolean
   notes: string | null
 }
 
@@ -89,7 +93,7 @@ export default async function RecurringExpensesPage({
       supabase
         .from('recurring_expenses')
         .select(
-          'id, name, provider, amount, frequency, next_due_date, currency_code, account_id, account:accounts(name, currency_code), is_active, notes',
+          'id, name, provider, amount, frequency, next_due_date, currency_code, account_id, account:accounts(name, currency_code), is_active, auto_post_enabled, notes',
         )
         .eq('user_id', user.id)
         .eq('context_id', financialContext.id)
@@ -151,6 +155,12 @@ export default async function RecurringExpensesPage({
         />
       </header>
       <RecurringTabs active="expense" />
+      <p className="mt-3 max-w-2xl text-xs leading-5 text-muted-foreground">
+        As novas recorrências criam movimentos reais quando chegam à data: as
+        entradas somam ao saldo e as saídas subtraem. As recorrências antigas
+        continuam em modo de planeamento até ativares os lançamentos
+        automáticos.
+      </p>
       {params.toast ? (
         <p
           role="status"
@@ -254,9 +264,22 @@ export default async function RecurringExpensesPage({
                           {frequencyLabels[item.frequency]}
                         </p>
                       </div>
-                      <Badge variant={item.is_active ? 'secondary' : 'outline'}>
-                        {item.is_active ? 'Ativa' : 'Pausada'}
-                      </Badge>
+                      <div className="flex shrink-0 flex-col items-end gap-1.5">
+                        <Badge
+                          variant={item.is_active ? 'secondary' : 'outline'}
+                        >
+                          {item.is_active ? 'Ativa' : 'Pausada'}
+                        </Badge>
+                        <Badge
+                          variant={
+                            item.auto_post_enabled ? 'default' : 'outline'
+                          }
+                        >
+                          {item.auto_post_enabled
+                            ? 'Lançamento automático'
+                            : 'Só planeamento'}
+                        </Badge>
+                      </div>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -302,6 +325,25 @@ export default async function RecurringExpensesPage({
                         />
                         <Button type="submit" size="sm" variant="outline">
                           {item.is_active ? 'Pausar' : 'Ativar'}
+                        </Button>
+                      </form>
+                      <form action={toggleRecurringExpenseAutomation}>
+                        <input type="hidden" name="id" value={item.id} />
+                        <input
+                          type="hidden"
+                          name="enabled"
+                          value={item.auto_post_enabled ? 'false' : 'true'}
+                        />
+                        <Button
+                          type="submit"
+                          size="sm"
+                          variant={
+                            item.auto_post_enabled ? 'outline' : 'secondary'
+                          }
+                        >
+                          {item.auto_post_enabled
+                            ? 'Pausar lançamentos'
+                            : 'Ativar lançamentos'}
                         </Button>
                       </form>
                       <DeleteRecurringExpenseButton

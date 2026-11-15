@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Empty,
@@ -17,6 +18,7 @@ import { RecurringIncomeCreateDialog } from './create-dialog'
 import { RecurringIncomeActionMenu } from './action-menu'
 import { RecurringTabs } from '@/components/dashboard/recurring-tabs'
 import { getFinancialContext } from '@/lib/financial-context'
+import { toggleRecurringIncomeAutomation } from './actions'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,6 +33,7 @@ type RecurringIncome = {
   account_id: string | null
   account?: { name: string; currency_code: string } | null
   is_active: boolean
+  auto_post_enabled: boolean
 }
 
 const frequencyLabels = {
@@ -90,7 +93,7 @@ export default async function RecurringIncomePage({
       supabase
         .from('recurring_incomes')
         .select(
-          'id, name, source, amount, frequency, next_income_date, currency_code, account_id, account:accounts(name, currency_code), is_active',
+          'id, name, source, amount, frequency, next_income_date, currency_code, account_id, account:accounts(name, currency_code), is_active, auto_post_enabled',
         )
         .eq('user_id', user.id)
         .eq('context_id', financialContext.id)
@@ -146,6 +149,12 @@ export default async function RecurringIncomePage({
         </div>
       </header>
       <RecurringTabs active="income" />
+      <p className="mt-3 max-w-2xl text-xs leading-5 text-muted-foreground">
+        As novas recorrências criam movimentos reais quando chegam à data: as
+        entradas somam ao saldo e as saídas subtraem. As recorrências antigas
+        continuam em modo de planeamento até ativares os lançamentos
+        automáticos.
+      </p>
 
       {params.toast ? (
         <p
@@ -256,9 +265,18 @@ export default async function RecurringIncomePage({
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <Badge variant={item.is_active ? 'secondary' : 'outline'}>
-                      {item.is_active ? 'Ativo' : 'Pausado'}
-                    </Badge>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant={item.is_active ? 'secondary' : 'outline'}>
+                        {item.is_active ? 'Ativo' : 'Pausado'}
+                      </Badge>
+                      <Badge
+                        variant={item.auto_post_enabled ? 'default' : 'outline'}
+                      >
+                        {item.auto_post_enabled
+                          ? 'Lançamento automático'
+                          : 'Só planeamento'}
+                      </Badge>
+                    </div>
                     <p className="mt-4 text-2xl font-semibold tabular-nums">
                       {formatCurrency(Number(item.amount), itemCurrency)}
                     </p>
@@ -284,6 +302,29 @@ export default async function RecurringIncomePage({
                         ) : null}
                       </div>
                     </div>
+                    <form
+                      action={toggleRecurringIncomeAutomation}
+                      className="mt-4"
+                    >
+                      <input type="hidden" name="id" value={item.id} />
+                      <input
+                        type="hidden"
+                        name="enabled"
+                        value={item.auto_post_enabled ? 'false' : 'true'}
+                      />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant={
+                          item.auto_post_enabled ? 'outline' : 'secondary'
+                        }
+                        className="w-full"
+                      >
+                        {item.auto_post_enabled
+                          ? 'Pausar lançamentos automáticos'
+                          : 'Ativar lançamentos automáticos'}
+                      </Button>
+                    </form>
                   </CardContent>
                 </Card>
               )
