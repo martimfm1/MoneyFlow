@@ -27,30 +27,30 @@ export default async function FinancialOverviewPage() {
   const nextMonthStart = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1),
   )
-  const [{ data: contexts }, { data: accounts }, { data: transactions }, { data: profile }] =
-    await Promise.all([
-      supabase
-        .from('financial_contexts')
-        .select('id, slug, name, context_type, currency_code')
-        .eq('user_id', user.id)
-        .order('slug'),
-      supabase
-        .from('accounts')
-        .select('id, context_id, balance, currency_code, is_active')
-        .eq('user_id', user.id)
-        .eq('is_active', true),
-      supabase
-        .from('transactions')
-        .select('context_id, transaction_type, amount, accounts(currency_code)')
-        .eq('user_id', user.id)
-        .gte('occurred_at', monthStart.toISOString())
-        .lt('occurred_at', nextMonthStart.toISOString()),
-      supabase
-        .from('profiles')
-        .select('locale')
-        .eq('id', user.id)
-        .maybeSingle(),
-    ])
+  const [
+    { data: contexts },
+    { data: accounts },
+    { data: transactions },
+    { data: profile },
+  ] = await Promise.all([
+    supabase
+      .from('financial_contexts')
+      .select('id, slug, name, context_type, currency_code')
+      .eq('user_id', user.id)
+      .order('slug'),
+    supabase
+      .from('accounts')
+      .select('id, context_id, balance, currency_code, is_active')
+      .eq('user_id', user.id)
+      .eq('is_active', true),
+    supabase
+      .from('transactions')
+      .select('context_id, transaction_type, amount, accounts(currency_code)')
+      .eq('user_id', user.id)
+      .gte('occurred_at', monthStart.toISOString())
+      .lt('occurred_at', nextMonthStart.toISOString()),
+    supabase.from('profiles').select('locale').eq('id', user.id).maybeSingle(),
+  ])
 
   const monthlyByContext = new Map<string, MonthlyFlow>()
   for (const transaction of transactions ?? []) {
@@ -109,7 +109,10 @@ export default async function FinancialOverviewPage() {
                 <div className="flex items-center gap-3">
                   <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted">
                     {isBusiness ? (
-                      <BriefcaseBusiness className="size-4" aria-hidden="true" />
+                      <BriefcaseBusiness
+                        className="size-4"
+                        aria-hidden="true"
+                      />
                     ) : (
                       <Wallet className="size-4" aria-hidden="true" />
                     )}
@@ -157,7 +160,8 @@ export default async function FinancialOverviewPage() {
                   <p className="text-xs font-medium text-muted-foreground">
                     {isEnglish ? 'This month' : 'Este mês'}
                   </p>
-                  {Object.entries(monthlyByContext.get(context.id) ?? {}).length ? (
+                  {Object.entries(monthlyByContext.get(context.id) ?? {})
+                    .length ? (
                     <div className="mt-2 grid gap-2 sm:grid-cols-2">
                       {Object.entries(monthlyByContext.get(context.id) ?? {})
                         .sort(([a], [b]) => a.localeCompare(b))
