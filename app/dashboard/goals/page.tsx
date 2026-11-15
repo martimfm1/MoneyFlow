@@ -44,7 +44,8 @@ export default async function GoalsPage({
       .order('created_at', { ascending: false }),
   ])
 
-  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10 lg:py-12">
