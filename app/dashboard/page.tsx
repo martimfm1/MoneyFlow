@@ -36,6 +36,15 @@ export default async function DashboardPage() {
   if (!user) redirect('/login')
   const financialContext = await getFinancialContext(supabase, user.id)
 
+  const { error: recurringProcessingError } = await supabase.rpc(
+    'process_my_due_recurring_transactions',
+  )
+  if (recurringProcessingError) {
+    console.error('[RECURRING_TRANSACTIONS_PROCESS_FAILED]', {
+      code: recurringProcessingError.code ?? 'UNKNOWN',
+    })
+  }
+
   const [
     { data: profile },
     { data: accounts },
