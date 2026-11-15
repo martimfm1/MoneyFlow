@@ -54,7 +54,7 @@ export default async function WishlistPage({
       .order('created_at', { ascending: false }),
   ])
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
   const totalValue = (items ?? [])
     .filter((item) => item.status !== 'purchased')
     .reduce((sum, item) => sum + Number(item.price), 0)
