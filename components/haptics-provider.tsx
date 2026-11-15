@@ -5,7 +5,10 @@ import { useEffect } from 'react'
 type HapticKind = 'tap' | 'success' | 'error'
 
 function vibrate(kind: HapticKind) {
-  if (typeof navigator === 'undefined' || typeof navigator.vibrate !== 'function') {
+  if (
+    typeof navigator === 'undefined' ||
+    typeof navigator.vibrate !== 'function'
+  ) {
     return
   }
 

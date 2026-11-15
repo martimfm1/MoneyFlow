@@ -83,7 +83,10 @@ export async function MonthlyOverview({
   const health = calculateHealth(income, expenses, recurringReserve)
 
   return (
-    <section className="mf-enter-delayed mt-7 lg:mt-10" aria-labelledby="monthly-overview-title">
+    <section
+      className="mf-enter-delayed mt-7 lg:mt-10"
+      aria-labelledby="monthly-overview-title"
+    >
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
