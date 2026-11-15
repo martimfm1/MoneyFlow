@@ -16,7 +16,7 @@ const labels = {
   'pt-PT': {
     label: 'Contexto financeiro',
     personal: 'Pessoal',
-    silencra: 'Silentra',
+    silentra: 'Silentra',
     general: 'Geral',
     saving: 'A atualizar…',
     error: 'Não foi possível alterar o contexto.',
@@ -24,7 +24,7 @@ const labels = {
   en: {
     label: 'Finance context',
     personal: 'Personal',
-    silencra: 'Silentra',
+    silentra: 'Silentra',
     general: 'All finances',
     saving: 'Updating…',
     error: 'Could not change the context.',
@@ -73,7 +73,7 @@ export function FinanceContextSwitcher({ value, locale }: Props) {
           className="max-w-[9rem] bg-transparent text-sm font-semibold outline-none disabled:opacity-60"
         >
           <option value="personal">{copy.personal}</option>
-          <option value="silentra">{copy.silencra}</option>
+          <option value="silentra">{copy.silentra}</option>
           <option value="general">{copy.general}</option>
         </select>
         {isPending ? (
