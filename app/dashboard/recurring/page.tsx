@@ -81,13 +81,13 @@ export default async function RecurringExpensesPage({
     await Promise.all([
       supabase
         .from('profiles')
-        .select('currency_code')
+        .select('currency_code, active_finance_context')
         .eq('id', user.id)
         .maybeSingle(),
       supabase
         .from('recurring_expenses')
         .select(
-          'id, name, provider, amount, frequency, next_due_date, currency_code, account_id, account:accounts(name, currency_code), is_active, notes',
+          'id, name, provider, amount, frequency, next_due_date, currency_code, account_id, account:accounts(name, currency_code), is_active, notes, finance_context',
         )
         .eq('user_id', user.id)
         .order('is_active', { ascending: false })
@@ -99,7 +99,7 @@ export default async function RecurringExpensesPage({
         .eq('is_active', true)
         .order('name'),
     ])
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = profile?.currency_code ?? 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
   const items = (expenses ?? []) as unknown as RecurringExpense[]
   const active = items.filter((item) => item.is_active)
   const activeInPrimaryCurrency = active.filter(
@@ -140,10 +140,14 @@ export default async function RecurringExpensesPage({
             </h1>
           </div>
         </div>
-        <RecurringExpenseCreateDialog
-          currency={currency}
-          accounts={accounts ?? []}
-        />
+        {!readOnly ? (
+          <RecurringExpenseCreateDialog
+            currency={currency}
+            accounts={accounts ?? []}
+          />
+        ) : (
+          <Badge variant="outline">Geral · leitura</Badge>
+        )}
       </header>
       <RecurringTabs active="expense" />
       {params.toast ? (
@@ -213,12 +217,14 @@ export default async function RecurringExpensesPage({
             <EmptyTitle>Sem despesas recorrentes</EmptyTitle>
             <EmptyDescription>Adiciona a primeira.</EmptyDescription>
           </EmptyHeader>
-          <EmptyContent>
-            <RecurringExpenseCreateDialog
-              currency={currency}
-              accounts={accounts ?? []}
-            />
-          </EmptyContent>
+          {!readOnly ? (
+            <EmptyContent>
+              <RecurringExpenseCreateDialog
+                currency={currency}
+                accounts={accounts ?? []}
+              />
+            </EmptyContent>
+          ) : null}
         </Empty>
       ) : (
         <section>
@@ -248,6 +254,11 @@ export default async function RecurringExpensesPage({
                           {item.provider || 'Sem fornecedor'} ·{' '}
                           {frequencyLabels[item.frequency]}
                         </p>
+                        {readOnly ? (
+                          <p className="mt-1 text-xs text-muted-foreground">
+                            {item.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                          </p>
+                        ) : null}
                       </div>
                       <Badge variant={item.is_active ? 'secondary' : 'outline'}>
                         {item.is_active ? 'Ativa' : 'Pausada'}
@@ -282,28 +293,30 @@ export default async function RecurringExpensesPage({
                         {item.notes}
                       </p>
                     ) : null}
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      <Button asChild size="sm" variant="ghost">
-                        <Link href={`/dashboard/recurring/${item.id}/edit`}>
-                          Editar
-                        </Link>
-                      </Button>
-                      <form action={toggleRecurringExpense}>
-                        <input type="hidden" name="id" value={item.id} />
-                        <input
-                          type="hidden"
-                          name="isActive"
-                          value={item.is_active ? 'false' : 'true'}
-                        />
-                        <Button type="submit" size="sm" variant="outline">
-                          {item.is_active ? 'Pausar' : 'Ativar'}
+                    {!readOnly ? (
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        <Button asChild size="sm" variant="ghost">
+                          <Link href={`/dashboard/recurring/${item.id}/edit`}>
+                            Editar
+                          </Link>
                         </Button>
-                      </form>
-                      <DeleteRecurringExpenseButton
-                        id={item.id}
-                        name={item.name}
-                      />
-                    </div>
+                        <form action={toggleRecurringExpense}>
+                          <input type="hidden" name="id" value={item.id} />
+                          <input
+                            type="hidden"
+                            name="isActive"
+                            value={item.is_active ? 'false' : 'true'}
+                          />
+                          <Button type="submit" size="sm" variant="outline">
+                            {item.is_active ? 'Pausar' : 'Ativar'}
+                          </Button>
+                        </form>
+                        <DeleteRecurringExpenseButton
+                          id={item.id}
+                          name={item.name}
+                        />
+                      </div>
+                    ) : null}
                   </CardContent>
                 </Card>
               )
