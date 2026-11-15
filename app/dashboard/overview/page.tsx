@@ -20,6 +20,16 @@ export default async function FinancialOverviewPage() {
 
   if (!user) redirect('/login')
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('locale, active_finance_context')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (profile?.active_finance_context !== 'general') {
+    redirect('/dashboard')
+  }
+
   const now = new Date()
   const monthStart = new Date(
     Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
@@ -31,7 +41,6 @@ export default async function FinancialOverviewPage() {
     { data: contexts },
     { data: accounts },
     { data: transactions },
-    { data: profile },
   ] = await Promise.all([
     supabase
       .from('financial_contexts')
@@ -49,7 +58,6 @@ export default async function FinancialOverviewPage() {
       .eq('user_id', user.id)
       .gte('occurred_at', monthStart.toISOString())
       .lt('occurred_at', nextMonthStart.toISOString()),
-    supabase.from('profiles').select('locale').eq('id', user.id).maybeSingle(),
   ])
 
   const monthlyByContext = new Map<string, MonthlyFlow>()
