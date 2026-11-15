@@ -65,5 +65,7 @@ jobs:
           if [ -z "$FILES" ]; then
             echo "No supported files changed; skipping formatting check."
           else
+            printf '%s\n' "$FILES" | xargs -r pnpm exec prettier --write
+            git diff -- $FILES
             printf '%s\n' "$FILES" | xargs -r pnpm exec prettier --check
           fi
