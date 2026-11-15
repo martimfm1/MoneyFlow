@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import type { FinancialContextSelection } from '@/lib/financial-context'
 import { switchFinancialContext } from '@/app/dashboard/actions'
 
@@ -30,14 +29,6 @@ export function FinancialContextSwitcher({ active, locale }: Props) {
           <option value="general">{isEnglish ? 'Overview' : 'Geral'}</option>
         </select>
       </form>
-      {active !== 'general' ? (
-        <Link
-          href="/dashboard/overview"
-          className="inline-flex min-h-10 shrink-0 items-center rounded-xl border px-3 text-sm font-medium text-[hsl(var(--muted-foreground))] transition-colors hover:bg-[hsl(var(--surface-muted))] hover:text-[hsl(var(--foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-        >
-          {isEnglish ? 'Overview' : 'Geral'}
-        </Link>
-      ) : null}
     </div>
   )
 }
