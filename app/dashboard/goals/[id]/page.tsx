@@ -70,7 +70,8 @@ export default async function GoalDetailPage({
 
   if (!goal) notFound()
 
-  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
   const current = Number(goal.current_amount)
   const target = Number(goal.target_amount)
   const remaining = Math.max(0, target - current)
