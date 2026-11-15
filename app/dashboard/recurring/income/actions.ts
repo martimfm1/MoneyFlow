@@ -46,7 +46,7 @@ async function getActiveAccount(
 ) {
   const { data } = await supabase
     .from('accounts')
-    .select('id, is_active')
+    .select('id, is_active, currency_code')
     .eq('id', accountId)
     .eq('user_id', userId)
     .eq('context_id', contextId)
@@ -77,6 +77,9 @@ export async function createRecurringIncome(formData: FormData) {
   )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
+  if (account.currency_code !== parsed.data.currencyCode) {
+    errorRedirect('A moeda da entrada tem de corresponder à moeda da conta.')
+  }
 
   const { error } = await supabase.from('recurring_incomes').insert({
     user_id: user.id,
@@ -87,6 +90,9 @@ export async function createRecurringIncome(formData: FormData) {
     amount: parsed.data.amount,
     frequency: parsed.data.frequency,
     next_income_date: parsed.data.nextIncomeDate,
+    auto_post_enabled: true,
+    schedule_day_of_month: Number(parsed.data.nextIncomeDate.slice(8, 10)),
+    schedule_month_of_year: Number(parsed.data.nextIncomeDate.slice(5, 7)),
     currency_code: parsed.data.currencyCode,
     notes: parsed.data.notes || null,
   })
@@ -123,6 +129,9 @@ export async function updateRecurringIncome(formData: FormData) {
   )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
+  if (account.currency_code !== parsed.data.currencyCode) {
+    errorRedirect('A moeda da entrada tem de corresponder à moeda da conta.')
+  }
 
   const { error } = await supabase
     .from('recurring_incomes')
@@ -133,6 +142,8 @@ export async function updateRecurringIncome(formData: FormData) {
       amount: parsed.data.amount,
       frequency: parsed.data.frequency,
       next_income_date: parsed.data.nextIncomeDate,
+      schedule_day_of_month: Number(parsed.data.nextIncomeDate.slice(8, 10)),
+      schedule_month_of_year: Number(parsed.data.nextIncomeDate.slice(5, 7)),
       currency_code: parsed.data.currencyCode,
       notes: parsed.data.notes || null,
       updated_at: new Date().toISOString(),
@@ -196,4 +207,25 @@ export async function deleteRecurringIncome(formData: FormData) {
   revalidatePath('/dashboard/recurring/income')
   revalidatePath('/dashboard')
   redirect('/dashboard/recurring/income?toast=Ganho%20apagado.')
+}
+
+export async function toggleRecurringIncomeAutomation(formData: FormData) {
+  const parsed = z
+    .object({ id: z.uuid(), enabled: z.enum(['true', 'false']) })
+    .safeParse({ id: formData.get('id'), enabled: formData.get('enabled') })
+  if (!parsed.success) errorRedirect('Entrada inválida.')
+
+  const { supabase } = await getUser()
+  const { error } = await supabase.rpc('set_recurring_automation', {
+    p_recurrence_type: 'income',
+    p_recurrence_id: parsed.data.id,
+    p_enabled: parsed.data.enabled === 'true',
+  })
+  if (error) errorRedirect('Não foi possível atualizar a automatização.')
+
+  revalidatePath('/dashboard/recurring/income')
+  revalidatePath('/dashboard')
+  redirect(
+    `/dashboard/recurring/income?toast=${parsed.data.enabled === 'true' ? 'Lançamentos%20automáticos%20ativados.%20O%20primeiro%20lançamento%20será%20na%20próxima%20data%20futura.' : 'Lançamentos%20automáticos%20pausados.'}`,
+  )
 }
