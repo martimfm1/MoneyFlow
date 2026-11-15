@@ -35,9 +35,9 @@ alter table public.transactions
   add constraint transactions_import_metadata_pair_check
   check ((import_source is null) = (import_reference is null));
 
-create unique index if not exists transactions_import_dedupe_idx
-  on public.transactions(user_id, import_source, import_reference)
-  where import_reference is not null;
+drop index if exists public.transactions_import_dedupe_idx;
+create unique index transactions_import_dedupe_idx
+  on public.transactions(user_id, finance_context, import_source, import_reference);
 
 -- Category names are unique within a context, not across the whole user account.
 alter table public.categories
@@ -88,6 +88,21 @@ $$;
 
 -- New records inherit the active context. In General, forms may explicitly choose one;
 -- the column default keeps an unspecified new record in Personal.
+create or replace function public.can_write_finance_context(target_context text)
+returns boolean
+language sql
+stable
+security invoker
+set search_path = public
+as $
+  select exists (
+    select 1
+    from public.profiles p
+    where p.id = (select auth.uid())
+      and p.active_finance_context = target_context
+  );
+$;
+
 create or replace function public.assign_active_finance_context()
 returns trigger
 language plpgsql
@@ -165,21 +180,21 @@ for select using (
 create policy accounts_insert_own_context on public.accounts
 for insert with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 create policy accounts_update_own_context on public.accounts
 for update using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 )
 with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 create policy accounts_delete_own_context on public.accounts
 for delete using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 
 drop policy if exists categories_own on public.categories;
@@ -191,21 +206,21 @@ for select using (
 create policy categories_insert_own_context on public.categories
 for insert with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 create policy categories_update_own_context on public.categories
 for update using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 )
 with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 create policy categories_delete_own_context on public.categories
 for delete using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 
 drop policy if exists transactions_select_own on public.transactions;
@@ -222,7 +237,7 @@ for select using (
 create policy transactions_insert_own_context on public.transactions
 for insert with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and exists (
     select 1 from public.accounts a
     where a.id = account_id
@@ -242,11 +257,11 @@ for insert with check (
 create policy transactions_update_own_context on public.transactions
 for update using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 )
 with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and exists (
     select 1 from public.accounts a
     where a.id = account_id
@@ -266,7 +281,7 @@ with check (
 create policy transactions_delete_own_context on public.transactions
 for delete using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 
 drop policy if exists wishlist_own on public.wishlist_items;
@@ -278,21 +293,21 @@ for select using (
 create policy wishlist_insert_own_context on public.wishlist_items
 for insert with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 create policy wishlist_update_own_context on public.wishlist_items
 for update using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 )
 with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 create policy wishlist_delete_own_context on public.wishlist_items
 for delete using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 
 drop policy if exists goals_select_own on public.goals;
@@ -309,7 +324,7 @@ for select using (
 create policy goals_insert_own_context on public.goals
 for insert with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and (
     wishlist_item_id is null
     or exists (
@@ -323,11 +338,11 @@ for insert with check (
 create policy goals_update_own_context on public.goals
 for update using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 )
 with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and (
     wishlist_item_id is null
     or exists (
@@ -341,7 +356,7 @@ with check (
 create policy goals_delete_own_context on public.goals
 for delete using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 
 drop policy if exists goal_contributions_select_own on public.goal_contributions;
@@ -358,7 +373,7 @@ for select using (
 create policy goal_contributions_insert_own_context on public.goal_contributions
 for insert with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and exists (
     select 1 from public.goals g
     where g.id = goal_id
@@ -369,11 +384,11 @@ for insert with check (
 create policy goal_contributions_update_own_context on public.goal_contributions
 for update using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 )
 with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and exists (
     select 1 from public.goals g
     where g.id = goal_id
@@ -384,7 +399,7 @@ with check (
 create policy goal_contributions_delete_own_context on public.goal_contributions
 for delete using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 
 drop policy if exists budgets_select_own on public.budgets;
@@ -399,7 +414,7 @@ for select using (
 create policy budgets_insert_own_context on public.budgets
 for insert with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and exists (
     select 1 from public.categories c
     where c.id = category_id
@@ -410,11 +425,11 @@ for insert with check (
 create policy budgets_update_own_context on public.budgets
 for update using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 )
 with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and exists (
     select 1 from public.categories c
     where c.id = category_id
@@ -425,7 +440,7 @@ with check (
 create policy budgets_delete_own_context on public.budgets
 for delete using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 
 drop policy if exists recurring_expenses_own on public.recurring_expenses;
@@ -437,7 +452,7 @@ for select using (
 create policy recurring_expenses_insert_own_context on public.recurring_expenses
 for insert with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and (
     account_id is null
     or exists (
@@ -451,11 +466,11 @@ for insert with check (
 create policy recurring_expenses_update_own_context on public.recurring_expenses
 for update using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 )
 with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and (
     account_id is null
     or exists (
@@ -469,7 +484,7 @@ with check (
 create policy recurring_expenses_delete_own_context on public.recurring_expenses
 for delete using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
 
 drop policy if exists recurring_incomes_own on public.recurring_incomes;
@@ -481,7 +496,7 @@ for select using (
 create policy recurring_incomes_insert_own_context on public.recurring_incomes
 for insert with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and (
     account_id is null
     or exists (
@@ -495,11 +510,11 @@ for insert with check (
 create policy recurring_incomes_update_own_context on public.recurring_incomes
 for update using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 )
 with check (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
   and (
     account_id is null
     or exists (
@@ -513,5 +528,5 @@ with check (
 create policy recurring_incomes_delete_own_context on public.recurring_incomes
 for delete using (
   auth.uid() = user_id
-  and public.can_access_finance_context(finance_context)
+  and public.can_write_finance_context(finance_context)
 );
