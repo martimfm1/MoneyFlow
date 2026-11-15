@@ -3,6 +3,7 @@ import './globals.css'
 import { RegisterServiceWorker } from '@/components/pwa/register-sw'
 import { QueryToaster } from '@/components/query-toaster'
 import { ThemeProvider } from '@/components/theme/theme-provider'
+import { HapticsProvider } from '@/components/haptics-provider'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeLocale } from '@/lib/i18n'
 import { Geist } from 'next/font/google'
@@ -70,6 +71,7 @@ export default async function RootLayout({
     >
       <body>
         <ThemeProvider />
+        <HapticsProvider />
         <RegisterServiceWorker />
         <QueryToaster />
         {children}
