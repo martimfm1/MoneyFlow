@@ -184,7 +184,11 @@ See [`SECURITY.md`](SECURITY.md) for the security baseline and vulnerability-rep
 
 ## Roadmap
 
-The core product foundation is in place. Future work can focus on deeper automated testing, accessibility verification, performance optimization, richer financial insights and stronger offline form persistence.
+The core product foundation is in place. Recurring income/expense tracking, multi-space finance, CSV transaction import and the installable PWA are already implemented.
+
+The next work is tracked in the [API integrations and platform roadmap](docs/roadmap/api-integrations-and-platform.md). It covers provider eligibility and selection, secure Open Banking architecture, stronger CSV import/reconciliation, sandbox integration, incremental bank sync, webhooks, recurring suggestions, API contracts, FX/export decisions, automated testing, privacy and production rollout.
+
+**Important:** direct Revolut Open Banking production access is restricted to regulated TPPs with the required certificates. Revolut Kids & Teens support in Portugal must be confirmed before promising automatic sync. CSV import remains the supported fallback while this is evaluated.
 
 ## License
 
