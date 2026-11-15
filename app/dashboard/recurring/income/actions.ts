@@ -81,23 +81,45 @@ export async function createRecurringIncome(formData: FormData) {
     errorRedirect('A moeda da entrada tem de corresponder à moeda da conta.')
   }
 
-  const { error } = await supabase.from('recurring_incomes').insert({
-    user_id: user.id,
-    context_id: financialContext.id,
-    account_id: parsed.data.accountId,
-    name: parsed.data.name,
-    source: parsed.data.source || null,
-    amount: parsed.data.amount,
-    frequency: parsed.data.frequency,
-    next_income_date: parsed.data.nextIncomeDate,
-    auto_post_enabled: true,
-    schedule_day_of_month: Number(parsed.data.nextIncomeDate.slice(8, 10)),
-    schedule_month_of_year: Number(parsed.data.nextIncomeDate.slice(5, 7)),
-    currency_code: parsed.data.currencyCode,
-    notes: parsed.data.notes || null,
-  })
+  const { data: created, error } = await supabase
+    .from('recurring_incomes')
+    .insert({
+      user_id: user.id,
+      context_id: financialContext.id,
+      account_id: parsed.data.accountId,
+      name: parsed.data.name,
+      source: parsed.data.source || null,
+      amount: parsed.data.amount,
+      frequency: parsed.data.frequency,
+      next_income_date: parsed.data.nextIncomeDate,
+      auto_post_enabled: false,
+      schedule_day_of_month: Number(parsed.data.nextIncomeDate.slice(8, 10)),
+      schedule_month_of_year: Number(parsed.data.nextIncomeDate.slice(5, 7)),
+      currency_code: parsed.data.currencyCode,
+      notes: parsed.data.notes || null,
+    })
+    .select('id')
+    .single()
 
-  if (error) errorRedirect('Não foi possível guardar o ganho.')
+  if (error || !created) errorRedirect('Não foi possível guardar o ganho.')
+
+  const { error: automationError } = await supabase.rpc(
+    'set_recurring_automation',
+    {
+      p_recurrence_type: 'income',
+      p_recurrence_id: created.id,
+      p_enabled: true,
+    },
+  )
+  if (automationError) {
+    await supabase
+      .from('recurring_incomes')
+      .delete()
+      .eq('id', created.id)
+      .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
+    errorRedirect('Não foi possível ativar os lançamentos automáticos. O ganho não foi criado.')
+  }
 
   revalidatePath('/dashboard/recurring/income')
   revalidatePath('/dashboard')
@@ -133,6 +155,15 @@ export async function updateRecurringIncome(formData: FormData) {
     errorRedirect('A moeda da entrada tem de corresponder à moeda da conta.')
   }
 
+  const { data: existing, error: existingError } = await supabase
+    .from('recurring_incomes')
+    .select('auto_post_enabled')
+    .eq('id', parsed.data.id)
+    .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
+    .maybeSingle()
+  if (existingError || !existing) errorRedirect('Ganho não encontrado.')
+
   const { error } = await supabase
     .from('recurring_incomes')
     .update({
@@ -157,6 +188,26 @@ export async function updateRecurringIncome(formData: FormData) {
       `/dashboard/recurring/income/${parsed.data.id}/edit?error=${encodeURIComponent('Não foi possível atualizar o ganho.')}`,
     )
 
+  if (existing.auto_post_enabled) {
+    const { error: automationError } = await supabase.rpc(
+      'set_recurring_automation',
+      {
+        p_recurrence_type: 'income',
+        p_recurrence_id: parsed.data.id,
+        p_enabled: true,
+      },
+    )
+    if (automationError) {
+      await supabase
+        .from('recurring_incomes')
+        .update({ auto_post_enabled: false })
+        .eq('id', parsed.data.id)
+        .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
+      errorRedirect('O ganho foi atualizado, mas a automatização foi pausada por segurança. Ativa-a novamente para continuar.')
+    }
+  }
+
   revalidatePath('/dashboard/recurring/income')
   revalidatePath(`/dashboard/recurring/income/${parsed.data.id}/edit`)
   revalidatePath('/dashboard')
@@ -171,7 +222,7 @@ export async function toggleRecurringIncome(formData: FormData) {
   if (!parsed.success) errorRedirect('Ganho inválido.')
 
   const { supabase, user, financialContext } = await getUser()
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('recurring_incomes')
     .update({
       is_active: parsed.data.isActive === 'true',
@@ -180,8 +231,30 @@ export async function toggleRecurringIncome(formData: FormData) {
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
     .eq('context_id', financialContext.id)
+    .select('id, is_active, auto_post_enabled')
+    .maybeSingle()
 
-  if (error) errorRedirect('Não foi possível atualizar.')
+  if (error || !data || data.is_active !== (parsed.data.isActive === 'true')) errorRedirect('Não foi possível atualizar.')
+
+  if (parsed.data.isActive === 'true' && data.auto_post_enabled) {
+    const { error: automationError } = await supabase.rpc(
+      'set_recurring_automation',
+      {
+        p_recurrence_type: 'income',
+        p_recurrence_id: parsed.data.id,
+        p_enabled: true,
+      },
+    )
+    if (automationError) {
+      await supabase
+        .from('recurring_incomes')
+        .update({ auto_post_enabled: false })
+        .eq('id', parsed.data.id)
+        .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
+      errorRedirect('O ganho foi ativado, mas os lançamentos automáticos foram pausados por segurança.')
+    }
+  }
 
   revalidatePath('/dashboard/recurring/income')
   revalidatePath('/dashboard')
