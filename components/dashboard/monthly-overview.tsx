@@ -144,7 +144,8 @@ export async function MonthlyOverview({
         <div className="mt-3">
           {health === null ? (
             <p className="text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-              Regista pelo menos uma receita neste mês para calcular o indicador.
+              Regista pelo menos uma receita neste mês para calcular o
+              indicador.
             </p>
           ) : (
             <div
@@ -164,7 +165,9 @@ export async function MonthlyOverview({
           )}
           <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[hsl(var(--muted-foreground))]">
             <span>Fluxo, poupança e compromissos recorrentes</span>
-            <span className="shrink-0 tabular-nums">{formatCurrency(recurringReserve, currency)}/mês</span>
+            <span className="shrink-0 tabular-nums">
+              {formatCurrency(recurringReserve, currency)}/mês
+            </span>
           </div>
           <p className="mt-2 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
             Pontuação baseada no fluxo de caixa, na taxa de poupança e nos
