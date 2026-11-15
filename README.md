@@ -188,7 +188,9 @@ The core product foundation is in place. Recurring income/expense tracking, mult
 
 The next work is tracked in the [API integrations and platform roadmap](docs/roadmap/api-integrations-and-platform.md). It covers provider eligibility and selection, secure Open Banking architecture, stronger CSV import/reconciliation, sandbox integration, incremental bank sync, webhooks, recurring suggestions, API contracts, FX/export decisions, automated testing, privacy and production rollout.
 
-**Important:** direct Revolut Open Banking production access is restricted to regulated TPPs with the required certificates. Revolut Kids & Teens support in Portugal must be confirmed before promising automatic sync. CSV import remains the supported fallback while this is evaluated.
+The current Portugal provider shortlist and due-diligence notes live in [the Open Banking provider evaluation](docs/roadmap/provider-evaluation-portugal-2026-11.md). Salt Edge Partner Program is the leading proof-of-concept candidate, pending commercial onboarding, pricing, KYB/DPA and a specific Revolut Jovem data test.
+
+**Important:** direct Revolut Open Banking production access is restricted to regulated TPPs with the required certificates. Revolut Jovem is a parent-owned sub-account without individual banking details; automatic sync of its movements must not be promised until the parent-authorised data feed is verified. CSV import remains the supported fallback.
 
 ## License
 
