@@ -4,6 +4,8 @@
 > **Objetivo:** centralizar as fases, tarefas, decisões, dependências e critérios de conclusão para as próximas integrações do MoneyFlow.  
 > **Âmbito:** integrações bancárias e de dados financeiros, API interna, automação, qualidade e evolução da plataforma. Este documento não ativa ligações bancárias nem altera dados de utilizadores.
 
+> **Decisão de âmbito atualizada (15/11/2026):** a ligação a fornecedores bancários/Open Banking foi cancelada. O MoneyFlow mantém a importação bancária manual por CSV e não vai guardar credenciais bancárias nem ligar contas automaticamente. A execução atual está em [recorrências automáticas e integração Silentra for Barbers](recurring-automation-and-silentra-integration.md). As secções abaixo sobre escolha de fornecedores, Revolut Open Banking e sincronização bancária ficam arquivadas e não são tarefas ativas.
+
 ---
 
 ## 1. Ponto de situação
