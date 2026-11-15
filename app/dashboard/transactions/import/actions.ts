@@ -14,7 +14,7 @@ function normalizeHeader(value: string) {
     .trim()
 }
 
-function parseCsv(input: string): string[][] {
+function detectCsvDelimiter(input: string) {\n  const firstLine = input.split(/\\r?\\n/, 1)[0] ?? ''\n  let quoted = false\n  let commas = 0\n  let semicolons = 0\n\n  for (let index = 0; index < firstLine.length; index += 1) {\n    const character = firstLine[index]\n    if (character === '\"') {\n      if (quoted && firstLine[index + 1] === '\"') index += 1\n      else quoted = !quoted\n    } else if (!quoted && character === ',') commas += 1\n    else if (!quoted && character === ';') semicolons += 1\n  }\n\n  return semicolons > commas ? ';' : ','\n}\n\nfunction parseCsv(input: string, delimiter: string): string[][] {
   const rows: string[][] = []
   let row: string[] = []
   let field = ''
@@ -33,7 +33,7 @@ function parseCsv(input: string): string[][] {
       continue
     }
 
-    if (character === ',' && !quoted) {
+    if (character === delimiter && !quoted) {
       row.push(field)
       field = ''
       continue
@@ -210,14 +210,11 @@ export async function importRevolutCsv(formData: FormData) {
       ? profile.active_finance_context
       : 'personal'
 
-  const financeContext: FinanceContext =
-    activeContext === 'general'
-      ? requestedContext === 'silentra'
-        ? 'silentra'
-        : requestedContext === 'personal'
-          ? 'personal'
-          : importError('Escolhe o contexto onde queres guardar os movimentos.')
-      : activeContext
+  if (activeContext === 'general') {
+    importError('O contexto Geral é apenas de leitura. Muda para Pessoal ou Silentra antes de importar.')
+  }
+
+  const financeContext: FinanceContext = activeContext
 
   const { data: account } = await supabase
     .from('accounts')
@@ -319,12 +316,25 @@ export async function importRevolutCsv(formData: FormData) {
     }
 
     const externalId = idIndex >= 0 ? (row[idIndex] ?? '') : ''
+    const referenceCurrency = currency || (account.currency_code ?? 'EUR')
+    const fallbackKey = [
+      occurredAt,
+      amount.toFixed(2),
+      description,
+      referenceCurrency,
+    ].join('|')
+    const occurrence = externalId
+      ? 1
+      : (fallbackOccurrences.get(fallbackKey) ?? 0) + 1
+    if (!externalId) fallbackOccurrences.set(fallbackKey, occurrence)
+
     const reference = makeReference(
       externalId,
       occurredAt,
       amount,
       description,
-      currency || (account.currency_code ?? 'EUR'),
+      referenceCurrency,
+      occurrence,
     )
 
     if (seen.has(reference)) {
@@ -377,15 +387,28 @@ export async function importRevolutCsv(formData: FormData) {
     importError('Estes movimentos já tinham sido importados. Não foram criadas duplicações.')
   }
 
+  let importedCount = 0
   for (let index = 0; index < newRows.length; index += 100) {
     const batch = newRows.slice(index, index + 100)
-    const { error } = await supabase.from('transactions').insert(batch)
+    const { data, error } = await supabase
+      .from('transactions')
+      .upsert(batch, {
+        onConflict: 'user_id,finance_context,import_source,import_reference',
+        ignoreDuplicates: true,
+      })
+      .select('id')
     if (error) {
       importError('A importação foi interrompida. Verifica a conta e volta a tentar.')
     }
+    importedCount += data?.length ?? 0
+  }
+
+  if (importedCount === 0) {
+    importError('Estes movimentos já tinham sido importados. Não foram criadas duplicações.')
   }
 
   const contextLabel = financeContext === 'silentra' ? 'Silentra' : 'Pessoal'
-  const message = `${newRows.length} movimentos importados para ${contextLabel}; ${skipped + existing.size} ignorados.`
+  const ignoredCount = skipped + existing.size + newRows.length - importedCount
+  const message = `${importedCount} movimentos importados para ${contextLabel}; ${ignoredCount} ignorados.`
   redirect(`/dashboard/transactions?toast=${encodeURIComponent(message)}`)
 }
