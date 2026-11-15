@@ -22,6 +22,7 @@ type Props = {
   accounts: AccountOption[]
   initialConnection: Connection
   locale: 'pt-PT' | 'en'
+  isSilentraContext: boolean
 }
 
 function formatDate(value: string | null, isEnglish: boolean) {
@@ -36,6 +37,7 @@ export function SilentraIntegrationCard({
   accounts,
   initialConnection,
   locale,
+  isSilentraContext,
 }: Props) {
   const isEnglish = locale === 'en'
   const [connection, setConnection] = useState(initialConnection)
@@ -56,7 +58,7 @@ export function SilentraIntegrationCard({
     startTransition(async () => {
       try {
         const response = await fetch(
-          '/api/integrations/silentra-for-barbers/pairing',
+          '/api/integrations/silentra/pairing',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -108,7 +110,7 @@ export function SilentraIntegrationCard({
     startTransition(async () => {
       try {
         const response = await fetch(
-          '/api/integrations/silentra-for-barbers/pairing',
+          '/api/integrations/silentra/pairing',
           { method: 'DELETE', cache: 'no-store' },
         )
         const payload = await response.json()
@@ -214,6 +216,13 @@ export function SilentraIntegrationCard({
           </>
         ) : (
           <>
+            {!isSilentraContext ? (
+              <p className="rounded-xl border border-amber-500/20 bg-amber-500/[0.05] p-4 text-sm text-muted-foreground">
+                {isEnglish
+                  ? 'Switch the financial context to Silentra using the selector at the top before pairing the app.'
+                  : 'Muda para o contexto financeiro Silentra no seletor do topo antes de ligares a aplicação.'}
+              </p>
+            ) : null}
             {accounts.length ? (
               <label className="grid gap-2 text-sm font-medium">
                 {isEnglish ? 'Income account' : 'Conta onde entram as receitas'}
@@ -245,7 +254,7 @@ export function SilentraIntegrationCard({
             <Button
               type="button"
               onClick={generatePairingCode}
-              disabled={!accountId || isPending}
+              disabled={!accountId || isPending || !isSilentraContext}
             >
               {isPending ? (
                 <RefreshCw className="size-4 animate-spin" />
