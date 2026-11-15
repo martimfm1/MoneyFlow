@@ -11,15 +11,25 @@ export const dynamic = 'force-dynamic'
 
 export default async function IntegrationsSettingsPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
   const context = await getFinancialContextBySlug(supabase, user.id, 'silentra')
   if (!context) {
     return (
       <main className="moneyflow-shell py-6 sm:py-10">
-        <Button asChild variant="ghost" size="sm"><Link href="/dashboard/settings"><ArrowLeft className="size-4" /> Definições</Link></Button>
-        <Card className="mt-6 max-w-2xl"><CardContent className="p-5 text-sm text-muted-foreground">O espaço financeiro Silentra não está disponível nesta conta.</CardContent></Card>
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/dashboard/settings">
+            <ArrowLeft className="size-4" /> Definições
+          </Link>
+        </Button>
+        <Card className="mt-6 max-w-2xl">
+          <CardContent className="p-5 text-sm text-muted-foreground">
+            O espaço financeiro Silentra não está disponível nesta conta.
+          </CardContent>
+        </Card>
       </main>
     )
   }
@@ -42,17 +52,28 @@ export default async function IntegrationsSettingsPage() {
   ])
 
   const connected = integration?.status === 'connected'
-  const account = Array.isArray(integration?.account) ? integration.account[0] : integration?.account
+  const account = Array.isArray(integration?.account)
+    ? integration.account[0]
+    : integration?.account
 
   return (
     <main className="moneyflow-shell py-6 sm:py-10">
       <Button asChild variant="ghost" size="sm" className="-ml-2">
-        <Link href="/dashboard/settings"><ArrowLeft className="size-4" /> Definições</Link>
+        <Link href="/dashboard/settings">
+          <ArrowLeft className="size-4" /> Definições
+        </Link>
       </Button>
       <header className="mb-6 mt-5 max-w-2xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Ligações</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">Integrações</h1>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">Liga serviços externos ao MoneyFlow sem partilhar credenciais financeiras.</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+          Ligações
+        </p>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
+          Integrações
+        </h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          Liga serviços externos ao MoneyFlow sem partilhar credenciais
+          financeiras.
+        </p>
       </header>
       <div className="max-w-3xl">
         <SilentraForBarbersPanel

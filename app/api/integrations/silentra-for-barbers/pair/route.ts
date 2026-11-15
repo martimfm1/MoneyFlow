@@ -10,25 +10,36 @@ const schema = z.object({ pairingToken: z.string().regex(/^[a-f0-9]{64}$/i) })
 
 export async function POST(request: Request) {
   if (Number(request.headers.get('content-length') ?? 0) > 4096) {
-    return NextResponse.json({ ok: false, error: 'Pedido demasiado grande.' }, { status: 413 })
+    return NextResponse.json(
+      { ok: false, error: 'Pedido demasiado grande.' },
+      { status: 413 },
+    )
   }
 
   const body = await request.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: 'Código de ligação inválido.' }, { status: 400 })
+    return NextResponse.json(
+      { ok: false, error: 'Código de ligação inválido.' },
+      { status: 400 },
+    )
   }
 
   try {
     const admin = createAdminClient()
-    const tokenHash = createHash('sha256').update(parsed.data.pairingToken).digest('hex')
+    const tokenHash = createHash('sha256')
+      .update(parsed.data.pairingToken)
+      .digest('hex')
     const { data, error } = await admin.rpc('claim_silentra_pairing', {
       p_token_hash: tokenHash,
     })
 
     if (error || !Array.isArray(data) || !data[0]?.sync_token) {
       return NextResponse.json(
-        { ok: false, error: 'O código expirou, já foi utilizado ou não é válido.' },
+        {
+          ok: false,
+          error: 'O código expirou, já foi utilizado ou não é válido.',
+        },
         { status: 401, headers: { 'Cache-Control': 'no-store' } },
       )
     }

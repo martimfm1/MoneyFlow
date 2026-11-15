@@ -148,10 +148,15 @@ export default async function SettingsPage({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-semibold">Integrações</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Liga a Silentra for Barbers para registar as receitas confirmadas da plataforma.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Liga a Silentra for Barbers para registar as receitas confirmadas
+              da plataforma.
+            </p>
           </div>
           <Button asChild variant="outline" size="sm">
-            <Link href="/dashboard/settings/integrations">Gerir integrações</Link>
+            <Link href="/dashboard/settings/integrations">
+              Gerir integrações
+            </Link>
           </Button>
         </div>
       </section>

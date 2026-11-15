@@ -16,24 +16,38 @@ function sameOrigin(request: Request) {
 
 export async function POST(request: Request) {
   if (!sameOrigin(request)) {
-    return NextResponse.json({ ok: false, error: 'Pedido inválido.' }, { status: 403 })
+    return NextResponse.json(
+      { ok: false, error: 'Pedido inválido.' },
+      { status: 403 },
+    )
   }
 
   const body = await request.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: 'Seleciona uma conta válida.' }, { status: 400 })
+    return NextResponse.json(
+      { ok: false, error: 'Seleciona uma conta válida.' },
+      { status: 400 },
+    )
   }
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
   if (!user) {
-    return NextResponse.json({ ok: false, error: 'Inicia sessão para continuar.' }, { status: 401 })
+    return NextResponse.json(
+      { ok: false, error: 'Inicia sessão para continuar.' },
+      { status: 401 },
+    )
   }
 
   const context = await getFinancialContextBySlug(supabase, user.id, 'silentra')
   if (!context) {
-    return NextResponse.json({ ok: false, error: 'O espaço financeiro Silentra não está disponível.' }, { status: 404 })
+    return NextResponse.json(
+      { ok: false, error: 'O espaço financeiro Silentra não está disponível.' },
+      { status: 404 },
+    )
   }
 
   const { data: account } = await supabase
@@ -45,23 +59,34 @@ export async function POST(request: Request) {
     .maybeSingle()
 
   if (!account || !account.is_active || account.currency_code !== 'EUR') {
-    return NextResponse.json({ ok: false, error: 'Escolhe uma conta ativa em EUR do espaço Silentra.' }, { status: 400 })
+    return NextResponse.json(
+      {
+        ok: false,
+        error: 'Escolhe uma conta ativa em EUR do espaço Silentra.',
+      },
+      { status: 400 },
+    )
   }
 
   const pairingToken = randomBytes(32).toString('hex')
   const tokenHash = createHash('sha256').update(pairingToken).digest('hex')
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString()
 
-  const { error } = await supabase.from('moneyflow_integration_pairings').insert({
-    user_id: user.id,
-    context_id: context.id,
-    account_id: account.id,
-    token_hash: tokenHash,
-    expires_at: expiresAt,
-  })
+  const { error } = await supabase
+    .from('moneyflow_integration_pairings')
+    .insert({
+      user_id: user.id,
+      context_id: context.id,
+      account_id: account.id,
+      token_hash: tokenHash,
+      expires_at: expiresAt,
+    })
 
   if (error) {
-    return NextResponse.json({ ok: false, error: 'Não foi possível gerar o código de ligação.' }, { status: 500 })
+    return NextResponse.json(
+      { ok: false, error: 'Não foi possível gerar o código de ligação.' },
+      { status: 500 },
+    )
   }
 
   return NextResponse.json(

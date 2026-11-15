@@ -17,44 +17,70 @@ const schema = z.object({
 
 export async function POST(request: Request) {
   const authorization = request.headers.get('authorization') ?? ''
-  const syncToken = authorization.startsWith('Bearer ') ? authorization.slice(7).trim() : ''
+  const syncToken = authorization.startsWith('Bearer ')
+    ? authorization.slice(7).trim()
+    : ''
   if (!/^[a-f0-9]{64}$/i.test(syncToken)) {
-    return NextResponse.json({ ok: false, error: 'Não autorizado.' }, { status: 401 })
+    return NextResponse.json(
+      { ok: false, error: 'Não autorizado.' },
+      { status: 401 },
+    )
   }
 
   if (Number(request.headers.get('content-length') ?? 0) > 16_384) {
-    return NextResponse.json({ ok: false, error: 'Pedido demasiado grande.' }, { status: 413 })
+    return NextResponse.json(
+      { ok: false, error: 'Pedido demasiado grande.' },
+      { status: 413 },
+    )
   }
 
   const body = await request.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: 'Evento de pagamento inválido.' }, { status: 400 })
+    return NextResponse.json(
+      { ok: false, error: 'Evento de pagamento inválido.' },
+      { status: 400 },
+    )
   }
 
   try {
     const admin = createAdminClient()
     const syncTokenHash = createHash('sha256').update(syncToken).digest('hex')
-    const { data, error } = await admin.rpc('record_silentra_platform_payment', {
-      p_sync_token_hash: syncTokenHash,
-      p_event_id: parsed.data.eventId,
-      p_amount: parsed.data.amount,
-      p_currency: parsed.data.currency.toUpperCase(),
-      p_occurred_at: parsed.data.occurredAt,
-      p_description: parsed.data.description,
-      p_external_reference: parsed.data.externalReference ?? null,
-    })
+    const { data, error } = await admin.rpc(
+      'record_silentra_platform_payment',
+      {
+        p_sync_token_hash: syncTokenHash,
+        p_event_id: parsed.data.eventId,
+        p_amount: parsed.data.amount,
+        p_currency: parsed.data.currency.toUpperCase(),
+        p_occurred_at: parsed.data.occurredAt,
+        p_description: parsed.data.description,
+        p_external_reference: parsed.data.externalReference ?? null,
+      },
+    )
 
     if (error) {
       const unauthorized = /INTEGRATION_NOT_CONNECTED/i.test(error.message)
       return NextResponse.json(
-        { ok: false, error: unauthorized ? 'Integração desligada ou token inválido.' : 'O pagamento não pôde ser registado.' },
-        { status: unauthorized ? 401 : 422, headers: { 'Cache-Control': 'no-store' } },
+        {
+          ok: false,
+          error: unauthorized
+            ? 'Integração desligada ou token inválido.'
+            : 'O pagamento não pôde ser registado.',
+        },
+        {
+          status: unauthorized ? 401 : 422,
+          headers: { 'Cache-Control': 'no-store' },
+        },
       )
     }
 
     return NextResponse.json(
-      { ok: true, created: data?.created === true, duplicate: data?.duplicate === true },
+      {
+        ok: true,
+        created: data?.created === true,
+        duplicate: data?.duplicate === true,
+      },
       { headers: { 'Cache-Control': 'no-store' } },
     )
   } catch {
