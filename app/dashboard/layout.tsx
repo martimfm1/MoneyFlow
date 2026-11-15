@@ -35,6 +35,15 @@ export default async function DashboardLayout({
     : null
   const isEnglish = locale === 'en'
 
+  if (user) {
+    const { error } = await supabase.rpc('process_my_due_recurring_transactions')
+    if (error) {
+      console.error('[RECURRING_TRANSACTIONS_PROCESS_ERROR]', {
+        code: error.code ?? 'UNKNOWN',
+      })
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <a
