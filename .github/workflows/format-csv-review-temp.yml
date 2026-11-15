@@ -1,0 +1,42 @@
+name: Format CSV review branch
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.head_ref == 'feat/moneyflow-csv-import-review'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Format changed files
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          git diff --name-only origin/main...HEAD -- '*.ts' '*.tsx' '*.md' | xargs -r pnpm exec prettier --write
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No formatting changes needed."
+            exit 0
+          fi
+          git commit -m "style: format CSV import review changes"
+          git push origin "HEAD:refs/heads/$BRANCH"
