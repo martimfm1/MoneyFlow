@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeDecimalInput } from '@/lib/number'
+import { getFinancialContext } from '@/lib/financial-context'
 
 const recurringExpenseSchema = z.object({
   id: z.uuid().optional(),
@@ -30,19 +31,22 @@ async function getUser() {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-  return { supabase, user }
+  const financialContext = await getFinancialContext(supabase, user.id)
+  return { supabase, user, financialContext }
 }
 
 async function getActiveAccount(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
   accountId: string,
+  contextId: string,
 ) {
   const { data } = await supabase
     .from('accounts')
     .select('id, is_active')
     .eq('id', accountId)
     .eq('user_id', userId)
+    .eq('context_id', contextId)
     .maybeSingle()
   return data
 }
@@ -61,17 +65,19 @@ export async function createRecurringExpense(formData: FormData) {
 
   if (!parsed.success) errorRedirect('Verifica os dados da despesa.')
 
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const account = await getActiveAccount(
     supabase,
     user.id,
     parsed.data.accountId,
+    financialContext.id,
   )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
 
   const { error } = await supabase.from('recurring_expenses').insert({
     user_id: user.id,
+    context_id: financialContext.id,
     account_id: parsed.data.accountId,
     name: parsed.data.name,
     provider: parsed.data.provider || null,
@@ -102,11 +108,12 @@ export async function updateRecurringExpense(formData: FormData) {
   if (!parsed.success || !parsed.data.id)
     errorRedirect('Verifica os dados da despesa.')
 
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const account = await getActiveAccount(
     supabase,
     user.id,
     parsed.data.accountId,
+    financialContext.id,
   )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
@@ -126,6 +133,7 @@ export async function updateRecurringExpense(formData: FormData) {
     })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error)
     redirect(
@@ -140,12 +148,13 @@ export async function updateRecurringExpense(formData: FormData) {
 export async function deleteRecurringExpense(formData: FormData) {
   const parsed = idSchema.safeParse(formData.get('id'))
   if (!parsed.success) errorRedirect('Despesa inválida.')
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const { error } = await supabase
     .from('recurring_expenses')
     .delete()
     .eq('id', parsed.data)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
   if (error) errorRedirect('Não foi possível apagar a despesa.')
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
@@ -158,7 +167,7 @@ export async function toggleRecurringExpense(formData: FormData) {
     .safeParse({ id: formData.get('id'), isActive: formData.get('isActive') })
   if (!parsed.success) errorRedirect('Despesa inválida.')
 
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const nextIsActive = parsed.data.isActive === 'true'
   const { data, error } = await supabase
     .from('recurring_expenses')
@@ -168,6 +177,7 @@ export async function toggleRecurringExpense(formData: FormData) {
     })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .select('id, is_active')
     .maybeSingle()
 

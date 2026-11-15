@@ -16,6 +16,10 @@ The application currently includes the core personal-finance workflows, responsi
 
 ### Money management
 
+- Separate Personal and Silentra financial spaces with a consolidated General overview
+- Existing financial history preserved in the Personal space
+- Context-aware accounts, transactions, categories, budgets, goals, wishlist and recurring records
+- Monthly General overview grouped by space and currency, with no implicit currency conversion
 - Supabase SSR authentication with Next.js App Router
 - Guided onboarding with profile, currency and first account
 - Multiple financial accounts with balances and active/inactive state
@@ -36,6 +40,7 @@ The application currently includes the core personal-finance workflows, responsi
 - Active / paused recurring items
 - Editing and secure deletion
 - Recurring-cost projections and annualized spending context
+- Independent recurring entries and exits for each financial space
 - Dedicated tabbed navigation between recurring income and expenses
 - Editable free-text labels with suggested categories for common income and expense types
 

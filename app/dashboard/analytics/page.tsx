@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { FinancialCharts } from '@/components/analytics/financial-charts'
 import { formatCurrency, formatShortMonth } from '@/lib/format'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,6 +25,7 @@ export default async function AnalyticsPage() {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const now = new Date()
   const start = monthStart(now, -5)
@@ -41,6 +43,7 @@ export default async function AnalyticsPage() {
         'transaction_type, amount, occurred_at, category_id, categories(name), accounts(currency_code)',
       )
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .gte('occurred_at', start.toISOString())
       .lt('occurred_at', end.toISOString())
       .order('occurred_at', { ascending: true }),

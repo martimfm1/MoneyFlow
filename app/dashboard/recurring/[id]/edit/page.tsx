@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { updateRecurringExpense } from '../../actions'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,6 +24,7 @@ export default async function EditRecurringExpensePage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
   const [{ data: expense }, { data: accounts }] = await Promise.all([
     supabase
       .from('recurring_expenses')
@@ -31,11 +33,13 @@ export default async function EditRecurringExpensePage({
       )
       .eq('id', id)
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .maybeSingle(),
     supabase
       .from('accounts')
       .select('id, name, currency_code, balance')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .eq('is_active', true)
       .order('name'),
   ])

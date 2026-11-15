@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { normalizeDecimalInput } from '@/lib/number'
+import { getFinancialContext } from '@/lib/financial-context'
 
 const contributionSchema = z.object({
   goalId: z.uuid(),
@@ -31,12 +32,14 @@ export async function addGoalContribution(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const { data: goal } = await supabase
     .from('goals')
     .select('id, current_amount, target_amount')
     .eq('id', parsed.data.goalId)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .maybeSingle()
 
   if (!goal) redirect('/dashboard/goals?error=Objetivo%20inválido.')
@@ -49,6 +52,7 @@ export async function addGoalContribution(formData: FormData) {
 
   const { error } = await supabase.from('goal_contributions').insert({
     user_id: user.id,
+    context_id: financialContext.id,
     goal_id: parsed.data.goalId,
     amount: parsed.data.amount,
     note: parsed.data.note || null,
@@ -73,12 +77,14 @@ export async function deleteGoal(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const { error } = await supabase
     .from('goals')
     .delete()
     .eq('id', parsed.data.goalId)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error)
     redirect(
