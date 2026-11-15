@@ -120,6 +120,18 @@ export async function deleteCategory(formData: FormData) {
       '/dashboard/categories?error=Não%20podes%20apagar%20uma%20categoria%20com%20movimentos.%20Reatribui-os%20primeiro.',
     )
 
+  const { count: budgetCount } = await supabase
+    .from('budgets')
+    .select('id', { count: 'exact', head: true })
+    .eq('category_id', parsed.data)
+    .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
+
+  if ((budgetCount ?? 0) > 0)
+    redirect(
+      '/dashboard/categories?error=Esta%20categoria%20tem%20orçamentos%20associados.%20Remove%20ou%20reatribui-os%20primeiro.',
+    )
+
   const { error } = await supabase
     .from('categories')
     .delete()
