@@ -57,7 +57,8 @@ export default async function TransactionDetailPage({
   const category = Array.isArray(transaction.categories)
     ? transaction.categories[0]
     : transaction.categories
-  const currency = account?.currency_code || profile?.currency_code || 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
+  const currency = account?.currency_code || profile?.currency_code || 'EUR'
+  const readOnly = profile?.active_finance_context === 'general'
   const label = transaction.description || (isIncome ? 'Receita' : 'Despesa')
   const amount = Number(transaction.amount)
 
