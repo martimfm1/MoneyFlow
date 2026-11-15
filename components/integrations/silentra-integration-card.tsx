@@ -58,7 +58,7 @@ export function SilentraIntegrationCard({
     startTransition(async () => {
       try {
         const response = await fetch(
-          '/api/integrations/silentra/pairing',
+          '/api/integrations/silentra-for-barbers/pairing',
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -110,7 +110,7 @@ export function SilentraIntegrationCard({
     startTransition(async () => {
       try {
         const response = await fetch(
-          '/api/integrations/silentra/pairing',
+          '/api/integrations/silentra-for-barbers/pairing',
           { method: 'DELETE', cache: 'no-store' },
         )
         const payload = await response.json()
