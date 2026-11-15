@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, Languages, Palette, Sparkles } from 'lucide-react'
+import { ArrowLeft, Languages, Palette, Sparkles, Link2 } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
@@ -143,6 +143,23 @@ export default async function SettingsPage({
           </div>
         </section>
       </div>
+
+      <section className="mt-6 max-w-5xl overflow-hidden rounded-2xl border border-border/80 bg-card/75 shadow-sm" aria-labelledby="integrations-title">
+        <Link href="/dashboard/settings/integrations" className="flex items-center gap-4 p-5 transition-colors hover:bg-muted/35 sm:p-6">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <Link2 className="size-[18px]" aria-hidden="true" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span id="integrations-title" className="block text-base font-semibold tracking-tight">
+              Integrações
+            </span>
+            <span className="mt-1 block text-sm leading-6 text-muted-foreground">
+              Liga o MoneyFlow ao Silentra for Barbers e sincroniza as receitas confirmadas da plataforma.
+            </span>
+          </span>
+          <span className="text-sm font-medium text-primary">Gerir</span>
+        </Link>
+      </section>
 
       <div className="mt-6 flex max-w-5xl items-start gap-3 rounded-2xl border border-border/70 bg-muted/35 p-4">
         <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-background text-primary">
