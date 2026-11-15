@@ -1,0 +1,62 @@
+name: Format glassmorphism final branch
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.head_ref == 'feat/moneyflow-glassmorphism-final'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Format and commit
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          pnpm exec prettier --write \
+            app/dashboard/layout.tsx \
+            app/dashboard/navigation.tsx \
+            app/dashboard/page.tsx \
+            app/globals.css \
+            app/layout.tsx \
+            components/dashboard/monthly-overview.tsx \
+            components/dashboard/quick-add.tsx \
+            components/haptics-provider.tsx \
+            components/theme/motion-provider.tsx \
+            components/ui/motion-reveal.tsx
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            app/dashboard/layout.tsx \
+            app/dashboard/navigation.tsx \
+            app/dashboard/page.tsx \
+            app/globals.css \
+            app/layout.tsx \
+            components/dashboard/monthly-overview.tsx \
+            components/dashboard/quick-add.tsx \
+            components/haptics-provider.tsx \
+            components/theme/motion-provider.tsx \
+            components/ui/motion-reveal.tsx
+          if git diff --cached --quiet; then
+            echo "No formatting changes needed."
+            exit 0
+          fi
+          git commit -m "style: format glassmorphism and Motion components"
+          git push origin "HEAD:refs/heads/$BRANCH"
