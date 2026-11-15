@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeDecimalInput } from '@/lib/number'
+import { getFinancialContext } from '@/lib/financial-context'
 
 const schema = z.object({
   id: z.uuid().optional(),
@@ -33,19 +34,22 @@ async function getUser() {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-  return { supabase, user }
+  const financialContext = await getFinancialContext(supabase, user.id)
+  return { supabase, user, financialContext }
 }
 
 async function getActiveAccount(
   supabase: Awaited<ReturnType<typeof createClient>>,
   userId: string,
   accountId: string,
+  contextId: string,
 ) {
   const { data } = await supabase
     .from('accounts')
     .select('id, is_active')
     .eq('id', accountId)
     .eq('user_id', userId)
+    .eq('context_id', contextId)
     .maybeSingle()
   return data
 }
@@ -64,17 +68,19 @@ export async function createRecurringIncome(formData: FormData) {
 
   if (!parsed.success) errorRedirect('Verifica os dados do ganho.')
 
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const account = await getActiveAccount(
     supabase,
     user.id,
     parsed.data.accountId,
+    financialContext.id,
   )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
 
   const { error } = await supabase.from('recurring_incomes').insert({
     user_id: user.id,
+    context_id: financialContext.id,
     account_id: parsed.data.accountId,
     name: parsed.data.name,
     source: parsed.data.source || null,
@@ -108,11 +114,12 @@ export async function updateRecurringIncome(formData: FormData) {
   if (!parsed.success || !parsed.data.id)
     redirect('/dashboard/recurring/income?error=Verifica%20os%20dados.')
 
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const account = await getActiveAccount(
     supabase,
     user.id,
     parsed.data.accountId,
+    financialContext.id,
   )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
@@ -132,6 +139,7 @@ export async function updateRecurringIncome(formData: FormData) {
     })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error)
     redirect(
@@ -151,7 +159,7 @@ export async function toggleRecurringIncome(formData: FormData) {
   })
   if (!parsed.success) errorRedirect('Ganho inválido.')
 
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const { error } = await supabase
     .from('recurring_incomes')
     .update({
@@ -160,6 +168,7 @@ export async function toggleRecurringIncome(formData: FormData) {
     })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error) errorRedirect('Não foi possível atualizar.')
 
@@ -174,12 +183,13 @@ export async function deleteRecurringIncome(formData: FormData) {
   const id = z.uuid().safeParse(formData.get('id'))
   if (!id.success) errorRedirect('Ganho inválido.')
 
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const { error } = await supabase
     .from('recurring_incomes')
     .delete()
     .eq('id', id.data)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error) errorRedirect('Não foi possível apagar.')
 
