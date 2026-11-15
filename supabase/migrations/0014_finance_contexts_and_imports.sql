@@ -251,7 +251,7 @@ with check (
     select 1 from public.accounts a
     where a.id = account_id
       and a.user_id = auth.uid()
-      and a.finance_context = finance_context
+      and a.finance_context = public.transactions.finance_context
   )
   and (
     category_id is null
@@ -334,7 +334,7 @@ with check (
       select 1 from public.wishlist_items w
       where w.id = wishlist_item_id
         and w.user_id = auth.uid()
-        and w.finance_context = finance_context
+        and w.finance_context = public.goals.finance_context
     )
   )
 );
@@ -378,7 +378,7 @@ with check (
     select 1 from public.goals g
     where g.id = goal_id
       and g.user_id = auth.uid()
-      and g.finance_context = finance_context
+      and g.finance_context = public.goal_contributions.finance_context
   )
 );
 create policy goal_contributions_delete_own_context on public.goal_contributions
@@ -404,7 +404,7 @@ for insert with check (
     select 1 from public.categories c
     where c.id = category_id
       and c.user_id = auth.uid()
-      and c.finance_context = finance_context
+      and c.finance_context = public.budgets.finance_context
   )
 );
 create policy budgets_update_own_context on public.budgets
@@ -419,7 +419,7 @@ with check (
     select 1 from public.categories c
     where c.id = category_id
       and c.user_id = auth.uid()
-      and c.finance_context = finance_context
+      and c.finance_context = public.budgets.finance_context
   )
 );
 create policy budgets_delete_own_context on public.budgets
@@ -444,7 +444,7 @@ for insert with check (
       select 1 from public.accounts a
       where a.id = account_id
         and a.user_id = auth.uid()
-        and a.finance_context = finance_context
+        and a.finance_context = public.recurring_expenses.finance_context
     )
   )
 );
@@ -462,7 +462,7 @@ with check (
       select 1 from public.accounts a
       where a.id = account_id
         and a.user_id = auth.uid()
-        and a.finance_context = finance_context
+        and a.finance_context = public.recurring_expenses.finance_context
     )
   )
 );
