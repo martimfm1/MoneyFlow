@@ -40,7 +40,7 @@ Não há trabalho de seleção de fornecedor bancário nem de ligação automát
 - [x] Emparelhamento entre apps com código aleatório de utilização única, validade de 15 minutos e conta EUR escolhida no contexto Silentra.
 - [x] Guardar apenas o hash da credencial na base de dados MoneyFlow.
 - [x] Guardar o segredo de envio apenas no servidor Silentra for Barbers, numa tabela acessível exclusivamente ao service role.
-- [x] Registar faturas Stripe pagas através do evento invoice.paid.
+- [x] Implementar o tratamento do evento Stripe `invoice.paid` no webhook (falta ativar o evento no dashboard Stripe).
 - [x] Registar pagamentos manuais apenas depois da confirmação e criação do comprovativo interno de pagamento.
 - [x] Usar outbox, retries, estados de entrega e IDs de evento idempotentes.
 - [x] Mostrar estado, conta ligada, última sincronização, pendentes e falhas no painel administrativo.
@@ -61,8 +61,8 @@ Não há trabalho de seleção de fornecedor bancário nem de ligação automát
 - [ ] Executar lint, TypeScript, build e Prettier nos dois repositórios.
 - [ ] Rever as políticas RLS e privilégios das funções RPC em ambas as bases de dados.
 - [ ] Aplicar primeiro as migrations em ambiente controlado e validar cron/outbox antes de produção.
-- [ ] Configurar o endpoint Stripe para enviar invoice.paid além dos eventos já usados para sincronizar subscrições.
-- [ ] Confirmar que CRON_SECRET existe no deployment Silentra for Barbers para o retry diário da outbox.
+- [ ] Ativar `invoice.paid` na configuração do endpoint Stripe já existente.
+- [ ] Confirmar que `CRON_SECRET` existe no deployment Silentra for Barbers para o retry diário da outbox.
 - [ ] Fazer uma ligação real de teste com uma conta EUR do contexto Silentra.
 - [ ] Confirmar um pagamento manual de teste e um pagamento Stripe de teste e verificar o movimento e o saldo no MoneyFlow.
 - [ ] Testar desligar/religar, falha temporária de rede, repetição do mesmo evento e moeda não suportada.
@@ -93,4 +93,4 @@ Não há trabalho de seleção de fornecedor bancário nem de ligação automát
 
 ## Estado atual
 
-As alterações estão organizadas em duas PRs separadas porque os repositórios e as bases de dados são independentes. As migrations ainda não foram aplicadas em produção e a integração ainda não deve ser considerada ativa até ao merge, migrations, deploy e teste de ponta a ponta.
+As alterações estão organizadas em duas PRs separadas porque os repositórios e as bases de dados são independentes. O código está preparado, mas as migrations ainda não foram aplicadas em produção e a integração ainda não deve ser considerada ativa até ao merge, migrations, configuração do evento `invoice.paid`, deploy e teste de ponta a ponta.
