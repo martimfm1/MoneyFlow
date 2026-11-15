@@ -2,7 +2,6 @@ import Link from 'next/link'
 import {
   CalendarClock,
   CircleDollarSign,
-  ExternalLink,
   RefreshCw,
 } from 'lucide-react'
 import { redirect } from 'next/navigation'
@@ -137,17 +136,10 @@ export default async function RecurringExpensesPage({
             </h1>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="outline">
-            <Link href="/dashboard/recurring/income">
-              <ExternalLink className="size-4" /> Ganhos
-            </Link>
-          </Button>
-          <RecurringExpenseCreateDialog
-            currency={currency}
-            accounts={accounts ?? []}
-          />
-        </div>
+        <RecurringExpenseCreateDialog
+          currency={currency}
+          accounts={accounts ?? []}
+        />
       </header>
       <RecurringTabs active="expense" />
       {params.toast ? (
