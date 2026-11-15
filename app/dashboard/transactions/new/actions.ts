@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { normalizeDecimalInput } from '@/lib/number'
+import { getFinancialContext } from '@/lib/financial-context'
 
 const schema = z.object({
   transactionType: z.enum(['income', 'expense']),
@@ -32,12 +33,14 @@ export async function createTransaction(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const { data: account } = await supabase
     .from('accounts')
     .select('id, is_active')
     .eq('id', parsed.data.accountId)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .maybeSingle()
 
   if (!account) redirect('/dashboard/transactions/new?error=Conta%20inválida.')
@@ -53,6 +56,7 @@ export async function createTransaction(formData: FormData) {
       .select('id')
       .eq('id', categoryId)
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .maybeSingle()
     if (!category)
       redirect('/dashboard/transactions/new?error=Categoria%20inválida.')
@@ -60,6 +64,7 @@ export async function createTransaction(formData: FormData) {
 
   const { error } = await supabase.from('transactions').insert({
     user_id: user.id,
+    context_id: financialContext.id,
     account_id: parsed.data.accountId,
     category_id: categoryId,
     transaction_type: parsed.data.transactionType,
