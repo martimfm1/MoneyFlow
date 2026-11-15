@@ -47,18 +47,21 @@ A documentação oficial da Revolut indica que o acesso de produção à Open Ba
 
 **Consequência:** não avançar com uma integração direta em produção sem confirmar a elegibilidade regulatória, certificados, âmbito territorial, termos e modelo de responsabilidade. A primeira opção a avaliar é um fornecedor de Open Banking que já tenha cobertura e autorização adequadas para Portugal; a escolha só acontece depois da avaliação técnica, legal e comercial.
 
-### Revolut Kids & Teens
+### Revolut Jovem / Kids & Teens em Portugal
 
-A documentação de suporte da Revolut consultada explica que o extrato Kids & Teens é obtido a partir da aplicação Revolut do pai/mãe ou tutor e que, naquele modelo, o extrato fica em nome do responsável legal e o IBAN apresentado pode corresponder à conta principal do responsável, não a um IBAN individual da criança. A documentação consultada é a página de suporte do Reino Unido; os detalhes e termos aplicáveis à conta portuguesa têm de ser confirmados com a Revolut antes de desenhar qualquer fluxo que dependa da titularidade ou do IBAN.
+A documentação oficial portuguesa consultada indica que a Revolut Jovem é uma subconta da conta pessoal do pai/mãe ou responsável e não tem dados bancários individuais. O extrato da subconta é obtido a partir da aplicação Revolut principal, fica em nome do responsável legal e o IBAN apresentado corresponde à conta principal, não a um IBAN individual do menor. Os termos portugueses da subconta Jovem identificam o titular da conta principal como parte contratante da Revolut.
 
 **Consequências para o MoneyFlow:**
 
-- [ ] Confirmar com a Revolut Portugal como são emitidos os extratos Kids & Teens para a região/conta concreta.
-- [ ] Confirmar quem é o titular legal, que identificadores aparecem no extrato e se existe exportação de movimentos apropriada.
-- [ ] Não usar o IBAN do responsável para inferir que a conta pertence ao menor.
+- [x] Confirmar documentalmente que a conta Jovem é uma subconta sem dados bancários individuais.
+- [x] Confirmar documentalmente que o extrato fica em nome do responsável e usa o IBAN da conta principal.
+- [ ] Confirmar com a Revolut Portugal e com o fornecedor Open Banking se os movimentos da subconta são expostos separadamente após consentimento do titular legal.
+- [ ] Não usar o IBAN do responsável para inferir que a conta principal ou a subconta pertence ao menor.
 - [ ] Não pedir nem armazenar credenciais da aplicação Revolut, PINs, códigos de autenticação ou palavras-passe.
-- [ ] Manter a importação CSV manual disponível como alternativa segura.
-- [ ] Mostrar uma explicação clara sobre a origem e a titularidade dos dados importados, sem prometer sincronização automática Kids & Teens antes de ser tecnicamente e legalmente confirmada.
+- [x] Manter a importação CSV manual disponível como alternativa segura.
+- [ ] Mostrar uma explicação clara sobre a origem e a titularidade dos dados importados, sem prometer sincronização automática Jovem antes de ser tecnicamente e legalmente confirmada.
+
+A avaliação de fornecedores e a recomendação provisória estão em [provider-evaluation-portugal-2026-11.md](provider-evaluation-portugal-2026-11.md). A Salt Edge Partner Program é o primeiro candidato para uma prova de conceito; falta convite/acesso, proposta comercial, KYB/DPA e confirmação dos movimentos da subconta Jovem.
 
 ### Fontes de referência
 
@@ -149,11 +152,17 @@ As fases devem ser entregues por marcos pequenos e verificáveis. As fases 0 e 1
 - [x] Confirmar que a Revolut Open Banking API não é uma API pública de uso livre para qualquer aplicação.
 - [ ] Documentar requisitos legais e regulatórios para o MoneyFlow atuar como AISP, caso se avalie acesso direto.
 - [ ] Pedir confirmação escrita à Revolut sobre disponibilidade e limitações de contas Kids & Teens em Portugal.
-- [ ] Avaliar provedores/agregadores que suportem Portugal, com pelo menos duas alternativas.
-- [ ] Comparar cobertura de bancos, elegibilidade para menores/Kids & Teens, histórico disponível, atualização, consentimento, webhooks, sandbox, SLA, preços, limites, residência/localização dos dados e contrato/DPA.
-- [ ] Decidir entre agregador, acesso direto regulado, CSV melhorado ou combinação destas opções.
+- [x] Fazer uma primeira comparação documental entre Salt Edge, Enable Banking, Plaid e TrueLayer para o mercado português.
+- [x] Identificar a Salt Edge Partner Program como candidato principal provisório por anunciar um modelo sem licença PSD2 própria e listar Revolut na cobertura portuguesa.
+- [x] Confirmar documentalmente as limitações de titularidade e IBAN da subconta Revolut Jovem em Portugal.
+- [ ] Obter convite/acesso sandbox e proposta comercial da Salt Edge; confirmar contrato, KYB, DPA, custos mínimos e limites.
+- [ ] Confirmar com o fornecedor se os movimentos da subconta Jovem são disponibilizados de forma isolada e com que identificadores.
+- [ ] Comparar por escrito cobertura exata, histórico, atualização, consentimento, webhooks, SLA, limites e residência/localização de dados.
+- [ ] Fechar a escolha do provedor depois de rever a proposta Salt Edge e, quando aplicável, a alternativa Enable Banking ou Plaid.
 - [ ] Definir a primeira instituição e o primeiro caso de uso de produção.
-- [ ] Definir explicitamente que a primeira versão só lê saldos e movimentos; não inicia pagamentos.
+- [x] Definir explicitamente que a primeira versão só lê saldos e movimentos; não inicia pagamentos.
+
+**Estado atual:** shortlist documental concluída; Salt Edge Partner Program é o candidato preferido para uma prova de conceito, não uma escolha final de produção. A fase continua aberta até existir acesso sandbox/comercial e confirmação do comportamento da Revolut Jovem.
 
 **Critério de saída:** fornecedor e âmbito escolhidos, custos e requisitos documentados, cobertura de Portugal confirmada e decisão explícita sobre Kids & Teens. Se a conta Kids & Teens não for suportada, a importação CSV continua a ser o caminho oficial para essa conta.
 
