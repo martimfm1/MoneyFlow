@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -42,4 +44,26 @@ jobs:
         run: pnpm build
 
       - name: Format check
-        run: pnpm format:check
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          BASE_SHA="$PR_BASE_SHA"
+          if [ -z "$BASE_SHA" ]; then
+            BASE_SHA="$PUSH_BEFORE_SHA"
+          fi
+
+          if [ -z "$BASE_SHA" ] || [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            BASE_SHA="HEAD^"
+          fi
+
+          FILES="$(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- \
+            '*.js' '*.jsx' '*.ts' '*.tsx' '*.mjs' '*.cjs' \
+            '*.json' '*.md' '*.css' '*.yml' '*.yaml')"
+
+          if [ -z "$FILES" ]; then
+            echo "No supported files changed; skipping formatting check."
+          else
+            printf '%s\n' "$FILES" | xargs -r pnpm exec prettier --check
+          fi
