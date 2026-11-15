@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/empty'
 import { toggleAccountStatus } from './actions'
 import { DeleteAccountButton } from './delete-button'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 const labels: Record<string, string> = {
@@ -37,6 +38,7 @@ export default async function AccountsPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
   const [{ data: profile }, { data: accounts }] = await Promise.all([
     supabase
       .from('profiles')
@@ -47,6 +49,7 @@ export default async function AccountsPage({
       .from('accounts')
       .select('id, name, account_type, balance, currency_code, is_active')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('is_active', { ascending: false })
       .order('created_at'),
   ])
