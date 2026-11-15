@@ -189,8 +189,8 @@ export default async function RecurringIncomePage({
           {activeInOtherCurrencies === 1 ? '' : 's'} ativo
           {activeInOtherCurrencies === 1 ? '' : 's'} noutra moeda
           {activeInOtherCurrencies === 1 ? '' : 's'} não entra
-          {activeInOtherCurrencies === 1 ? '' : 'm'} nos totais apresentados.
-          Os valores não são convertidos.
+          {activeInOtherCurrencies === 1 ? '' : 'm'} nos totais apresentados. Os
+          valores não são convertidos.
         </p>
       ) : null}
 
