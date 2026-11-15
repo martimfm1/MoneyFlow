@@ -19,7 +19,10 @@ import { Separator } from '@/components/ui/separator'
 import { RecurringExpenseCreateDialog } from './create-dialog'
 import { RecurringTabs } from '@/components/dashboard/recurring-tabs'
 import { DeleteRecurringExpenseButton } from './delete-button'
-import { toggleRecurringExpense, toggleRecurringExpenseAutomation } from './actions'
+import {
+  toggleRecurringExpense,
+  toggleRecurringExpenseAutomation,
+} from './actions'
 import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
@@ -261,11 +264,17 @@ export default async function RecurringExpensesPage({
                         </p>
                       </div>
                       <div className="flex shrink-0 flex-col items-end gap-1.5">
-                        <Badge variant={item.is_active ? 'secondary' : 'outline'}>
+                        <Badge
+                          variant={item.is_active ? 'secondary' : 'outline'}
+                        >
                           {item.is_active ? 'Ativa' : 'Pausada'}
                         </Badge>
-                        <Badge variant={item.auto_post_enabled ? 'default' : 'outline'}>
-                          {item.auto_post_enabled ? 'Lançamento automático' : 'Só planeamento'}
+                        <Badge
+                          variant={item.auto_post_enabled ? 'default' : 'outline'}
+                        >
+                          {item.auto_post_enabled
+                            ? 'Lançamento automático'
+                            : 'Só planeamento'}
                         </Badge>
                       </div>
                     </div>
@@ -327,7 +336,9 @@ export default async function RecurringExpensesPage({
                           size="sm"
                           variant={item.auto_post_enabled ? 'outline' : 'secondary'}
                         >
-                          {item.auto_post_enabled ? 'Pausar lançamentos' : 'Ativar lançamentos'}
+                          {item.auto_post_enabled
+                            ? 'Pausar lançamentos'
+                            : 'Ativar lançamentos'}
                         </Button>
                       </form>
                       <DeleteRecurringExpenseButton
