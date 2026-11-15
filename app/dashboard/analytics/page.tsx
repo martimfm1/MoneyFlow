@@ -49,7 +49,7 @@ export default async function AnalyticsPage() {
       .order('occurred_at', { ascending: true }),
   ])
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
   const monthlyMap = new Map<
     string,
     { label: string; income: number; expense: number }
