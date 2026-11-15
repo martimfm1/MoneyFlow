@@ -7,6 +7,8 @@ import { deleteTransaction, updateTransaction } from '../../actions'
 
 export const dynamic = 'force-dynamic'
 
+import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
+
 export default async function EditTransactionPage({
   params,
   searchParams,
@@ -14,6 +16,7 @@ export default async function EditTransactionPage({
   params: Promise<{ id: string }>
   searchParams: Promise<{ error?: string }>
 }) {
+  await redirectIfGeneralFinanceContext()
   const [{ id }, query] = await Promise.all([params, searchParams])
   const supabase = await createClient()
   const {
