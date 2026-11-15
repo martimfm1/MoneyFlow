@@ -8,9 +8,9 @@ import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
 export default async function NewGoalPage({
   searchParams,
 }: {
-  await redirectIfGeneralFinanceContext()
   searchParams: Promise<{ error?: string }>
 }) {
+  await redirectIfGeneralFinanceContext()
   const params = await searchParams
 
   return (
