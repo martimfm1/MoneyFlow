@@ -53,15 +53,15 @@ Description, notes, recurrence and attachments remain secondary options.
 5. Add contributions over time
 6. Mark item ready or purchased when appropriate
 
-### Recurring costs
+### Recurring income and expenses
 
-1. Add domain/subscription/hosting expense
-2. Enter amount and frequency
-3. Set next renewal date
-4. Review monthly reserve and annualized cost
-5. Pause, edit or delete the commitment as needed
+1. Open the Recurring area and choose the Entries or Exits tab.
+2. Create a recurring item with a user-defined name and optional category/source label.
+3. Enter amount, account, frequency and next expected date.
+4. Review monthly and yearly projections.
+5. Pause, edit or delete the commitment as needed.
 
-The recurring simulator is designed to turn irregular annual or quarterly invoices into predictable monthly planning values. It does not represent money that has actually been paid unless a real transaction is recorded separately.
+Suggested labels are convenience only; labels remain free text so the user can record items such as allowance, gifts, small jobs, subscriptions, mobile plans or any other recurring entry or cost. Recurring records are planning data and do not create actual transactions or alter account balances by themselves.
 
 ## Database direction
 
@@ -170,15 +170,18 @@ Data access and authorization stay server-side wherever possible.
 
 ## PWA and offline
 
-- `public/manifest.webmanifest` defines standalone installation metadata.
-- `public/icon.svg` is the application icon.
-- `public/sw.js` caches the offline shell and static application assets.
+- `public/manifest.webmanifest` defines standalone installation metadata and the app launch route.
+- The root layout exposes install metadata for Chromium-based browsers and iOS Home Screen apps.
+- `components/pwa/register-sw.tsx` registers the service worker, exposes install guidance and offers a safe update action.
+- `public/sw.js` precaches the offline page and manifest, then caches versioned static assets.
 - Navigation failures fall back to `/offline`.
-- The app does not claim full offline transaction persistence; future work may add IndexedDB-backed drafts/queueing.
+- Authenticated financial pages, API responses, balances and transactions are never written to Cache Storage.
+- Offline transaction creation and synchronization are not supported; the app returns to the network before loading financial data.
 
 ## Security baseline
 
 - Supabase RLS on every user-owned table
+- Long-lived browser auth cookies to preserve the session across app launches; users can always explicitly sign out and session revocation still applies
 - No service-role key in browser code
 - Server-side authorization on mutations
 - Zod validation at trust boundaries
