@@ -252,17 +252,7 @@ revoke all on function public.process_my_due_recurring_transactions()
 grant execute on function public.process_my_due_recurring_transactions()
   to authenticated;
 
-create or replace function public.process_due_recurring_transactions()
-returns integer
-language sql
-security definer
-set search_path = ''
-as $$
-  select public._process_due_recurring_transactions(null)
-$$;
-
--- Scheduled work runs as the database owner, so the global wrapper resolves each user
--- internally instead of accepting a user ID from an untrusted caller.
+-- Scheduled work resolves each user internally instead of accepting a user ID from an untrusted caller.
 create or replace function public.process_due_recurring_transactions_all()
 returns integer
 language plpgsql
@@ -598,5 +588,38 @@ revoke all on function public.disconnect_silentra_integration()
   from public, anon;
 grant execute on function public.disconnect_silentra_integration()
   to authenticated;
+
+create or replace function public.disconnect_silentra_integration_by_secret_hash(
+  p_event_secret_hash text
+)
+returns boolean
+language plpgsql
+security definer
+set search_path = ''
+as $
+declare
+  v_updated integer := 0;
+begin
+  if p_event_secret_hash is null or p_event_secret_hash !~ '^[a-f0-9]{64}
+ then
+    raise exception 'Invalid integration credential';
+  end if;
+
+  update public.silentra_integrations
+  set status = 'disconnected',
+      event_secret_hash = null,
+      disconnected_at = pg_catalog.now()
+  where event_secret_hash = p_event_secret_hash
+    and status = 'connected';
+
+  get diagnostics v_updated = row_count;
+  return v_updated = 1;
+end;
+$;
+
+revoke all on function public.disconnect_silentra_integration_by_secret_hash(text)
+  from public, authenticated;
+grant execute on function public.disconnect_silentra_integration_by_secret_hash(text)
+  to anon;
 
 notify pgrst, 'reload schema';
