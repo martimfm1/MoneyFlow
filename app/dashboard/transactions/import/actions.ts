@@ -14,7 +14,25 @@ function normalizeHeader(value: string) {
     .trim()
 }
 
-function detectCsvDelimiter(input: string) {\n  const firstLine = input.split(/\\r?\\n/, 1)[0] ?? ''\n  let quoted = false\n  let commas = 0\n  let semicolons = 0\n\n  for (let index = 0; index < firstLine.length; index += 1) {\n    const character = firstLine[index]\n    if (character === '\"') {\n      if (quoted && firstLine[index + 1] === '\"') index += 1\n      else quoted = !quoted\n    } else if (!quoted && character === ',') commas += 1\n    else if (!quoted && character === ';') semicolons += 1\n  }\n\n  return semicolons > commas ? ';' : ','\n}\n\nfunction parseCsv(input: string, delimiter: string): string[][] {
+function detectCsvDelimiter(input: string) {
+  const firstLine = input.split(/\r?\n/, 1)[0] ?? ''
+  let quoted = false
+  let commas = 0
+  let semicolons = 0
+
+  for (let index = 0; index < firstLine.length; index += 1) {
+    const character = firstLine[index]
+    if (character === '"') {
+      if (quoted && firstLine[index + 1] === '"') index += 1
+      else quoted = !quoted
+    } else if (!quoted && character === ',') commas += 1
+    else if (!quoted && character === ';') semicolons += 1
+  }
+
+  return semicolons > commas ? ';' : ','
+}
+
+function parseCsv(input: string, delimiter: string): string[][] {
   const rows: string[][] = []
   let row: string[] = []
   let field = ''
