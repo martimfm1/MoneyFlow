@@ -51,25 +51,15 @@ export function AuthForm({ mode }: { mode: 'signin' | 'signup' }) {
       </label>
       {!isSignUp ? (
         <div className="rounded-[var(--radius-md)] border border-[hsl(var(--foreground)/0.09)] bg-[hsl(var(--surface-muted)/0.72)] p-3">
-          <label className="flex cursor-pointer items-start gap-3">
-            <input
-              id="remember"
-              name="remember"
-              type="checkbox"
-              value="on"
-              defaultChecked
-              className="mt-0.5 size-4 shrink-0 rounded border-input accent-[hsl(var(--brand-green))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-            />
-            <span className="min-w-0">
-              <span className="flex items-center gap-1.5 text-sm font-medium">
-                <Check aria-hidden="true" className="size-3.5 text-[hsl(var(--brand-green))]" />
-                Lembrar-me neste dispositivo
-              </span>
-              <span className="mt-1 block text-xs leading-5 text-[hsl(var(--muted-foreground))]">
-                Mantém a sessão por 30 dias neste dispositivo.
-              </span>
-            </span>
-          </label>
+          <div className="flex items-start gap-3">
+            <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[hsl(var(--brand-green))]" />
+            <div>
+              <p className="text-sm font-medium">Sessão persistente ativada</p>
+              <p className="mt-1 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
+                Vais continuar com a sessão iniciada neste dispositivo até terminares sessão ou revogares o acesso.
+              </p>
+            </div>
+          </div>
         </div>
       ) : null}
       {state.error ? (
