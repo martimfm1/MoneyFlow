@@ -21,9 +21,9 @@ import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
 export default async function NewTransactionPage({
   searchParams,
 }: {
-  await redirectIfGeneralFinanceContext()
   searchParams: Promise<{ error?: string; type?: string }>
 }) {
+  await redirectIfGeneralFinanceContext()
   const params = await searchParams
   const supabase = await createClient()
   const {
