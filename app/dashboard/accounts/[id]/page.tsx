@@ -93,7 +93,9 @@ export default async function AccountDetailPage({
             </Button>
             <DeleteAccountButton id={account.id} name={account.name} />
           </div>
-        ) : null}
+        ) : (
+          <span className="text-xs text-[hsl(var(--muted-foreground))]">Apenas leitura</span>
+        )}
       </div>
 
       {query.error ? (
