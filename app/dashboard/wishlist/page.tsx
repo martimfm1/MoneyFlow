@@ -37,13 +37,13 @@ export default async function WishlistPage({
   const [{ data: profile }, { data: items }] = await Promise.all([
     supabase
       .from('profiles')
-      .select('currency_code')
+      .select('currency_code, active_finance_context')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
       .from('wishlist_items')
       .select(
-        'id, name, price, category, priority, status, url, image_url, desired_date, notes',
+        'id, name, price, category, priority, status, url, image_url, desired_date, notes, finance_context',
       )
       .eq('user_id', user.id)
       .order('status', { ascending: true })
@@ -51,7 +51,7 @@ export default async function WishlistPage({
       .order('created_at', { ascending: false }),
   ])
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = profile?.currency_code ?? 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
   const totalValue = (items ?? [])
     .filter((item) => item.status !== 'purchased')
     .reduce((sum, item) => sum + Number(item.price), 0)
@@ -71,11 +71,13 @@ export default async function WishlistPage({
             antes de gastar.
           </p>
         </div>
-        <Button asChild size="sm">
-          <Link href="/dashboard/wishlist/new">
-            <Plus className="size-4" aria-hidden="true" /> Adicionar item
-          </Link>
-        </Button>
+        {!readOnly ? (
+          <Button asChild size="sm">
+            <Link href="/dashboard/wishlist/new">
+              <Plus className="size-4" aria-hidden="true" /> Adicionar item
+            </Link>
+          </Button>
+        ) : null}
       </header>
       {params.toast ? (
         <p
@@ -102,9 +104,11 @@ export default async function WishlistPage({
             Adiciona algo que queres comprar e transforma a intenção numa
             decisão planeada.
           </p>
-          <Button asChild className="mt-5">
-            <Link href="/dashboard/wishlist/new">Adicionar item</Link>
-          </Button>
+          {!readOnly ? (
+            <Button asChild className="mt-5">
+              <Link href="/dashboard/wishlist/new">Adicionar item</Link>
+            </Button>
+          ) : null}
         </section>
       ) : (
         <>
@@ -167,6 +171,14 @@ export default async function WishlistPage({
                           <span>
                             {statusLabels[item.status] ?? item.status}
                           </span>
+                          {readOnly ? (
+                            <>
+                              <span>·</span>
+                              <span>
+                                {item.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                              </span>
+                            </>
+                          ) : null}
                           {item.category ? (
                             <>
                               <span>·</span>
@@ -191,56 +203,60 @@ export default async function WishlistPage({
                       </p>
                     ) : null}
                     <div className="mt-auto space-y-3 pt-5">
-                      <form
-                        action={updateWishlistStatus}
-                        className="flex items-end gap-2"
-                      >
-                        <input type="hidden" name="id" value={item.id} />
-                        <label
-                          className="grid min-w-0 flex-1 gap-1.5 text-xs font-medium"
-                          htmlFor={`status-${item.id}`}
-                        >
-                          Estado
-                          <select
-                            id={`status-${item.id}`}
-                            name="status"
-                            defaultValue={item.status}
-                            className="min-h-11 min-w-0 w-full rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+                      {!readOnly ? (
+                        <>
+                          <form
+                            action={updateWishlistStatus}
+                            className="flex items-end gap-2"
                           >
-                            <option value="want">Quero</option>
-                            <option value="saving">A guardar</option>
-                            <option value="ready">Pronto</option>
-                            <option value="purchased">Comprado</option>
-                          </select>
-                        </label>
-                        <Button type="submit" size="sm" variant="outline" className="min-h-11">
-                          Guardar estado
-                        </Button>
-                      </form>
-                      <div className="flex flex-wrap gap-2">
+                            <input type="hidden" name="id" value={item.id} />
+                            <label
+                              className="grid min-w-0 flex-1 gap-1.5 text-xs font-medium"
+                              htmlFor={`status-${item.id}`}
+                            >
+                              Estado
+                              <select
+                                id={`status-${item.id}`}
+                                name="status"
+                                defaultValue={item.status}
+                                className="min-h-11 min-w-0 w-full rounded-[var(--radius-md)] border bg-[hsl(var(--surface))] px-3 text-sm font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+                              >
+                                <option value="want">Quero</option>
+                                <option value="saving">A guardar</option>
+                                <option value="ready">Pronto</option>
+                                <option value="purchased">Comprado</option>
+                              </select>
+                            </label>
+                            <Button type="submit" size="sm" variant="outline" className="min-h-11">
+                              Guardar estado
+                            </Button>
+                          </form>
+                          <div className="flex flex-wrap gap-2">
+                            <Button asChild size="sm" variant="ghost">
+                              <Link href={`/dashboard/wishlist/${item.id}/edit`}>
+                                <Pencil className="size-4" /> Editar
+                              </Link>
+                            </Button>
+                            <form action={createGoalFromWishlist}>
+                              <input type="hidden" name="id" value={item.id} />
+                              <Button type="submit" size="sm" variant="ghost">
+                                <Target className="size-4" /> Criar objetivo
+                              </Button>
+                            </form>
+                            <DeleteWishlistItemButton
+                              id={item.id}
+                              name={item.name}
+                            />
+                          </div>
+                        </>
+                      ) : null}
+                      {item.url ? (
                         <Button asChild size="sm" variant="ghost">
-                          <Link href={`/dashboard/wishlist/${item.id}/edit`}>
-                            <Pencil className="size-4" /> Editar
-                          </Link>
+                          <a href={item.url} target="_blank" rel="noreferrer">
+                            <ExternalLink className="size-4" /> Abrir
+                          </a>
                         </Button>
-                        <form action={createGoalFromWishlist}>
-                          <input type="hidden" name="id" value={item.id} />
-                          <Button type="submit" size="sm" variant="ghost">
-                            <Target className="size-4" /> Criar objetivo
-                          </Button>
-                        </form>
-                        {item.url ? (
-                          <Button asChild size="sm" variant="ghost">
-                            <a href={item.url} target="_blank" rel="noreferrer">
-                              <ExternalLink className="size-4" /> Abrir
-                            </a>
-                          </Button>
-                        ) : null}
-                        <DeleteWishlistItemButton
-                          id={item.id}
-                          name={item.name}
-                        />
-                      </div>
+                      ) : null}
                     </div>
                   </div>
                 </article>
