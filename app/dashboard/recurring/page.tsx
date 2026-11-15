@@ -1,9 +1,5 @@
 import Link from 'next/link'
-import {
-  CalendarClock,
-  CircleDollarSign,
-  RefreshCw,
-} from 'lucide-react'
+import { CalendarClock, CircleDollarSign, RefreshCw } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
@@ -109,8 +105,7 @@ export default async function RecurringExpensesPage({
   const activeInPrimaryCurrency = active.filter(
     (item) => (item.currency_code || currency) === currency,
   )
-  const activeInOtherCurrencies =
-    active.length - activeInPrimaryCurrency.length
+  const activeInOtherCurrencies = active.length - activeInPrimaryCurrency.length
   const monthlyTotal = activeInPrimaryCurrency.reduce(
     (sum, item) => sum + monthlyReserve(item),
     0,
