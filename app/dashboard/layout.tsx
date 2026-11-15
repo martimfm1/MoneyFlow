@@ -99,6 +99,12 @@ export default async function DashboardLayout({
                     : 'personal'
                 }
               />
+              {profile?.active_finance_context === 'general' ? (
+                <p className="mt-2 text-right text-xs text-[hsl(var(--muted-foreground))]">
+                  Geral é uma visão conjunta em modo de leitura. Muda para Pessoal
+                  ou Silentra para criar, editar ou importar movimentos.
+                </p>
+              ) : null}
             </div>
           ) : null}
           {children}
@@ -108,7 +114,7 @@ export default async function DashboardLayout({
         </div>
       </div>
 
-      {user ? <QuickAdd locale={locale} /> : null}
+      {user && profile?.active_finance_context !== 'general' ? (\n        <QuickAdd locale={locale} />\n      ) : null}
       <div className="lg:hidden">
         <DashboardNavigation locale={locale} />
       </div>
