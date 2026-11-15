@@ -20,6 +20,7 @@ import { RecurringExpenseCreateDialog } from './create-dialog'
 import { RecurringTabs } from '@/components/dashboard/recurring-tabs'
 import { DeleteRecurringExpenseButton } from './delete-button'
 import { toggleRecurringExpense } from './actions'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -77,6 +78,7 @@ export default async function RecurringExpensesPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
   const [{ data: profile }, { data: expenses }, { data: accounts }] =
     await Promise.all([
       supabase
@@ -90,12 +92,14 @@ export default async function RecurringExpensesPage({
           'id, name, provider, amount, frequency, next_due_date, currency_code, account_id, account:accounts(name, currency_code), is_active, notes',
         )
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .order('is_active', { ascending: false })
         .order('next_due_date'),
       supabase
         .from('accounts')
         .select('id, name, currency_code, balance')
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .eq('is_active', true)
         .order('name'),
     ])
