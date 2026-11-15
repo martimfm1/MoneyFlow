@@ -186,12 +186,9 @@ See [`SECURITY.md`](SECURITY.md) for the security baseline and vulnerability-rep
 
 The core product foundation is in place. Recurring income/expense tracking, multi-space finance, CSV transaction import and the installable PWA are already implemented.
 
-The next work is tracked in the [API integrations and platform roadmap](docs/roadmap/api-integrations-and-platform.md). It covers provider eligibility and selection, secure Open Banking architecture, stronger CSV import/reconciliation, sandbox integration, incremental bank sync, webhooks, recurring suggestions, API contracts, FX/export decisions, automated testing, privacy and production rollout.
+The next work is tracked in the [API integrations and platform roadmap](docs/roadmap/api-integrations-and-platform.md). It covers the manual CSV import and reconciliation experience, the internal Silentra for Barbers connection, automatic recurring entries, API contracts, FX/export decisions, automated testing, privacy and production rollout.
 
-The current Portugal provider shortlist and due-diligence notes live in [the Open Banking provider evaluation](docs/roadmap/provider-evaluation-portugal-2026-11.md). Salt Edge Partner Program is the leading proof-of-concept candidate, pending commercial onboarding, pricing, KYB/DPA and a specific Revolut Jovem data test.
-
-**Important:** direct Revolut Open Banking production access is restricted to regulated TPPs with the required certificates. Revolut Jovem is a parent-owned sub-account without individual banking details; automatic sync of its movements must not be promised until the parent-authorised data feed is verified. CSV import remains the supported fallback.
-
+**Important:** bank data remains manual. MoneyFlow does not connect to banks or third-party Open Banking providers; users can continue creating movements manually or importing CSV statements.
 ## License
 
 MIT. See [`LICENSE`](LICENSE).
