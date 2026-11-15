@@ -114,7 +114,9 @@ export default async function DashboardLayout({
         </div>
       </div>
 
-      {user && profile?.active_finance_context !== 'general' ? (\n        <QuickAdd locale={locale} />\n      ) : null}
+      {user && profile?.active_finance_context !== 'general' ? (
+        <QuickAdd locale={locale} />
+      ) : null}
       <div className="lg:hidden">
         <DashboardNavigation locale={locale} />
       </div>
