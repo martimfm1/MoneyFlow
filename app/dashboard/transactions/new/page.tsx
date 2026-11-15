@@ -16,9 +16,12 @@ import { createTransaction } from './actions'
 
 export const dynamic = 'force-dynamic'
 
+import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
+
 export default async function NewTransactionPage({
   searchParams,
 }: {
+  await redirectIfGeneralFinanceContext()
   searchParams: Promise<{ error?: string; type?: string }>
 }) {
   const params = await searchParams
