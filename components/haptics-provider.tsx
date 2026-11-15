@@ -12,7 +12,11 @@ function vibrate(kind: HapticKind) {
   const pattern: number | number[] =
     kind === 'success' ? [10, 36, 14] : kind === 'error' ? [22, 42, 22] : 9
 
-  navigator.vibrate(pattern)
+  try {
+    navigator.vibrate(pattern)
+  } catch {
+    // Some browsers expose the API but block vibration in the current context.
+  }
 }
 
 function getHapticTarget(target: EventTarget | null) {
