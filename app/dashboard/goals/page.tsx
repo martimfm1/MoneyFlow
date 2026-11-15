@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation'
 import { addGoalContribution } from './actions'
 import { DeleteGoalButton } from './delete-goal-button'
 import { formatCurrency, formatDate } from '@/lib/format'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,6 +27,7 @@ export default async function GoalsPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: profile }, { data: goals }] = await Promise.all([
     supabase
@@ -37,6 +39,7 @@ export default async function GoalsPage({
       .from('goals')
       .select('id, name, target_amount, current_amount, target_date, priority')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('priority', { ascending: true })
       .order('created_at', { ascending: false }),
   ])
