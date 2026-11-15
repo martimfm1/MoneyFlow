@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowLeft, Languages, MoonStar } from 'lucide-react'
+import { ArrowLeft, Languages, Palette, Sparkles } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
@@ -30,101 +30,106 @@ export default async function SettingsPage({
     .maybeSingle()
   const locale = normalizeLocale(profile?.locale)
   const t = createTranslator(locale)
+  const isEnglish = locale === 'en'
   const errorMessage =
     params.error === 'invalid_locale' || params.error === 'save_failed'
       ? t('settings.saveError')
       : null
 
   return (
-    <main className="moneyflow-shell py-6 sm:py-10">
-      <Button asChild size="sm" variant="ghost">
+    <div className="moneyflow-shell py-6 sm:py-8 lg:py-10">
+      <Button asChild size="sm" variant="ghost" className="-ml-2">
         <Link href="/dashboard">
           <ArrowLeft className="size-4" aria-hidden="true" />
           {t('settings.back')}
         </Link>
       </Button>
 
-      <header className="mt-5">
-        <p className="text-sm text-[hsl(var(--muted-foreground))]">
-          {t('settings.eyebrow')}
+      <header className="mt-5 max-w-2xl">
+        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+          {isEnglish ? 'Make it yours' : 'Personaliza a experiência'}
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
+        <h1 className="mt-2 text-[clamp(1.8rem,4vw,2.55rem)] font-semibold tracking-[-0.045em]">
           {t('settings.title')}
         </h1>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
           {t('settings.description')}
         </p>
       </header>
 
       {params.saved ? (
-        <p
-          role="status"
-          className="mt-5 max-w-3xl rounded-[var(--radius-md)] border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-3 py-2 text-sm"
-        >
+        <p role="status" className="mt-5 max-w-3xl rounded-xl border border-[hsl(var(--success)/0.25)] bg-[hsl(var(--success)/0.08)] px-4 py-3 text-sm">
           {t('settings.saved')}
         </p>
       ) : null}
       {errorMessage ? (
-        <p
-          role="alert"
-          className="mt-5 max-w-3xl rounded-[var(--radius-md)] border border-[hsl(var(--danger)/0.25)] bg-[hsl(var(--danger)/0.08)] px-3 py-2 text-sm"
-        >
+        <p role="alert" className="mt-5 max-w-3xl rounded-xl border border-[hsl(var(--danger)/0.25)] bg-[hsl(var(--danger)/0.08)] px-4 py-3 text-sm">
           {errorMessage}
         </p>
       ) : null}
 
-      <section
-        className="mt-8 max-w-3xl divide-y rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] shadow-sm"
-        aria-label={locale === 'en' ? 'Preferences' : 'Preferências'}
-      >
-        <div className="grid gap-4 p-5 sm:grid-cols-[minmax(0,1fr)_minmax(16rem,0.9fr)] sm:items-center sm:p-6">
-          <div className="flex items-start gap-3">
-            <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
-              <Languages className="size-4" aria-hidden="true" />
+      <div className="mt-8 grid max-w-5xl gap-4 xl:grid-cols-[minmax(16rem,0.8fr)_minmax(0,1.2fr)]">
+        <section className="overflow-hidden rounded-2xl border border-border/80 bg-card/75 shadow-sm" aria-labelledby="language-title">
+          <div className="border-b border-border/70 p-5 sm:p-6">
+            <span className="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Languages className="size-[18px]" aria-hidden="true" />
             </span>
-            <div>
-              <h2 className="font-medium">{t('settings.language')}</h2>
-              <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-                {t('settings.languageHint')}
-              </p>
-            </div>
-          </div>
-          <form action={updateLocale} className="flex flex-col gap-2 sm:flex-row">
-            <label className="sr-only" htmlFor="settings-locale">
+            <h2 id="language-title" className="text-base font-semibold tracking-tight">
               {t('settings.language')}
+            </h2>
+            <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+              {t('settings.languageHint')}
+            </p>
+          </div>
+          <form action={updateLocale} className="flex flex-col gap-3 p-5 sm:p-6">
+            <label className="text-xs font-semibold text-muted-foreground" htmlFor="settings-locale">
+              {isEnglish ? 'Display language' : 'Idioma de apresentação'}
             </label>
             <select
               id="settings-locale"
               name="locale"
               defaultValue={locale}
-              className="min-h-11 min-w-0 flex-1 rounded-[var(--radius-md)] border bg-transparent px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+              className="min-h-11 w-full rounded-xl border border-border bg-background px-3 text-sm outline-none transition-colors focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-ring/30"
             >
               <option value="pt-PT">{t('settings.portuguese')}</option>
               <option value="en">{t('settings.english')}</option>
             </select>
-            <Button type="submit">{t('settings.save')}</Button>
+            <Button type="submit" className="w-full">
+              {t('settings.save')}
+            </Button>
           </form>
-        </div>
+        </section>
 
-        <div className="flex items-center justify-between gap-4 p-5 sm:p-6">
-          <div className="flex items-start gap-3">
-            <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[hsl(var(--surface-muted))]">
-              <MoonStar className="size-4" aria-hidden="true" />
+        <section className="overflow-hidden rounded-2xl border border-border/80 bg-card/75 shadow-sm" aria-labelledby="appearance-title">
+          <div className="border-b border-border/70 p-5 sm:p-6">
+            <span className="mb-4 inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Palette className="size-[18px]" aria-hidden="true" />
             </span>
-            <div>
-              <h2 className="font-medium">
-                {locale === 'en' ? 'Appearance' : 'Tema'}
-              </h2>
-              <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-                {locale === 'en'
-                  ? 'Switch between light, dark or your device preference.'
-                  : 'Alterna entre o tema claro, escuro ou o tema do dispositivo.'}
-              </p>
-            </div>
+            <h2 id="appearance-title" className="text-base font-semibold tracking-tight">
+              {isEnglish ? 'Appearance' : 'Aparência'}
+            </h2>
+            <p className="mt-1.5 text-sm leading-6 text-muted-foreground">
+              {isEnglish
+                ? 'Choose how MoneyFlow looks and feels. Your preferences stay on this device.'
+                : 'Escolhe o aspeto do MoneyFlow. As preferências ficam guardadas neste dispositivo.'}
+            </p>
           </div>
-          <ThemeToggle locale={locale} />
-        </div>
-      </section>
-    </main>
+          <div className="p-5 sm:p-6">
+            <ThemeToggle locale={locale} />
+          </div>
+        </section>
+      </div>
+
+      <div className="mt-6 flex max-w-5xl items-start gap-3 rounded-2xl border border-border/70 bg-muted/35 p-4">
+        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-background text-primary">
+          <Sparkles className="size-4" aria-hidden="true" />
+        </span>
+        <p className="text-xs leading-5 text-muted-foreground">
+          {isEnglish
+            ? 'Tip: the accent colour changes highlights, active navigation and focus states without changing your financial data.'
+            : 'Dica: a cor de destaque altera realces, navegação ativa e estados de foco, sem alterar os teus dados financeiros.'}
+        </p>
+      </div>
+    </div>
   )
 }
