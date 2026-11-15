@@ -114,7 +114,9 @@ export async function createRecurringExpense(formData: FormData) {
       .eq('id', created.id)
       .eq('user_id', user.id)
       .eq('context_id', financialContext.id)
-    errorRedirect('Não foi possível ativar os lançamentos automáticos. A despesa não foi criada.')
+    errorRedirect(
+      'Não foi possível ativar os lançamentos automáticos. A despesa não foi criada.',
+    )
   }
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
@@ -179,7 +181,9 @@ export async function updateRecurringExpense(formData: FormData) {
 
   if (error)
     redirect(
-      `/dashboard/recurring/${parsed.data.id}/edit?error=${encodeURIComponent('Não foi possível atualizar a despesa.')}`,
+      `/dashboard/recurring/${parsed.data.id}/edit?error=${encodeURIComponent(
+        'Não foi possível atualizar a despesa.',
+      )}`,
     )
 
   if (existing.auto_post_enabled) {
@@ -198,7 +202,9 @@ export async function updateRecurringExpense(formData: FormData) {
         .eq('id', parsed.data.id)
         .eq('user_id', user.id)
         .eq('context_id', financialContext.id)
-      errorRedirect('A despesa foi atualizada, mas a automatização foi pausada por segurança. Ativa-a novamente para continuar.')
+      errorRedirect(
+        'A despesa foi atualizada, mas a automatização foi pausada por segurança. Ativa-a novamente para continuar.',
+      )
     }
   }
 
@@ -263,15 +269,16 @@ export async function toggleRecurringExpense(formData: FormData) {
         .eq('id', parsed.data.id)
         .eq('user_id', user.id)
         .eq('context_id', financialContext.id)
-      errorRedirect('A despesa foi ativada, mas os lançamentos automáticos foram pausados por segurança.')
+      errorRedirect(
+        'A despesa foi ativada, mas os lançamentos automáticos foram pausados por segurança.',
+      )
     }
   }
 
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
-  redirect(
-    `/dashboard/recurring?toast=${nextIsActive ? 'Despesa%20ativada.' : 'Despesa%20pausada.'}`,
-  )
+  const toast = nextIsActive ? 'Despesa%20ativada.' : 'Despesa%20pausada.'
+  redirect(`/dashboard/recurring?toast=${toast}`)
 }
 
 export async function toggleRecurringExpenseAutomation(formData: FormData) {
@@ -290,7 +297,9 @@ export async function toggleRecurringExpenseAutomation(formData: FormData) {
 
   revalidatePath('/dashboard/recurring')
   revalidatePath('/dashboard')
-  redirect(
-    `/dashboard/recurring?toast=${parsed.data.enabled === 'true' ? 'Lançamentos%20automáticos%20ativados.%20O%20primeiro%20lançamento%20será%20na%20próxima%20data%20futura.' : 'Lançamentos%20automáticos%20pausados.'}`,
-  )
+  const toast =
+    parsed.data.enabled === 'true'
+      ? 'Lançamentos%20automáticos%20ativados.%20O%20primeiro%20lançamento%20será%20na%20próxima%20data%20futura.'
+      : 'Lançamentos%20automáticos%20pausados.'
+  redirect(`/dashboard/recurring?toast=${toast}`)
 }
