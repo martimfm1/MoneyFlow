@@ -101,7 +101,8 @@ export default async function RecurringIncomePage({
         .order('name', { ascending: true }),
     ])
 
-  const currency = profile?.currency_code ?? 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
+  const currency = profile?.currency_code ?? 'EUR'
+  const readOnly = profile?.active_finance_context === 'general'
   const items = (incomes ?? []) as unknown as RecurringIncome[]
   const activeItems = items.filter((item) => item.is_active)
   const activeInPrimaryCurrency = activeItems.filter(
