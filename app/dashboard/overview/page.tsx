@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 export const dynamic = 'force-dynamic'
 
 type CurrencyTotals = Record<string, number>
+type MonthlyFlow = Record<string, { income: number; expense: number }>
 
 export default async function FinancialOverviewPage() {
   const supabase = await createClient()
@@ -19,7 +20,14 @@ export default async function FinancialOverviewPage() {
 
   if (!user) redirect('/login')
 
-  const [{ data: contexts }, { data: accounts }, { data: profile }] =
+  const now = new Date()
+  const monthStart = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+  )
+  const nextMonthStart = new Date(
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1),
+  )
+  const [{ data: contexts }, { data: accounts }, { data: transactions }, { data: profile }] =
     await Promise.all([
       supabase
         .from('financial_contexts')
@@ -32,11 +40,34 @@ export default async function FinancialOverviewPage() {
         .eq('user_id', user.id)
         .eq('is_active', true),
       supabase
+        .from('transactions')
+        .select('context_id, transaction_type, amount, accounts(currency_code)')
+        .eq('user_id', user.id)
+        .gte('occurred_at', monthStart.toISOString())
+        .lt('occurred_at', nextMonthStart.toISOString()),
+      supabase
         .from('profiles')
         .select('locale')
         .eq('id', user.id)
         .maybeSingle(),
     ])
+
+  const monthlyByContext = new Map<string, MonthlyFlow>()
+  for (const transaction of transactions ?? []) {
+    const account = Array.isArray(transaction.accounts)
+      ? transaction.accounts[0]
+      : transaction.accounts
+    const currency = account?.currency_code ?? 'EUR'
+    const contextFlow = monthlyByContext.get(transaction.context_id) ?? {}
+    const totals = contextFlow[currency] ?? { income: 0, expense: 0 }
+    if (transaction.transaction_type === 'income') {
+      totals.income += Number(transaction.amount)
+    } else {
+      totals.expense += Number(transaction.amount)
+    }
+    contextFlow[currency] = totals
+    monthlyByContext.set(transaction.context_id, contextFlow)
+  }
 
   const locale = normalizeLocale(profile?.locale)
   const isEnglish = locale === 'en'
@@ -121,6 +152,41 @@ export default async function FinancialOverviewPage() {
                       : 'Ainda não existem contas ativas neste espaço.'}
                   </p>
                 )}
+
+                <div className="mt-4 border-t pt-4">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    {isEnglish ? 'This month' : 'Este mês'}
+                  </p>
+                  {Object.entries(monthlyByContext.get(context.id) ?? {}).length ? (
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                      {Object.entries(monthlyByContext.get(context.id) ?? {})
+                        .sort(([a], [b]) => a.localeCompare(b))
+                        .map(([currency, totals]) => (
+                          <div
+                            key={currency}
+                            className="rounded-xl bg-muted/30 p-3"
+                          >
+                            <p className="text-xs text-muted-foreground">
+                              {currency}
+                            </p>
+                            <p className="mt-1 text-sm font-medium tabular-nums text-[hsl(var(--success))]">
+                              +{formatCurrency(totals.income, currency)}
+                            </p>
+                            <p className="text-sm font-medium tabular-nums text-[hsl(var(--danger))]">
+                              -{formatCurrency(totals.expense, currency)}
+                            </p>
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {isEnglish
+                        ? 'No transactions recorded this month.'
+                        : 'Ainda não existem movimentos registados este mês.'}
+                    </p>
+                  )}
+                </div>
+
                 <form action={switchFinancialContext} className="mt-4">
                   <input type="hidden" name="slug" value={context.slug} />
                   <Button type="submit" variant="outline" className="w-full">
