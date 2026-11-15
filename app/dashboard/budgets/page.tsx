@@ -97,7 +97,7 @@ export default async function BudgetsPage({
       .lt('occurred_at', nextStart),
   ])
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
   const budgetsByCategory = new Map(
     (budgets ?? []).map((budget) => [
       budget.category_id,
