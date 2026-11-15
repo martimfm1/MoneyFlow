@@ -55,7 +55,9 @@ export async function completeOnboarding(formData: FormData) {
       .from('profiles')
       .update({ onboarding_completed_at: null })
       .eq('id', user.id)
-    redirect('/onboarding?error=Não%20foi%20possível%20preparar%20o%20espaço%20pessoal.')
+    redirect(
+      '/onboarding?error=Não%20foi%20possível%20preparar%20o%20espaço%20pessoal.',
+    )
   }
 
   const { error: accountError } = await supabase.from('accounts').insert({
