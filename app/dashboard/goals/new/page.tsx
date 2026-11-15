@@ -3,9 +3,12 @@ import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createGoal } from './actions'
 
+import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
+
 export default async function NewGoalPage({
   searchParams,
 }: {
+  await redirectIfGeneralFinanceContext()
   searchParams: Promise<{ error?: string }>
 }) {
   const params = await searchParams
