@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { createTransaction } from './actions'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,18 +28,21 @@ export default async function NewTransactionPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: accounts }, { data: categories }] = await Promise.all([
     supabase
       .from('accounts')
       .select('id, name, currency_code, balance')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .eq('is_active', true)
       .order('name'),
     supabase
       .from('categories')
       .select('id, name')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('sort_order')
       .order('name'),
   ])
