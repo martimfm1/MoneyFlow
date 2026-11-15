@@ -74,7 +74,8 @@ export default async function DashboardPage() {
   ])
 
   if (!profile?.onboarding_completed_at) redirect('/onboarding')
-  const currency = financialContext.currency_code || profile.currency_code || 'EUR'
+  const currency =
+    financialContext.currency_code || profile.currency_code || 'EUR'
   const accountsInPrimaryCurrency = (accounts ?? []).filter(
     (account) => (account.currency_code || currency) === currency,
   )
@@ -152,10 +153,7 @@ export default async function DashboardPage() {
           </Link>
         </section>
 
-        <MonthlyOverview
-          currency={currency}
-          contextId={financialContext.id}
-        />
+        <MonthlyOverview currency={currency} contextId={financialContext.id} />
 
         <section id="accounts" className="mt-8 lg:mt-10">
           <div className="flex items-center justify-between gap-3">
@@ -181,7 +179,8 @@ export default async function DashboardPage() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium">{account.name}</p>
                       <p className="text-xs text-[hsl(var(--muted-foreground))]">
-                        {accountTypeLabels[account.account_type] ?? account.account_type}
+                        {accountTypeLabels[account.account_type] ??
+                          account.account_type}
                       </p>
                     </div>
                   </div>
@@ -328,10 +327,7 @@ export default async function DashboardPage() {
           )}
         </section>
 
-        <WishlistPreview
-          currency={currency}
-          contextId={financialContext.id}
-        />
+        <WishlistPreview currency={currency} contextId={financialContext.id} />
 
         <section
           id="add"
