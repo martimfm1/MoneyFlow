@@ -16,6 +16,7 @@ import { formatCurrency, formatShortDate } from '@/lib/format'
 import { MonthlyOverview } from '@/components/dashboard/monthly-overview'
 import { WishlistPreview } from '@/components/dashboard/wishlist-preview'
 import { getFinancialContext } from '@/lib/financial-context'
+import { MotionReveal } from '@/components/ui/motion-reveal'
 
 export const dynamic = 'force-dynamic'
 
@@ -102,7 +103,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="moneyflow-shell pt-9 pb-6 sm:pt-9 sm:pb-8 lg:pt-10 lg:pb-10">
-      <header className="mf-enter flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <MotionReveal>
+      <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
             O teu espaço financeiro
@@ -135,7 +137,7 @@ export default async function DashboardPage() {
         aria-label="Resumo do saldo"
       >
         <article
-          className="glass-hero mf-enter relative isolate min-h-[15.5rem] overflow-hidden rounded-[1.65rem] p-5 text-white sm:p-7"
+          className="glass-hero relative isolate min-h-[15.5rem] overflow-hidden rounded-[1.65rem] p-5 text-white sm:p-7"
         >
           <div className="pointer-events-none absolute -right-14 -top-28 -z-10 size-80 rounded-full border border-white/10" />
           <div className="pointer-events-none absolute -right-2 -top-16 -z-10 size-56 rounded-full border border-white/10" />
@@ -176,7 +178,7 @@ export default async function DashboardPage() {
           </div>
         </article>
 
-        <aside className="glass-card mf-enter-delayed rounded-[1.65rem] p-5 sm:p-6" aria-label="Resumo de todas as contas por moeda">
+        <aside className="glass-card rounded-[1.65rem] p-5 sm:p-6" aria-label="Resumo de todas as contas por moeda">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.17em] text-muted-foreground">
@@ -242,10 +244,12 @@ export default async function DashboardPage() {
           </p>
         </aside>
       </section>
+      </MotionReveal>
 
       <MonthlyOverview currency={currency} contextId={financialContext.id} />
 
-      <div className="mt-8 grid items-start gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.85fr)]">
+      <MotionReveal className="mt-8" delay={0.12}>
+      <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.35fr)_minmax(19rem,0.85fr)]">
         <div className="min-w-0 space-y-8">
           <section id="transactions" aria-labelledby="transactions-title">
             <div className="mb-3 flex items-center justify-between gap-3">
@@ -518,6 +522,7 @@ export default async function DashboardPage() {
           </Link>
         </aside>
       </div>
+      </MotionReveal>
     </div>
   )
 }
