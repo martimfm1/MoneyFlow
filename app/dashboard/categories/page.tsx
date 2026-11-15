@@ -20,9 +20,17 @@ export default async function CategoriesPage({
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('active_finance_context')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  const readOnly = profile?.active_finance_context === 'general'
+
   const { data: categories } = await supabase
     .from('categories')
-    .select('id, name, sort_order')
+    .select('id, name, sort_order, finance_context')
     .eq('user_id', user.id)
     .order('sort_order', { ascending: true })
     .order('name', { ascending: true })
@@ -66,32 +74,42 @@ export default async function CategoriesPage({
       ) : null}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(20rem,0.8fr)_minmax(0,1.4fr)] lg:items-start">
-        <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6 lg:sticky lg:top-8">
-          <h2 className="font-medium">Nova categoria</h2>
-          <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-            Mantém nomes claros e consistentes para melhorar os filtros e os
-            analytics.
-          </p>
-          <form action={createCategory} className="mt-5 space-y-3">
-            <label
-              className="grid gap-2 text-sm font-medium"
-              htmlFor="category-name"
-            >
-              Nome
-              <input
-                id="category-name"
-                name="name"
-                required
-                maxLength={50}
-                placeholder="Ex.: Software"
-                className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
-              />
-            </label>
-            <Button type="submit" className="w-full">
-              Adicionar categoria
-            </Button>
-          </form>
-        </section>
+        {readOnly ? (
+          <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 text-sm text-[hsl(var(--muted-foreground))] shadow-sm sm:p-6">
+            As categorias de Pessoal e Silentra aparecem juntas nesta vista.
+            Para criar, editar, apagar ou ordenar categorias, muda para o
+            contexto correspondente.
+          </section>
+        ) : (
+          <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] p-5 shadow-sm sm:p-6 lg:sticky lg:top-8">
+            <h2 className="font-medium">Nova categoria</h2>
+            <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
+              Mantém nomes claros e consistentes para melhorar os filtros e os
+              analytics.
+            </p>
+            <form action={createCategory} className="mt-5 space-y-3">
+              <label
+                className="grid gap-2 text-sm font-medium"
+                htmlFor="category-name"
+              >
+                Nome
+                <input
+                  id="category-name"
+                  name="name"
+                  required
+                  maxLength={50}
+                  placeholder="Ex.: Software"
+                  className="min-h-11 rounded-[var(--radius-md)] border bg-transparent px-3 font-normal outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+                />
+              </label>
+              <Button type="submit" className="w-full">
+                Adicionar categoria
+              </Button>
+            </form>
+          </section>
+        )}
+
+</section>
 
         <section className="rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] shadow-sm">
           <div className="flex items-center justify-between gap-3 border-b px-5 py-4 sm:px-6">
@@ -124,12 +142,29 @@ export default async function CategoriesPage({
                     </span>
                     <p className="truncate font-medium">{category.name}</p>
                   </div>
-                  <CategoryActions
-                    id={category.id}
-                    name={category.name}
-                    canMoveUp={index > 0}
-                    canMoveDown={index < categories.length - 1}
-                  />
+                  <div className="flex min-w-0 items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-[hsl(var(--surface-muted))] text-xs font-semibold">
+                        {index + 1}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate font-medium">{category.name}</p>
+                        {readOnly ? (
+                          <p className="mt-0.5 text-xs text-[hsl(var(--muted-foreground))]">
+                            {category.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                    {!readOnly ? (
+                      <CategoryActions
+                        id={category.id}
+                        name={category.name}
+                        canMoveUp={index > 0}
+                        canMoveDown={index < categories.length - 1}
+                      />
+                    ) : null}
+                  </div>
                 </div>
               ))}
             </div>
