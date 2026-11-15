@@ -43,7 +43,7 @@ async function getActiveAccount(
 ) {
   const { data } = await supabase
     .from('accounts')
-    .select('id, is_active')
+    .select('id, is_active, currency_code')
     .eq('id', accountId)
     .eq('user_id', userId)
     .eq('context_id', contextId)
@@ -74,6 +74,8 @@ export async function createRecurringExpense(formData: FormData) {
   )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
+  if (account.currency_code !== parsed.data.currencyCode)
+    errorRedirect('A moeda da recorrência tem de corresponder à moeda da conta.')
 
   const { error } = await supabase.from('recurring_expenses').insert({
     user_id: user.id,
@@ -84,6 +86,8 @@ export async function createRecurringExpense(formData: FormData) {
     amount: parsed.data.amount,
     frequency: parsed.data.frequency,
     next_due_date: parsed.data.nextDueDate,
+    anchor_day: Number(parsed.data.nextDueDate.slice(8, 10)),
+    anchor_month: Number(parsed.data.nextDueDate.slice(5, 7)),
     currency_code: parsed.data.currencyCode,
     notes: parsed.data.notes || null,
   })
@@ -117,6 +121,8 @@ export async function updateRecurringExpense(formData: FormData) {
   )
   if (!account) errorRedirect('Conta inválida.')
   if (!account.is_active) errorRedirect('Escolhe uma conta ativa.')
+  if (account.currency_code !== parsed.data.currencyCode)
+    errorRedirect('A moeda da recorrência tem de corresponder à moeda da conta.')
 
   const { error } = await supabase
     .from('recurring_expenses')
@@ -127,6 +133,8 @@ export async function updateRecurringExpense(formData: FormData) {
       amount: parsed.data.amount,
       frequency: parsed.data.frequency,
       next_due_date: parsed.data.nextDueDate,
+      anchor_day: Number(parsed.data.nextDueDate.slice(8, 10)),
+      anchor_month: Number(parsed.data.nextDueDate.slice(5, 7)),
       currency_code: parsed.data.currencyCode,
       notes: parsed.data.notes || null,
       updated_at: new Date().toISOString(),
