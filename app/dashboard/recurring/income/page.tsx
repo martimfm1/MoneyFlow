@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator'
 import { RecurringIncomeCreateDialog } from './create-dialog'
 import { RecurringIncomeActionMenu } from './action-menu'
 import { RecurringTabs } from '@/components/dashboard/recurring-tabs'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -77,6 +78,7 @@ export default async function RecurringIncomePage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: profile }, { data: incomes }, { data: accounts }] =
     await Promise.all([
@@ -91,12 +93,14 @@ export default async function RecurringIncomePage({
           'id, name, source, amount, frequency, next_income_date, currency_code, account_id, account:accounts(name, currency_code), is_active',
         )
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .order('is_active', { ascending: false })
         .order('next_income_date', { ascending: true }),
       supabase
         .from('accounts')
         .select('id, name, currency_code, balance')
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .eq('is_active', true)
         .order('name', { ascending: true }),
     ])
