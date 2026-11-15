@@ -286,7 +286,7 @@ begin
 
   update public.silentra_integrations
   set status = 'disconnected',
-      event_secret_hash = encode(gen_random_bytes(32), 'hex'),
+      event_secret_hash = replace(pg_catalog.gen_random_uuid()::text || pg_catalog.gen_random_uuid()::text, '-', ''),
       updated_at = now()
   where user_id = v_user_id
     and status = 'connected';
@@ -313,7 +313,7 @@ begin
 
   update public.silentra_integrations
   set status = 'disconnected',
-      event_secret_hash = encode(gen_random_bytes(32), 'hex'),
+      event_secret_hash = replace(pg_catalog.gen_random_uuid()::text || pg_catalog.gen_random_uuid()::text, '-', ''),
       updated_at = now()
   where event_secret_hash = lower(p_event_secret_hash)
     and status = 'connected';
