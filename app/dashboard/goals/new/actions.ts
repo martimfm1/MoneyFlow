@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { normalizeDecimalInput } from '@/lib/number'
+import { getFinancialContext } from '@/lib/financial-context'
 
 const schema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -27,9 +28,11 @@ export async function createGoal(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const { error } = await supabase.from('goals').insert({
     user_id: user.id,
+    context_id: financialContext.id,
     name: parsed.data.name,
     target_amount: parsed.data.targetAmount,
     priority: parsed.data.priority,
