@@ -188,16 +188,17 @@ As fases devem ser entregues por marcos pequenos e verificáveis. As fases 0 e 1
 
 **Objetivo:** melhorar a alternativa manual antes de depender de um fornecedor bancário.
 
-- [ ] Criar fluxo de pré-visualização antes de gravar: total de linhas, válidas, pendentes, duplicadas, moeda incompatível e rejeitadas.
-- [ ] Mostrar exemplos das primeiras linhas e a conta/contexto de destino antes da confirmação.
-- [ ] Separar análise do ficheiro da gravação das transações; cancelar a pré-visualização não deve alterar dados.
-- [ ] Suportar formatos documentados de mais bancos/ficheiros, sem assumir que todos os CSV são iguais.
-- [ ] Adicionar mapeamento manual de colunas quando a deteção automática falhar.
-- [ ] Tornar o parser robusto a delimitadores, aspas, BOM, datas, timezone, separadores decimais e valores negativos.
-- [ ] Mostrar o resultado da importação com contagens e linhas ignoradas, sem apresentar dados bancários sensíveis em URLs.
-- [ ] Manter o limite de tamanho/linhas e validar MIME/extensão/conteúdo.
-- [ ] Preservar a deduplicação no servidor e na base de dados; não depender apenas de verificações no browser.
-- [ ] Rever a importação de extratos Kids & Teens com a documentação da região correta e avisar quando o titular/IBAN do extrato seja o do responsável.
+- [x] Criar pré-visualização server-side antes de gravar, com total de linhas, movimentos prontos, pendentes, duplicados, moeda incompatível e inválidos (PR de implementação em revisão).
+- [x] Mostrar amostra dos primeiros movimentos e exigir confirmação antes da gravação (PR de implementação em revisão).
+- [x] Separar a análise do ficheiro da gravação; a pré-visualização não altera dados (PR de implementação em revisão).
+- [ ] Suportar e documentar formatos de exportação de mais bancos, sem assumir que todos os CSV são iguais.
+- [x] Adicionar mapeamento manual de colunas quando a deteção automática falhar (PR de implementação em revisão).
+- [x] Suportar delimitadores vírgula/ponto e vírgula, campos entre aspas, BOM UTF-8, UTF-16, datas ISO/europeias, separadores decimais e valores negativos.
+- [ ] Fechar parsing de timezones e formatos de data adicionais com fixtures por banco.
+- [ ] Mostrar relatório pós-importação detalhado por linha/categoria de erro, sem apresentar dados bancários sensíveis em URLs.
+- [ ] Reforçar a validação de tipo de ficheiro/MIME/extensão, mantendo limite de tamanho e de 2.000 movimentos.
+- [x] Preservar a deduplicação no servidor e na base de dados; não depender apenas de verificações no browser.
+- [ ] Rever o comportamento de extratos Revolut Jovem com o responsável legal e confirmar o que é exportado antes de rotular a conta como suportada automaticamente.
 - [ ] Adicionar testes com fixtures anonimizadas de cada formato suportado, incluindo ficheiro repetido e moedas diferentes.
 
 **Critério de saída:** importação previsível, com preview e confirmação, sem duplicações em reenvios e com relatório claro do que foi importado ou ignorado.
