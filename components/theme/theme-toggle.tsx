@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useSyncExternalStore } from 'react'
+import { useSyncExternalStore } from 'react'
 import { Laptop, Moon, Palette, Sun } from 'lucide-react'
 import type { MoneyFlowLocale } from '@/lib/i18n'
 
@@ -58,18 +58,6 @@ function getAccentServerSnapshot(): Accent {
   return 'mint'
 }
 
-function resolveTheme(theme: Theme): 'light' | 'dark' {
-  if (theme !== 'system') return theme
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
-function applyPreferences(theme: Theme, accent: Accent) {
-  const resolved = resolveTheme(theme)
-  document.documentElement.dataset.theme = resolved
-  document.documentElement.dataset.accent = accent
-  document.documentElement.style.colorScheme = resolved
-}
-
 function savePreference(key: string, value: string) {
   window.localStorage.setItem(key, value)
   window.dispatchEvent(new Event(PREFERENCES_EVENT))
@@ -79,16 +67,6 @@ export function ThemeToggle({ locale }: { locale: MoneyFlowLocale }) {
   const theme = useSyncExternalStore(subscribePreferences, getThemeSnapshot, getThemeServerSnapshot)
   const accent = useSyncExternalStore(subscribePreferences, getAccentSnapshot, getAccentServerSnapshot)
   const isEnglish = locale === 'en'
-
-  useEffect(() => {
-    applyPreferences(theme, accent)
-    const media = window.matchMedia('(prefers-color-scheme: dark)')
-    const handleChange = () => {
-      if (theme === 'system') applyPreferences('system', accent)
-    }
-    media.addEventListener('change', handleChange)
-    return () => media.removeEventListener('change', handleChange)
-  }, [theme, accent])
 
   return (
     <div className="w-full space-y-5">
