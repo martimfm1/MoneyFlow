@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { updateWishlistItem } from '../../actions'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +22,7 @@ export default async function EditWishlistItemPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const { data: item } = await supabase
     .from('wishlist_items')
@@ -29,6 +31,7 @@ export default async function EditWishlistItemPage({
     )
     .eq('id', id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .maybeSingle()
   if (!item) notFound()
 
