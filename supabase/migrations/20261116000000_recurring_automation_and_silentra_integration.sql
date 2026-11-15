@@ -367,9 +367,9 @@ begin
     raise exception 'Choose an active EUR account in the Silentra context';
   end if;
 
+  -- A newly generated code invalidates any previous pending pairing code.
   delete from public.silentra_pairing_tokens
-  where user_id = v_user_id
-    and (used_at is not null or expires_at <= pg_catalog.now());
+  where user_id = v_user_id;
 
   insert into public.silentra_pairing_tokens (
     token_hash, user_id, context_id, account_id, expires_at
