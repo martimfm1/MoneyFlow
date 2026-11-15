@@ -208,7 +208,7 @@ export async function toggleRecurringExpenseAutomation(formData: FormData) {
     .safeParse({ id: formData.get('id'), enabled: formData.get('enabled') })
   if (!parsed.success) errorRedirect('Despesa inválida.')
 
-  const { supabase, user, financialContext } = await getUser()
+  const { supabase } = await getUser()
   const { error } = await supabase.rpc('set_recurring_automation', {
     p_recurrence_type: 'expense',
     p_recurrence_id: parsed.data.id,
