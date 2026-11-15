@@ -49,8 +49,9 @@ const getIosSnapshot = () => {
 const getServerSnapshot = () => false
 
 export function RegisterServiceWorker() {
-  const [installPrompt, setInstallPrompt] =
-    useState<InstallPromptEvent | null>(null)
+  const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(
+    null,
+  )
   const isIos = useSyncExternalStore(
     subscribeNever,
     getIosSnapshot,
@@ -73,10 +74,7 @@ export function RegisterServiceWorker() {
       setInstallPrompt(null)
     }
 
-    window.addEventListener(
-      'beforeinstallprompt',
-      handleBeforeInstallPrompt,
-    )
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     window.addEventListener('appinstalled', handleAppInstalled)
 
     let reloadedForUpdate = false
@@ -142,16 +140,12 @@ export function RegisterServiceWorker() {
   }
 
   const installVisible =
-    !isInstalled &&
-    !dismissedInstall &&
-    (installPrompt !== null || isIos)
+    !isInstalled && !dismissedInstall && (installPrompt !== null || isIos)
 
   return (
     <>
       {waitingWorker ? (
-        <div
-        className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[70] mx-auto flex max-w-md items-center gap-3 rounded-2xl border bg-background p-3 shadow-xl lg:bottom-4"
-      >
+        <div className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[70] mx-auto flex max-w-md items-center gap-3 rounded-2xl border bg-background p-3 shadow-xl lg:bottom-4">
           <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted">
             <RefreshCw className="size-4" aria-hidden="true" />
           </span>
@@ -163,9 +157,7 @@ export function RegisterServiceWorker() {
           </div>
           <button
             type="button"
-            onClick={() =>
-              waitingWorker.postMessage({ type: 'SKIP_WAITING' })
-            }
+            onClick={() => waitingWorker.postMessage({ type: 'SKIP_WAITING' })}
             className="min-h-10 rounded-xl bg-primary px-3 text-sm font-medium text-primary-foreground"
           >
             Atualizar
@@ -174,9 +166,7 @@ export function RegisterServiceWorker() {
       ) : null}
 
       {installVisible ? (
-        <div
-          className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[60] mx-auto flex max-w-md items-start gap-3 rounded-2xl border bg-background p-3 shadow-xl lg:bottom-4"
-        >
+        <div className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-[60] mx-auto flex max-w-md items-start gap-3 rounded-2xl border bg-background p-3 shadow-xl lg:bottom-4">
           <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted">
             {isIos ? (
               <Share className="size-4" aria-hidden="true" />
