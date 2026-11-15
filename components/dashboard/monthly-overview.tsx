@@ -27,7 +27,13 @@ function calculateHealth(
   )
 }
 
-export async function MonthlyOverview({ currency }: { currency: string }) {
+export async function MonthlyOverview({
+  currency,
+  contextId,
+}: {
+  currency: string
+  contextId: string
+}) {
   const supabase = await createClient()
   const {
     data: { user },
@@ -42,12 +48,14 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
       .from('transactions')
       .select('transaction_type, amount, accounts(currency_code)')
       .eq('user_id', user.id)
+      .eq('context_id', contextId)
       .gte('occurred_at', start.toISOString())
       .lt('occurred_at', end.toISOString()),
     supabase
       .from('recurring_expenses')
       .select('amount, frequency, currency_code')
       .eq('user_id', user.id)
+      .eq('context_id', contextId)
       .eq('is_active', true),
   ])
 
