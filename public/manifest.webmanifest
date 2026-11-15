@@ -2,7 +2,7 @@
   "id": "/dashboard",
   "name": "MoneyFlow",
   "short_name": "MoneyFlow",
-  "description": "As tuas finanças pessoais e da Silentra, num só lugar.",
+  "description": "Gestão das tuas finanças pessoais, movimentos e objetivos.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
