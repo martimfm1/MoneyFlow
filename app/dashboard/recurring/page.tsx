@@ -46,8 +46,16 @@ const frequencyLabels = {
   quarterly: 'Trimestral',
   yearly: 'Anual',
 } as const
-const yearlyMultipliers = { monthly: 12, quarterly: 4, yearly: 1 } as const
-const monthlyDivisors = { monthly: 1, quarterly: 3, yearly: 12 } as const
+const yearlyMultipliers = {
+  monthly: 12,
+  quarterly: 4,
+  yearly: 1,
+} as const
+const monthlyDivisors = {
+  monthly: 1,
+  quarterly: 3,
+  yearly: 12,
+} as const
 const monthlyReserve = (item: RecurringExpense) =>
   Number(item.amount) / monthlyDivisors[item.frequency]
 const yearlyCost = (item: RecurringExpense) =>
@@ -101,7 +109,8 @@ export default async function RecurringExpensesPage({
   const activeInPrimaryCurrency = active.filter(
     (item) => (item.currency_code || currency) === currency,
   )
-  const activeInOtherCurrencies = active.length - activeInPrimaryCurrency.length
+  const activeInOtherCurrencies =
+    active.length - activeInPrimaryCurrency.length
   const monthlyTotal = activeInPrimaryCurrency.reduce(
     (sum, item) => sum + monthlyReserve(item),
     0,
