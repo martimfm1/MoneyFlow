@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { Plus, Settings } from 'lucide-react'
+import { LogOut, Plus, Settings } from 'lucide-react'
 import { DashboardNavigation } from './navigation'
 import { SilentraCredit } from '@/components/silentra-credit'
 import { QuickAdd } from '@/components/dashboard/quick-add'
@@ -10,6 +10,7 @@ import { createTranslator, normalizeLocale } from '@/lib/i18n'
 import { FinancialContextSwitcher } from '@/components/dashboard/financial-context-switcher'
 import { getFinancialContextSelection } from '@/lib/financial-context'
 import { Button } from '@/components/ui/button'
+import { signOut } from './actions'
 
 export default async function DashboardLayout({
   children,
@@ -84,6 +85,23 @@ export default async function DashboardLayout({
               <p className="mt-1.5 text-[11px] leading-5 text-muted-foreground">
                 {isEnglish ? 'Track today. Plan tomorrow.' : 'Controla hoje. Planeia amanhã.'}
               </p>
+              {user ? (
+                <div className="mt-3 flex items-center justify-between gap-2 border-t border-sidebar-border/70 pt-3">
+                  <span className="min-w-0 truncate text-[11px] text-muted-foreground">
+                    {user.email}
+                  </span>
+                  <form action={signOut}>
+                    <button
+                      type="submit"
+                      className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      aria-label={isEnglish ? 'Sign out' : 'Terminar sessão'}
+                      title={isEnglish ? 'Sign out' : 'Terminar sessão'}
+                    >
+                      <LogOut className="size-4" aria-hidden="true" />
+                    </button>
+                  </form>
+                </div>
+              ) : null}
             </div>
           </div>
         </aside>
