@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { Download, RefreshCw, Share, X } from 'lucide-react'
 
 type InstallPromptEvent = Event & {
@@ -8,34 +8,65 @@ type InstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
 }
 
+const subscribeInstalled = (onStoreChange: () => void) => {
+  const displayMode = window.matchMedia('(display-mode: standalone)')
+  displayMode.addEventListener('change', onStoreChange)
+  window.addEventListener('appinstalled', onStoreChange)
+
+  return () => {
+    displayMode.removeEventListener('change', onStoreChange)
+    window.removeEventListener('appinstalled', onStoreChange)
+  }
+}
+
+const getInstalledSnapshot = () => {
+  const standaloneNavigator = navigator as Navigator & {
+    standalone?: boolean
+  }
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    standaloneNavigator.standalone === true
+  )
+}
+
+const subscribeNever = () => () => {}
+const getIosSnapshot = () => {
+  const standaloneNavigator = navigator as Navigator & {
+    standalone?: boolean
+  }
+  const installed =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    standaloneNavigator.standalone === true
+  const appleTouchDevice =
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+
+  return appleTouchDevice && !installed
+}
+const getServerSnapshot = () => false
+
 export function RegisterServiceWorker() {
   const [installPrompt, setInstallPrompt] =
     useState<InstallPromptEvent | null>(null)
-  const [isIos, setIsIos] = useState(false)
-  const [isInstalled, setIsInstalled] = useState(false)
+  const isIos = useSyncExternalStore(
+    subscribeNever,
+    getIosSnapshot,
+    getServerSnapshot,
+  )
+  const isInstalled = useSyncExternalStore(
+    subscribeInstalled,
+    getInstalledSnapshot,
+    getServerSnapshot,
+  )
   const [dismissedInstall, setDismissedInstall] = useState(false)
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null)
 
   useEffect(() => {
-    const standaloneQuery = window.matchMedia('(display-mode: standalone)')
-    const standaloneNavigator = navigator as Navigator & {
-      standalone?: boolean
-    }
-    const standalone =
-      standaloneQuery.matches || standaloneNavigator.standalone === true
-    setIsInstalled(standalone)
-
-    const appleTouchDevice =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-    setIsIos(appleTouchDevice && !standalone)
-
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault()
       setInstallPrompt(event as InstallPromptEvent)
     }
     const handleAppInstalled = () => {
-      setIsInstalled(true)
       setInstallPrompt(null)
     }
 
