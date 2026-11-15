@@ -7,6 +7,8 @@ import { SilentraCredit } from '@/components/silentra-credit'
 import { QuickAdd } from '@/components/dashboard/quick-add'
 import { createClient } from '@/lib/supabase/server'
 import { createTranslator, normalizeLocale } from '@/lib/i18n'
+import { FinancialContextSwitcher } from '@/components/dashboard/financial-context-switcher'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export default async function DashboardLayout({
   children,
@@ -26,6 +28,9 @@ export default async function DashboardLayout({
 
   const locale = normalizeLocale(profile?.locale)
   const t = createTranslator(locale)
+  const financialContext = user
+    ? await getFinancialContext(supabase, user.id)
+    : null
 
   return (
     <div className="min-h-screen bg-[hsl(var(--background))]">
@@ -87,6 +92,14 @@ export default async function DashboardLayout({
           tabIndex={-1}
           className="min-w-0 pb-20 outline-none lg:pb-10"
         >
+          {financialContext ? (
+            <div className="px-4 pt-4 sm:px-6 lg:px-0">
+              <FinancialContextSwitcher
+                active={financialContext.slug}
+                locale={locale}
+              />
+            </div>
+          ) : null}
           {children}
           <div className="px-4 pb-6 sm:px-6 lg:px-0">
             <SilentraCredit className="pt-4" />
