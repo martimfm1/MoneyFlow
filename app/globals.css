@@ -61,6 +61,8 @@
 
 html[data-theme='light'] {
   color-scheme: light;
+  --brand-green: 151 58% 32%;
+  --brand-green-dark: 151 58% 25%;
   --background: 222 24% 97%;
   --foreground: 225 27% 12%;
   --surface: 0 0% 100%;
