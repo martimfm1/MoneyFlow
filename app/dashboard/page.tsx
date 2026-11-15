@@ -42,26 +42,26 @@ export default async function DashboardPage() {
   ] = await Promise.all([
     supabase
       .from('profiles')
-      .select('display_name, currency_code, onboarding_completed_at')
+      .select('display_name, currency_code, onboarding_completed_at, active_finance_context')
       .eq('id', user.id)
       .maybeSingle(),
     supabase
       .from('accounts')
-      .select('id, name, account_type, balance, currency_code')
+      .select('id, name, account_type, balance, currency_code, finance_context')
       .eq('user_id', user.id)
       .eq('is_active', true)
       .order('created_at', { ascending: true }),
     supabase
       .from('transactions')
       .select(
-        'id, transaction_type, amount, description, occurred_at, accounts(name, currency_code)',
+        'id, finance_context, transaction_type, amount, description, occurred_at, accounts(name, currency_code)',
       )
       .eq('user_id', user.id)
       .order('occurred_at', { ascending: false })
       .limit(5),
     supabase
       .from('goals')
-      .select('id, name, target_amount, current_amount, target_date, priority')
+      .select('id, name, target_amount, current_amount, target_date, priority, finance_context')
       .eq('user_id', user.id)
       .order('priority', { ascending: true })
       .order('created_at', { ascending: false })
@@ -69,7 +69,7 @@ export default async function DashboardPage() {
   ])
 
   if (!profile?.onboarding_completed_at) redirect('/onboarding')
-  const currency = profile.currency_code ?? 'EUR'
+  const currency = profile.currency_code ?? 'EUR'\n  const readOnly = profile.active_finance_context === 'general'
   const accountsInPrimaryCurrency = (accounts ?? []).filter(
     (account) => (account.currency_code || currency) === currency,
   )
@@ -125,19 +125,21 @@ export default async function DashboardPage() {
                 </p>
               ) : null}
             </div>
-            <Button
-              asChild
-              size="icon"
-              className="size-12 shrink-0 rounded-full lg:size-default lg:rounded-[var(--radius-md)]"
-            >
-              <Link
-                href="/dashboard/transactions/new"
-                aria-label="Adicionar movimento"
+            {!readOnly ? (
+              <Button
+                asChild
+                size="icon"
+                className="size-12 shrink-0 rounded-full lg:size-default lg:rounded-[var(--radius-md)]"
               >
-                <Plus className="size-5" aria-hidden="true" />
-                <span className="hidden lg:inline">Adicionar movimento</span>
-              </Link>
-            </Button>
+                <Link
+                  href="/dashboard/transactions/new"
+                  aria-label="Adicionar movimento"
+                >
+                  <Plus className="size-5" aria-hidden="true" />
+                  <span className="hidden lg:inline">Adicionar movimento</span>
+                </Link>
+              </Button>
+            ) : null}
           </div>
           <Link
             href="#accounts"
@@ -175,6 +177,11 @@ export default async function DashboardPage() {
                       <p className="text-xs text-[hsl(var(--muted-foreground))]">
                         {accountTypeLabels[account.account_type] ?? account.account_type}
                       </p>
+                      {readOnly ? (
+                        <p className="mt-0.5 text-xs text-[hsl(var(--muted-foreground))]">
+                          {account.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                        </p>
+                      ) : null}
                     </div>
                   </div>
                   <p className="mt-4 text-xl font-semibold tabular-nums">
@@ -187,13 +194,19 @@ export default async function DashboardPage() {
               ))}
             </div>
           ) : (
-            <Link
-              href="/dashboard/accounts/new"
-              className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4"
-            >
-              <span className="font-medium">Criar a primeira conta</span>
-              <Plus className="size-4" aria-hidden="true" />
-            </Link>
+            {readOnly ? (
+              <p className="mt-3 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-4 text-sm text-[hsl(var(--muted-foreground))]">
+                Ainda não existem contas nos contextos Pessoal ou Silentra.
+              </p>
+            ) : (
+              <Link
+                href="/dashboard/accounts/new"
+                className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4"
+              >
+                <span className="font-medium">Criar a primeira conta</span>
+                <Plus className="size-4" aria-hidden="true" />
+              </Link>
+            )}
           )}
         </section>
 
@@ -207,13 +220,19 @@ export default async function DashboardPage() {
             </Button>
           </div>
           {!transactions?.length ? (
-            <Link
-              href="/dashboard/transactions/new"
-              className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4"
-            >
-              <span className="font-medium">Adicionar primeiro movimento</span>
-              <Plus className="size-4" aria-hidden="true" />
-            </Link>
+            {readOnly ? (
+              <p className="mt-3 rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] p-4 text-sm text-[hsl(var(--muted-foreground))]">
+                Ainda não existem movimentos nos contextos Pessoal ou Silentra.
+              </p>
+            ) : (
+              <Link
+                href="/dashboard/transactions/new"
+                className="mt-3 flex min-h-20 items-center justify-between rounded-[var(--radius-lg)] border border-dashed bg-[hsl(var(--surface))] px-4"
+              >
+                <span className="font-medium">Adicionar primeiro movimento</span>
+                <Plus className="size-4" aria-hidden="true" />
+              </Link>
+            )}
           ) : (
             <div className="mt-3 overflow-hidden rounded-[var(--radius-lg)] border bg-[hsl(var(--surface))] shadow-sm">
               <div className="divide-y">
@@ -247,6 +266,11 @@ export default async function DashboardPage() {
                           {account?.name ?? 'Conta'} ·{' '}
                           {formatShortDate(transaction.occurred_at)}
                         </p>
+                        {readOnly ? (
+                          <p className="mt-0.5 text-xs text-[hsl(var(--muted-foreground))]">
+                            {transaction.finance_context === 'silentra' ? 'Silentra' : 'Pessoal'}
+                          </p>
+                        ) : null}
                       </div>
                       <p
                         className={`shrink-0 text-sm font-semibold tabular-nums ${isIncome ? 'text-[hsl(var(--success))]' : 'text-[hsl(var(--danger))]'}`}
