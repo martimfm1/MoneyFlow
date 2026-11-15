@@ -21,6 +21,13 @@ export async function signOut() {
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
   })
+  cookieStore.set(FINANCIAL_CONTEXT_COOKIE, '', {
+    httpOnly: true,
+    maxAge: 0,
+    path: '/',
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+  })
   redirect('/login')
 }
 
