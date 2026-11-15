@@ -52,11 +52,15 @@ export function AuthForm({ mode }: { mode: 'signin' | 'signup' }) {
       {!isSignUp ? (
         <div className="rounded-[var(--radius-md)] border border-[hsl(var(--foreground)/0.09)] bg-[hsl(var(--surface-muted)/0.72)] p-3">
           <div className="flex items-start gap-3">
-            <Check aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-[hsl(var(--brand-green))]" />
+            <Check
+              aria-hidden="true"
+              className="mt-0.5 size-4 shrink-0 text-[hsl(var(--brand-green))]"
+            />
             <div>
               <p className="text-sm font-medium">Sessão persistente ativada</p>
               <p className="mt-1 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
-                Vais continuar com a sessão iniciada neste dispositivo até terminares sessão ou revogares o acesso.
+                Vais continuar com a sessão iniciada neste dispositivo até
+                terminares sessão ou revogares o acesso.
               </p>
             </div>
           </div>
