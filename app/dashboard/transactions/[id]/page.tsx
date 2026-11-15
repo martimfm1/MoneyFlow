@@ -36,14 +36,14 @@ export default async function TransactionDetailPage({
     supabase
       .from('transactions')
       .select(
-        'id, transaction_type, amount, description, occurred_at, created_at, updated_at, accounts(id, name, currency_code), categories(id, name)',
+        'id, finance_context, transaction_type, amount, description, occurred_at, created_at, updated_at, accounts(id, name, currency_code), categories(id, name)',
       )
       .eq('id', id)
       .eq('user_id', user.id)
       .maybeSingle(),
     supabase
       .from('profiles')
-      .select('currency_code')
+      .select('currency_code, active_finance_context')
       .eq('id', user.id)
       .maybeSingle(),
   ])
@@ -57,7 +57,7 @@ export default async function TransactionDetailPage({
   const category = Array.isArray(transaction.categories)
     ? transaction.categories[0]
     : transaction.categories
-  const currency = account?.currency_code || profile?.currency_code || 'EUR'
+  const currency = account?.currency_code || profile?.currency_code || 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
   const label = transaction.description || (isIncome ? 'Receita' : 'Despesa')
   const amount = Number(transaction.amount)
 
@@ -69,14 +69,16 @@ export default async function TransactionDetailPage({
             <ArrowLeft className="size-4" /> Movimentos
           </Link>
         </Button>
-        <div className="flex items-center gap-2">
-          <Button asChild size="sm" variant="outline">
-            <Link href={`/dashboard/transactions/${transaction.id}/edit`}>
-              <Pencil className="size-4" /> Editar
-            </Link>
-          </Button>
-          <DeleteTransactionButton id={transaction.id} label={label} />
-        </div>
+        {!readOnly ? (
+          <div className="flex items-center gap-2">
+            <Button asChild size="sm" variant="outline">
+              <Link href={`/dashboard/transactions/${transaction.id}/edit`}>
+                <Pencil className="size-4" /> Editar
+              </Link>
+            </Button>
+            <DeleteTransactionButton id={transaction.id} label={label} />
+          </div>
+        ) : null}
       </div>
 
       {query.error ? (
