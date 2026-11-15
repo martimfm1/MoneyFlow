@@ -30,7 +30,7 @@ export default async function IntegrationsSettingsPage() {
         .eq('slug', 'silentra')
         .maybeSingle(),
       supabase
-        .from('moneyflow_integrations')
+        .from('silentra_integrations')
         .select('account_id, status, connected_at, last_synced_at')
         .eq('user_id', user.id)
         .eq('provider', 'silentra-for-barbers')
@@ -42,7 +42,7 @@ export default async function IntegrationsSettingsPage() {
   const isEnglish = locale === 'en'
   const isSilentraContext = profile?.active_finance_context === 'silentra'
 
-  const [{ data: accounts }, { data: linkedAccount }] = await Promise.all([
+  const [{ data: accounts }, { data: integration }] = await Promise.all([
     context && isSilentraContext
       ? supabase
           .from('accounts')
@@ -53,22 +53,20 @@ export default async function IntegrationsSettingsPage() {
           .eq('currency_code', 'EUR')
           .order('name', { ascending: true })
       : Promise.resolve({ data: [] }),
-    integration
-      ? supabase
-          .from('accounts')
-          .select('name, currency_code')
-          .eq('id', integration.account_id)
-          .eq('user_id', user.id)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
+    supabase
+      .from('silentra_integrations')
+      .select('account_id, account_name, currency_code, connected_at, last_synced_at')
+      .eq('user_id', user.id)
+      .eq('status', 'connected')
+      .maybeSingle(),
   ])
 
   const initialConnection =
-    integration?.status === 'connected'
+    integration
       ? {
           account_id: integration.account_id,
-          account_name: linkedAccount?.name ?? 'Conta Silentra',
-          currency_code: linkedAccount?.currency_code ?? 'EUR',
+          account_name: integration.account_name,
+          currency_code: integration.currency_code,
           connected_at: integration.connected_at,
           last_synced_at: integration.last_synced_at,
         }
