@@ -165,6 +165,17 @@ export function CsvImportForm({ accounts, contextName, error }: Props) {
             </span>
           </label>
 
+          {successfulPreview && mapping
+            ? MAPPING_FIELDS.map((field) => (
+                <input
+                  key={field.key}
+                  type="hidden"
+                  name={`${field.key}Column`}
+                  value={String(mapping[field.key])}
+                />
+              ))
+            : null}
+
           {preview?.ok && preview.needsMapping ? (
             <section className="grid gap-3 rounded-[var(--radius-md)] border p-3">
               <div>
