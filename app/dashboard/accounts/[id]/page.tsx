@@ -67,7 +67,8 @@ export default async function AccountDetailPage({
 
   if (!account) notFound()
 
-  const currency = account.currency_code || 'EUR'\n  const readOnly = profile?.active_finance_context === 'general'
+  const currency = account.currency_code || 'EUR'
+  const readOnly = profile?.active_finance_context === 'general'
   const items = transactions ?? []
   const incomeTotal = items
     .filter((item) => item.transaction_type === 'income')
