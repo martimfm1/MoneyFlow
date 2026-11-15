@@ -1,7 +1,7 @@
-/* global caches, fetch, self, URL */
+/* global caches, fetch, self, URL, Response */
 
 const CACHE_NAME = 'moneyflow-shell-v2'
-const PRECACHE_URLS = ['/offline', '/manifest.webmanifest', '/icon.svg']
+const PRECACHE_URLS = ['/offline', '/manifest.webmanifest']
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
