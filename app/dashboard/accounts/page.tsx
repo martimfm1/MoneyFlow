@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/empty'
 import { toggleAccountStatus } from './actions'
 import { DeleteAccountButton } from './delete-button'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 const labels: Record<string, string> = {
@@ -37,6 +38,7 @@ export default async function AccountsPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
   const [{ data: profile }, { data: accounts }] = await Promise.all([
     supabase
       .from('profiles')
@@ -47,10 +49,12 @@ export default async function AccountsPage({
       .from('accounts')
       .select('id, name, account_type, balance, currency_code, is_active')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('is_active', { ascending: false })
       .order('created_at'),
   ])
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
   const rows = accounts ?? []
   const active = rows.filter((item) => item.is_active)
   const activeInPrimaryCurrency = active.filter(
@@ -158,9 +162,7 @@ export default async function AccountsPage({
                       {labels[account.account_type] ?? account.account_type}
                     </p>
                   </div>
-                  <Badge
-                    variant={account.is_active ? 'secondary' : 'outline'}
-                  >
+                  <Badge variant={account.is_active ? 'secondary' : 'outline'}>
                     {account.is_active ? 'Ativa' : 'Arquivada'}
                   </Badge>
                 </div>
@@ -193,10 +195,7 @@ export default async function AccountsPage({
                       {account.is_active ? (
                         <Archive className="size-4" aria-hidden="true" />
                       ) : (
-                        <ArchiveRestore
-                          className="size-4"
-                          aria-hidden="true"
-                        />
+                        <ArchiveRestore className="size-4" aria-hidden="true" />
                       )}
                       {account.is_active ? 'Arquivar' : 'Reativar'}
                     </Button>

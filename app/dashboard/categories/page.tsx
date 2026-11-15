@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { createCategory } from './actions'
 import { CategoryActions } from './category-actions'
 import { redirect } from 'next/navigation'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,11 +20,13 @@ export default async function CategoriesPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const { data: categories } = await supabase
     .from('categories')
     .select('id, name, sort_order')
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .order('sort_order', { ascending: true })
     .order('name', { ascending: true })
 

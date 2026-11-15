@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
+import { getFinancialContext } from '@/lib/financial-context'
 
 const itemSchema = z.object({
   id: z.uuid().optional(),
@@ -30,7 +31,8 @@ async function getUser() {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-  return { supabase, user }
+  const financialContext = await getFinancialContext(supabase, user.id)
+  return { supabase, user, financialContext }
 }
 
 function normalizeNumber(value: FormDataEntryValue | null) {
@@ -69,9 +71,10 @@ export async function createWishlistItem(formData: FormData) {
     })
     errorRedirect('/dashboard/wishlist/new', 'Confirma os dados.')
   }
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const { error } = await supabase.from('wishlist_items').insert({
     user_id: user.id,
+    context_id: financialContext.id,
     name: parsed.data.name,
     price: parsed.data.price,
     category: parsed.data.category || null,
@@ -108,7 +111,7 @@ export async function updateWishlistItem(formData: FormData) {
     })
     errorRedirect('/dashboard/wishlist', 'Confirma os dados.')
   }
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const { error } = await supabase
     .from('wishlist_items')
     .update({
@@ -124,6 +127,7 @@ export async function updateWishlistItem(formData: FormData) {
     })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
   if (error) {
     logger.error('wishlist_update_db_failed', {
       code: error.code,
@@ -145,12 +149,13 @@ export async function updateWishlistItem(formData: FormData) {
 export async function deleteWishlistItem(formData: FormData) {
   const parsed = goalSchema.safeParse({ id: formData.get('id') })
   if (!parsed.success) errorRedirect('/dashboard/wishlist', 'Item inválido.')
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const { data: linkedGoal } = await supabase
     .from('goals')
     .select('id')
     .eq('wishlist_item_id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .maybeSingle()
   if (linkedGoal)
     errorRedirect(
@@ -162,6 +167,7 @@ export async function deleteWishlistItem(formData: FormData) {
     .delete()
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
   if (error)
     errorRedirect('/dashboard/wishlist', 'Não foi possível apagar o item.')
   revalidatePath('/dashboard/wishlist')
@@ -175,7 +181,7 @@ export async function updateWishlistStatus(formData: FormData) {
     status: formData.get('status'),
   })
   if (!parsed.success) errorRedirect('/dashboard/wishlist', 'Estado inválido.')
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const { error } = await supabase
     .from('wishlist_items')
     .update({
@@ -184,6 +190,7 @@ export async function updateWishlistStatus(formData: FormData) {
     })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
   if (error)
     errorRedirect('/dashboard/wishlist', 'Não foi possível atualizar o item.')
   revalidatePath('/dashboard/wishlist')
@@ -194,12 +201,13 @@ export async function updateWishlistStatus(formData: FormData) {
 export async function createGoalFromWishlist(formData: FormData) {
   const parsed = goalSchema.safeParse({ id: formData.get('id') })
   if (!parsed.success) errorRedirect('/dashboard/wishlist', 'Item inválido.')
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const { data: item } = await supabase
     .from('wishlist_items')
     .select('id, name, price, priority, desired_date')
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .maybeSingle()
   if (!item) errorRedirect('/dashboard/wishlist', 'Item inválido.')
   const { data: existingGoal } = await supabase
@@ -207,12 +215,14 @@ export async function createGoalFromWishlist(formData: FormData) {
     .select('id')
     .eq('wishlist_item_id', item.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .maybeSingle()
   if (existingGoal) redirect(`/dashboard/goals/${existingGoal.id}`)
   const { data: goal, error } = await supabase
     .from('goals')
     .insert({
       user_id: user.id,
+      context_id: financialContext.id,
       wishlist_item_id: item.id,
       name: item.name,
       target_amount: item.price,
@@ -235,6 +245,7 @@ export async function createGoalFromWishlist(formData: FormData) {
     .update({ status: 'saving' })
     .eq('id', item.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
   if (statusError) {
     logger.error('wishlist_status_sync_db_failed', {
       code: statusError.code,

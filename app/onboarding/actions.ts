@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { normalizeDecimalInput } from '@/lib/number'
+import { getFinancialContextBySlug } from '@/lib/financial-context'
 
 const schema = z.object({
   displayName: z.string().trim().max(80).optional(),
@@ -44,8 +45,24 @@ export async function completeOnboarding(formData: FormData) {
       '/onboarding?error=Não%20foi%20possível%20guardar%20a%20preferência.',
     )
 
+  const personalContext = await getFinancialContextBySlug(
+    supabase,
+    user.id,
+    'personal',
+  )
+  if (!personalContext) {
+    await supabase
+      .from('profiles')
+      .update({ onboarding_completed_at: null })
+      .eq('id', user.id)
+    redirect(
+      '/onboarding?error=Não%20foi%20possível%20preparar%20o%20espaço%20pessoal.',
+    )
+  }
+
   const { error: accountError } = await supabase.from('accounts').insert({
     user_id: user.id,
+    context_id: personalContext.id,
     name: parsed.data.accountName,
     account_type: parsed.data.accountType,
     balance: parsed.data.balance,

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import {
   ArrowDownLeft,
   ArrowUpRight,
+  FileSpreadsheet,
   Pencil,
   Plus,
   Search,
@@ -14,6 +15,7 @@ import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { redirect } from 'next/navigation'
 import { DeleteTransactionButton } from './delete-button'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -42,6 +44,7 @@ export default async function TransactionsPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: profile }, { data: categories }, { data: accounts }] =
     await Promise.all([
@@ -54,12 +57,14 @@ export default async function TransactionsPage({
         .from('categories')
         .select('id, name')
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .order('sort_order', { ascending: true })
         .order('name', { ascending: true }),
       supabase
         .from('accounts')
         .select('id, name, is_active')
         .eq('user_id', user.id)
+        .eq('context_id', financialContext.id)
         .order('is_active', { ascending: false })
         .order('created_at', { ascending: true }),
     ])
@@ -70,6 +75,7 @@ export default async function TransactionsPage({
       'id, transaction_type, amount, description, occurred_at, accounts(name, currency_code), categories(id, name)',
     )
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
     .order('occurred_at', { ascending: false })
     .limit(100)
   if (type !== 'all') query = query.eq('transaction_type', type)
@@ -78,15 +84,18 @@ export default async function TransactionsPage({
   if (q) query = query.ilike('description', `%${q}%`)
 
   const { data: transactions } = await query
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
   const hasFilters =
     Boolean(q) || type !== 'all' || categoryId !== 'all' || accountId !== 'all'
-  const primaryCurrencyTransactions = (transactions ?? []).filter((transaction) => {
-    const account = Array.isArray(transaction.accounts)
-      ? transaction.accounts[0]
-      : transaction.accounts
-    return (account?.currency_code ?? currency) === currency
-  })
+  const primaryCurrencyTransactions = (transactions ?? []).filter(
+    (transaction) => {
+      const account = Array.isArray(transaction.accounts)
+        ? transaction.accounts[0]
+        : transaction.accounts
+      return (account?.currency_code ?? currency) === currency
+    },
+  )
   const transactionsInOtherCurrencies =
     (transactions ?? []).length - primaryCurrencyTransactions.length
   const incomeTotal = primaryCurrencyTransactions
@@ -110,11 +119,18 @@ export default async function TransactionsPage({
             Pesquisa e filtra os movimentos por conta, tipo e categoria.
           </p>
         </div>
-        <Button asChild size="sm">
-          <Link href="/dashboard/transactions/new">
-            <Plus className="size-4" /> Novo
-          </Link>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild size="sm" variant="outline">
+            <Link href="/dashboard/transactions/import">
+              <FileSpreadsheet className="size-4" /> Importar CSV
+            </Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link href="/dashboard/transactions/new">
+              <Plus className="size-4" /> Novo
+            </Link>
+          </Button>
+        </div>
       </header>
 
       {params.toast ? (
@@ -166,8 +182,10 @@ export default async function TransactionsPage({
           Os totais incluem apenas movimentos em {currency}.{' '}
           {transactionsInOtherCurrencies} movimento
           {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
-          {transactionsInOtherCurrencies === 1 ? ' moeda não foi' : 's moedas não foram'}
-          {' '}convertido{transactionsInOtherCurrencies === 1 ? '' : 's'} nem
+          {transactionsInOtherCurrencies === 1
+            ? ' moeda não foi'
+            : 's moedas não foram'}{' '}
+          convertido{transactionsInOtherCurrencies === 1 ? '' : 's'} nem
           incluído{transactionsInOtherCurrencies === 1 ? '' : 's'} nos totais.
         </p>
       ) : null}

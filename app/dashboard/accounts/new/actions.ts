@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeDecimalInput } from '@/lib/number'
 import { logger } from '@/lib/logger'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export type AccountActionState = {
   error?: string
@@ -51,28 +52,14 @@ export async function createAccount(
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('currency_code')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (profileError) {
-    logger.error('account_create_profile_failed', {
-      code: profileError.code,
-      message: profileError.message,
-      details: profileError.details,
-      hint: profileError.hint,
-    })
-    return { error: 'Não foi possível ler a moeda da conta.' }
-  }
-
+  const financialContext = await getFinancialContext(supabase, user.id)
   const { error } = await supabase.from('accounts').insert({
     user_id: user.id,
+    context_id: financialContext.id,
     name: parsed.data.name,
     account_type: parsed.data.accountType,
     balance: parsed.data.balance,
-    currency_code: profile?.currency_code ?? 'EUR',
+    currency_code: financialContext.currency_code,
   })
 
   if (error) {

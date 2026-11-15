@@ -27,7 +27,13 @@ function calculateHealth(
   )
 }
 
-export async function MonthlyOverview({ currency }: { currency: string }) {
+export async function MonthlyOverview({
+  currency,
+  contextId,
+}: {
+  currency: string
+  contextId: string
+}) {
   const supabase = await createClient()
   const {
     data: { user },
@@ -42,12 +48,14 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
       .from('transactions')
       .select('transaction_type, amount, accounts(currency_code)')
       .eq('user_id', user.id)
+      .eq('context_id', contextId)
       .gte('occurred_at', start.toISOString())
       .lt('occurred_at', end.toISOString()),
     supabase
       .from('recurring_expenses')
       .select('amount, frequency, currency_code')
       .eq('user_id', user.id)
+      .eq('context_id', contextId)
       .eq('is_active', true),
   ])
 
@@ -136,7 +144,8 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
         <div className="mt-3">
           {health === null ? (
             <p className="text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-              Regista pelo menos uma receita neste mês para calcular o indicador.
+              Regista pelo menos uma receita neste mês para calcular o
+              indicador.
             </p>
           ) : (
             <div
@@ -156,7 +165,9 @@ export async function MonthlyOverview({ currency }: { currency: string }) {
           )}
           <div className="mt-2 flex items-center justify-between gap-3 text-xs text-[hsl(var(--muted-foreground))]">
             <span>Fluxo, poupança e compromissos recorrentes</span>
-            <span className="shrink-0 tabular-nums">{formatCurrency(recurringReserve, currency)}/mês</span>
+            <span className="shrink-0 tabular-nums">
+              {formatCurrency(recurringReserve, currency)}/mês
+            </span>
           </div>
           <p className="mt-2 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
             Pontuação baseada no fluxo de caixa, na taxa de poupança e nos

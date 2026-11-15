@@ -8,6 +8,17 @@ MoneyFlow should make a user's financial position understandable within seconds 
 
 ## Information architecture
 
+### Financial spaces
+
+MoneyFlow separates the user's data into two independently managed contexts:
+
+- **Personal** — private accounts, movements, budgets, savings goals and wishlist.
+- **Silentra** — business accounts, income, expenses, budgets and recurring commitments.
+
+The persistent space selector changes the context used by the dashboard and its management pages. The **General** page is read-only: it presents each context separately, groups balances and monthly cash flow by currency, and never adds amounts from different currencies without an explicit conversion. Switching contexts is not a transfer and does not change account balances.
+
+Existing records are migrated to Personal. The Silentra space starts empty and receives its own default categories. Cross-context links between movements, accounts, categories, budgets, goals, wishlist items, contributions and recurring records are rejected at the database boundary.
+
 ### Primary mobile navigation
 
 1. Home
@@ -65,11 +76,12 @@ Suggested labels are convenience only; labels remain free text so the user can r
 
 ## Database direction
 
-All user-owned records require `user_id` ownership and Row Level Security.
+All user-owned records require `user_id` ownership and Row Level Security. Context-owned financial records also require `context_id`, a composite owner/context foreign key, and server-side filters for the selected space.
 
 Core tables:
 
 - `profiles`
+- `financial_contexts`
 - `accounts`
 - `categories`
 - `transactions`
@@ -87,7 +99,9 @@ Important principles:
 - Do not aggregate balances or movements from different currencies without an explicit exchange-rate conversion and timestamp. When conversion is unavailable, group totals by currency or restrict each total to one currency and state that scope.
 - Destructive category operations must protect or explicitly reassign related records.
 - Goal contribution mutations must be transactional where multiple balances are affected.
-- Recurring expenses are planning records, not transactions.
+- Recurring expenses and recurring income are planning records, not transactions.
+- Financial contexts are isolated in application queries and relationship-validation triggers; Personal and Silentra records must never be cross-linked.
+- General is a read-only projection. It does not create internal transfers or merge balances across currencies.
 
 ## Dashboard model
 

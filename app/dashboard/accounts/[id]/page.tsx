@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { DeleteAccountButton } from '../delete-button'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,6 +40,7 @@ export default async function AccountDetailPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: account }, { data: transactions }] = await Promise.all([
     supabase
@@ -48,6 +50,7 @@ export default async function AccountDetailPage({
       )
       .eq('id', id)
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .maybeSingle(),
     supabase
       .from('transactions')
@@ -56,6 +59,7 @@ export default async function AccountDetailPage({
       )
       .eq('account_id', id)
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('occurred_at', { ascending: false })
       .limit(50),
   ])

@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { REMEMBER_COOKIE, SESSION_MAX_AGE } from '@/lib/supabase/session'
 import { signInSchema, signUpSchema } from '@/lib/validations/auth'
+import { FINANCIAL_CONTEXT_COOKIE } from '@/lib/financial-context'
 
 export type AuthState = { error?: string }
 
@@ -32,6 +33,13 @@ export async function signIn(
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production',
     })
+    cookieStore.set(FINANCIAL_CONTEXT_COOKIE, 'personal', {
+      httpOnly: true,
+      maxAge: SESSION_MAX_AGE,
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    })
   }
 
   if (error)
@@ -39,10 +47,19 @@ export async function signIn(
       error: 'Não foi possível entrar. Confirma o email e a palavra-passe.',
     }
 
+  const userId = (await supabase.auth.getUser()).data.user?.id ?? ''
+  const { data: personalContext } = await supabase
+    .from('financial_contexts')
+    .select('id')
+    .eq('user_id', userId)
+    .eq('slug', 'personal')
+    .maybeSingle()
+
   const { count } = await supabase
     .from('accounts')
     .select('id', { count: 'exact', head: true })
-    .eq('user_id', (await supabase.auth.getUser()).data.user?.id ?? '')
+    .eq('user_id', userId)
+    .eq('context_id', personalContext?.id ?? '')
 
   redirect(count ? '/dashboard' : '/onboarding')
 }
@@ -73,6 +90,13 @@ export async function signUp(
   if (data.session) {
     const cookieStore = await cookies()
     cookieStore.set(REMEMBER_COOKIE, '1', {
+      httpOnly: true,
+      maxAge: SESSION_MAX_AGE,
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+    })
+    cookieStore.set(FINANCIAL_CONTEXT_COOKIE, 'personal', {
       httpOnly: true,
       maxAge: SESSION_MAX_AGE,
       path: '/',

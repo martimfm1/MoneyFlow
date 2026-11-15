@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { normalizeDecimalInput } from '@/lib/number'
+import { getFinancialContext } from '@/lib/financial-context'
 
 const updateSchema = z.object({
   id: z.uuid(),
@@ -23,7 +24,8 @@ async function getUser() {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-  return { supabase, user }
+  const financialContext = await getFinancialContext(supabase, user.id)
+  return { supabase, user, financialContext }
 }
 
 export async function updateTransaction(formData: FormData) {
@@ -42,7 +44,7 @@ export async function updateTransaction(formData: FormData) {
       `/dashboard/transactions/${formData.get('id')}/edit?error=Dados%20inválidos.`,
     )
 
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
 
   const [{ data: transaction }, { data: account }] = await Promise.all([
     supabase
@@ -50,12 +52,14 @@ export async function updateTransaction(formData: FormData) {
       .select('id')
       .eq('id', parsed.data.id)
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .maybeSingle(),
     supabase
       .from('accounts')
       .select('id')
       .eq('id', parsed.data.accountId)
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .maybeSingle(),
   ])
 
@@ -73,6 +77,7 @@ export async function updateTransaction(formData: FormData) {
       .select('id')
       .eq('id', categoryId)
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .maybeSingle()
 
     if (!category)
@@ -94,6 +99,7 @@ export async function updateTransaction(formData: FormData) {
     })
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error)
     redirect(
@@ -108,12 +114,13 @@ export async function deleteTransaction(formData: FormData) {
   if (!parsed.success)
     redirect('/dashboard/transactions?error=Movimento%20inválido.')
 
-  const { supabase, user } = await getUser()
+  const { supabase, user, financialContext } = await getUser()
   const { error } = await supabase
     .from('transactions')
     .delete()
     .eq('id', parsed.data.id)
     .eq('user_id', user.id)
+    .eq('context_id', financialContext.id)
 
   if (error)
     redirect(

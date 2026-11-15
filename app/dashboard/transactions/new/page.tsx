@@ -6,13 +6,10 @@ import { AccountCombobox } from '@/components/account-combobox'
 import { FormDatePicker } from '@/components/form-date-picker'
 import { TransactionTypeSelector } from '@/components/transaction-type-selector'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { createTransaction } from './actions'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,18 +24,21 @@ export default async function NewTransactionPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: accounts }, { data: categories }] = await Promise.all([
     supabase
       .from('accounts')
       .select('id, name, currency_code, balance')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .eq('is_active', true)
       .order('name'),
     supabase
       .from('categories')
       .select('id, name')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('sort_order')
       .order('name'),
   ])
@@ -77,8 +77,8 @@ export default async function NewTransactionPage({
             <div className="rounded-lg border border-dashed p-5 text-center">
               <h2 className="font-medium">Ainda não tens contas</h2>
               <p className="mt-1 text-sm leading-6 text-[hsl(var(--muted-foreground))]">
-                Cria primeiro uma conta para poderes associar este movimento
-                ao teu saldo.
+                Cria primeiro uma conta para poderes associar este movimento ao
+                teu saldo.
               </p>
               <Button asChild className="mt-4">
                 <Link href="/dashboard/accounts/new">Criar conta</Link>
@@ -108,11 +108,7 @@ export default async function NewTransactionPage({
                 </span>
               </label>
 
-              <AccountCombobox
-                name="accountId"
-                accounts={accounts}
-                required
-              />
+              <AccountCombobox name="accountId" accounts={accounts} required />
 
               <label className="grid gap-2 text-sm font-medium">
                 <span>

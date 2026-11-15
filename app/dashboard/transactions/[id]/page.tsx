@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { formatCurrency, formatDate } from '@/lib/format'
 import { DeleteTransactionButton } from '../delete-button'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,6 +32,7 @@ export default async function TransactionDetailPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [{ data: transaction }, { data: profile }] = await Promise.all([
     supabase
@@ -40,6 +42,7 @@ export default async function TransactionDetailPage({
       )
       .eq('id', id)
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .maybeSingle(),
     supabase
       .from('profiles')
@@ -57,7 +60,11 @@ export default async function TransactionDetailPage({
   const category = Array.isArray(transaction.categories)
     ? transaction.categories[0]
     : transaction.categories
-  const currency = account?.currency_code || profile?.currency_code || 'EUR'
+  const currency =
+    account?.currency_code ||
+    financialContext.currency_code ||
+    profile?.currency_code ||
+    'EUR'
   const label = transaction.description || (isIncome ? 'Receita' : 'Despesa')
   const amount = Number(transaction.amount)
 

@@ -4,6 +4,7 @@ import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { Button } from '@/components/ui/button'
 import { deleteTransaction, updateTransaction } from '../../actions'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -20,6 +21,7 @@ export default async function EditTransactionPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [
     { data: transaction },
@@ -34,16 +36,19 @@ export default async function EditTransactionPage({
       )
       .eq('id', id)
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .maybeSingle(),
     supabase
       .from('accounts')
       .select('id, name, currency_code, is_active')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('created_at', { ascending: true }),
     supabase
       .from('categories')
       .select('id, name')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true }),
     supabase
@@ -55,7 +60,8 @@ export default async function EditTransactionPage({
 
   if (!transaction) notFound()
 
-  const currency = profile?.currency_code ?? 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
   const dateValue = transaction.occurred_at.slice(0, 10)
   const activeAccounts =
     accounts?.filter(
