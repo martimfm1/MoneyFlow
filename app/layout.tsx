@@ -15,6 +15,14 @@ export const metadata: Metadata = {
     'Track, understand, prioritize and decide what to do with your money.',
   applicationName: 'MoneyFlow',
   manifest: '/manifest.webmanifest',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'MoneyFlow',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
   icons: {
     icon: [
       { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
