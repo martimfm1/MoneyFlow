@@ -97,7 +97,8 @@ export default async function BudgetsPage({
       .lt('occurred_at', nextStart),
   ])
 
-  const currency = financialContext.currency_code || profile?.currency_code || 'EUR'
+  const currency =
+    financialContext.currency_code || profile?.currency_code || 'EUR'
   const budgetsByCategory = new Map(
     (budgets ?? []).map((budget) => [
       budget.category_id,
@@ -226,8 +227,10 @@ export default async function BudgetsPage({
         <p className="mt-4 text-xs leading-5 text-[hsl(var(--muted-foreground))]">
           {transactionsInOtherCurrencies} despesa
           {transactionsInOtherCurrencies === 1 ? '' : 's'} noutra
-          {transactionsInOtherCurrencies === 1 ? ' moeda foi' : 's moedas foram'}
-          {' '}excluída{transactionsInOtherCurrencies === 1 ? '' : 's'} destes
+          {transactionsInOtherCurrencies === 1
+            ? ' moeda foi'
+            : 's moedas foram'}{' '}
+          excluída{transactionsInOtherCurrencies === 1 ? '' : 's'} destes
           cálculos. Não é feita conversão automática.
         </p>
       ) : null}
