@@ -10,6 +10,7 @@ import { redirect } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 import { upsertBudget } from './actions'
+import { getFinancialContext } from '@/lib/financial-context'
 import { formatCurrency, formatMonth } from '@/lib/format'
 
 export const dynamic = 'force-dynamic'
@@ -60,6 +61,7 @@ export default async function BudgetsPage({
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
+  const financialContext = await getFinancialContext(supabase, user.id)
 
   const [
     { data: profile },
@@ -76,17 +78,20 @@ export default async function BudgetsPage({
       .from('categories')
       .select('id, name')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true }),
     supabase
       .from('budgets')
       .select('id, category_id, amount')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .eq('month_start', currentMonthDate),
     supabase
       .from('transactions')
       .select('category_id, amount, transaction_type, accounts(currency_code)')
       .eq('user_id', user.id)
+      .eq('context_id', financialContext.id)
       .eq('transaction_type', 'expense')
       .gte('occurred_at', start)
       .lt('occurred_at', nextStart),
