@@ -186,9 +186,11 @@ See [`SECURITY.md`](SECURITY.md) for the security baseline and vulnerability-rep
 
 The core product foundation is in place. Recurring income/expense tracking, multi-space finance, CSV transaction import and the installable PWA are already implemented.
 
-The next work is tracked in the [API integrations and platform roadmap](docs/roadmap/api-integrations-and-platform.md). It covers provider eligibility and selection, secure Open Banking architecture, stronger CSV import/reconciliation, sandbox integration, incremental bank sync, webhooks, recurring suggestions, API contracts, FX/export decisions, automated testing, privacy and production rollout.
+Bank imports remain **manual** through CSV. MoneyFlow does not connect to banking providers, store bank credentials or initiate payments. This is an intentional product decision; the existing CSV workflow remains the supported way to import external account movements.
 
-**Important:** direct Revolut Open Banking production access is restricted to regulated TPPs with the required certificates. Revolut Kids & Teens support in Portugal must be confirmed before promising automatic sync. CSV import remains the supported fallback while this is evaluated.
+Recurring income and expenses are being extended to create real, idempotent transactions on their due dates. A posted income increases the linked account balance; a posted expense decreases it. Silentra for Barbers is also being connected to the dedicated **Silentra** finance space so confirmed platform subscription payments can be recorded automatically, without mixing in barbershop customer bookings or POS sales.
+
+The implementation and acceptance criteria are tracked in the [recurring automation and Silentra integration roadmap](docs/roadmap/recurring-automation-and-silentra-integration.md).
 
 ## License
 
