@@ -1,0 +1,42 @@
+name: Temporary recurring PR formatter
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.head_ref == 'feat/moneyflow-recurring-automation'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Format changed files
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          FILES="$(git diff --name-only "$BASE_SHA" HEAD -- '*.js' '*.jsx' '*.ts' '*.tsx' '*.mjs' '*.cjs' '*.json' '*.md' '*.css' '*.yml' '*.yaml')"
+          if [ -n "$FILES" ]; then
+            printf '%s\n' "$FILES" | xargs -r pnpm exec prettier --write
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add $FILES
+            if ! git diff --cached --quiet; then
+              git commit -m "style: format recurring automation PR"
+              git push origin "HEAD:refs/heads/feat/moneyflow-recurring-automation"
+            fi
+          fi
