@@ -24,13 +24,15 @@ export async function createClient(options: CreateClientOptions = {}) {
         },
         setAll(cookiesToSet) {
           try {
-            cookiesToSet.forEach(({ name, value, options: cookieOptions }) => {
-              const cookieOptionsWithPersistence =
-                remember && value
-                  ? { ...cookieOptions, maxAge: SESSION_MAX_AGE }
-                  : cookieOptions
-              cookieStore.set(name, value, cookieOptionsWithPersistence)
-            })
+            cookiesToSet.forEach(
+              ({ name, value, options: cookieOptions }) => {
+                const cookieOptionsWithPersistence =
+                  remember && value
+                    ? { ...cookieOptions, maxAge: SESSION_MAX_AGE }
+                    : cookieOptions
+                cookieStore.set(name, value, cookieOptionsWithPersistence)
+              },
+            )
           } catch {
             // Server Components cannot always mutate cookies; middleware handles refreshes.
           }
