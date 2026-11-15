@@ -94,14 +94,14 @@ language sql
 stable
 security invoker
 set search_path = public
-as $
+as $$
   select exists (
     select 1
     from public.profiles p
     where p.id = (select auth.uid())
       and p.active_finance_context = target_context
   );
-$;
+$$;
 
 create or replace function public.assign_active_finance_context()
 returns trigger
