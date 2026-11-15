@@ -1,6 +1,6 @@
 # MoneyFlow
 
-MoneyFlow is an open-source, mobile-first personal finance and wishlist application built to help people understand their money and make better spending decisions.
+MoneyFlow is a mobile-first personal finance and wishlist application built to help people understand their money and make better spending decisions.
 
 **Track → Understand → Prioritize → Decide**
 
@@ -36,7 +36,8 @@ The application currently includes the core personal-finance workflows, responsi
 - Active / paused recurring items
 - Editing and secure deletion
 - Recurring-cost projections and annualized spending context
-- Dedicated navigation between recurring expenses and recurring income
+- Dedicated tabbed navigation between recurring income and expenses
+- Editable free-text labels with suggested categories for common income and expense types
 
 ### Planning
 
@@ -80,9 +81,11 @@ The application currently includes the core personal-finance workflows, responsi
 ### Platform & security
 
 - Next.js 16 + React 19 + TypeScript
-- Installable PWA manifest and application icons
-- Service-worker static asset caching
-- Offline navigation fallback
+- Installable PWA manifest, app icons and native iOS web-app metadata
+- Contextual installation guidance for supported browsers and iOS
+- Service-worker static asset caching with update handling
+- Offline navigation fallback without caching authenticated financial pages
+- Long-lived Supabase sessions that persist between app launches
 - Server-side validation with Zod
 - Supabase Row Level Security
 - Server-side ownership checks across related records
