@@ -144,6 +144,23 @@ export default async function SettingsPage({
         </section>
       </div>
 
+      <section className="mt-6 max-w-5xl rounded-2xl border border-border/80 bg-card/75 p-5 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold">Integrações</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Liga a Silentra for Barbers para registar as receitas confirmadas
+              da plataforma.
+            </p>
+          </div>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/dashboard/settings/integrations">
+              Gerir integrações
+            </Link>
+          </Button>
+        </div>
+      </section>
+
       <div className="mt-6 flex max-w-5xl items-start gap-3 rounded-2xl border border-border/70 bg-muted/35 p-4">
         <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-background text-primary">
           <Sparkles className="size-4" aria-hidden="true" />

@@ -126,7 +126,7 @@ begin
     raise exception 'PAIRING_ACCOUNT_NOT_AVAILABLE';
   end if;
 
-  v_sync_token := encode(gen_random_bytes(32), 'hex');
+  v_sync_token := encode(extensions.gen_random_bytes(32), 'hex');
 
   insert into public.moneyflow_integrations (
     user_id, context_id, account_id, provider, token_hash,
@@ -135,7 +135,7 @@ begin
   values (
     v_pairing.user_id, v_pairing.context_id, v_pairing.account_id,
     'silentra-for-barbers',
-    encode(digest(v_sync_token, 'sha256'), 'hex'),
+    encode(extensions.digest(v_sync_token, 'sha256'), 'hex'),
     'connected', now(), null, now()
   )
   on conflict (user_id, provider) do update
@@ -258,7 +258,7 @@ declare
 begin
   update public.moneyflow_integrations
   set status = 'disconnected',
-      token_hash = encode(gen_random_bytes(32), 'hex'),
+      token_hash = encode(extensions.gen_random_bytes(32), 'hex'),
       updated_at = now()
   where token_hash = p_sync_token_hash
     and provider = 'silentra-for-barbers'
