@@ -2,7 +2,10 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { AccountForm } from './account-form'
 
-export default function NewAccountPage() {
+import { redirectIfGeneralFinanceContext } from '@/lib/finance-context'
+
+export default async function NewAccountPage() {
+  await redirectIfGeneralFinanceContext()
   return (
     <main className="min-h-screen">
       <div className="moneyflow-shell py-6 sm:py-10">
