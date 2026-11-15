@@ -54,11 +54,11 @@ set search_path = ''
 as $$
 begin
   if tg_op = 'INSERT' then
-    new.schedule_anchor_date := coalesce(
-      new.schedule_anchor_date,
-      case when tg_table_name = 'recurring_expenses'
-        then new.next_due_date else new.next_income_date end
-    );
+    if tg_table_name = 'recurring_expenses' then
+      new.schedule_anchor_date := coalesce(new.schedule_anchor_date, new.next_due_date);
+    else
+      new.schedule_anchor_date := coalesce(new.schedule_anchor_date, new.next_income_date);
+    end if;
     new.next_occurrence_index := coalesce(new.next_occurrence_index, 0);
     return new;
   end if;
@@ -72,14 +72,14 @@ begin
       tg_table_name = 'recurring_incomes'
       and new.next_income_date is distinct from old.next_income_date
     ) then
-    -- A user-edited schedule starts a fresh recurrence series. The worker
-    -- increments next_occurrence_index when it advances the date, so that
-    -- internal update does not reset the original day-of-month anchor.
+    -- The worker increments the occurrence index together with the next date.
+    -- A user edit leaves the index unchanged and therefore starts a new series.
     if new.next_occurrence_index is not distinct from old.next_occurrence_index then
-      new.schedule_anchor_date := case
-        when tg_table_name = 'recurring_expenses' then new.next_due_date
-        else new.next_income_date
-      end;
+      if tg_table_name = 'recurring_expenses' then
+        new.schedule_anchor_date := new.next_due_date;
+      else
+        new.schedule_anchor_date := new.next_income_date;
+      end if;
       new.next_occurrence_index := 0;
     end if;
   end if;
