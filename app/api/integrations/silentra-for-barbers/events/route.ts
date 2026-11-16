@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -44,9 +44,9 @@ export async function POST(request: Request) {
   }
 
   try {
-    const admin = createAdminClient()
+    const supabase = await createClient()
     const syncTokenHash = createHash('sha256').update(syncToken).digest('hex')
-    const { data, error } = await admin.rpc(
+    const { data, error } = await supabase.rpc(
       'record_silentra_platform_payment',
       {
         p_sync_token_hash: syncTokenHash,
