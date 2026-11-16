@@ -5,10 +5,12 @@
 A integração regista apenas receitas efetivamente recebidas pela plataforma Silentra for Barbers no espaço financeiro **Silentra** do MoneyFlow.
 
 Incluído:
+
 - Faturas/subscrições Stripe pagas (`invoice.paid`).
 - Pagamentos manuais da subscrição depois de confirmados e de existir comprovativo interno.
 
 Excluído:
+
 - Pagamentos de marcações ou serviços dos clientes das barbearias.
 - Vendas POS das barbearias.
 - Contas bancárias externas ou Open Banking.
