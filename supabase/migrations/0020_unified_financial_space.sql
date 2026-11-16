@@ -29,6 +29,38 @@ join public.categories as target_category
  and target_category.name = source_category.name
 order by source_category.id, target_category.created_at, target_category.id;
 
+-- If identical category/month budgets exist in both spaces, merge their
+-- allocations before moving the source budget into the canonical context.
+create temporary table moneyflow_budget_merge on commit drop as
+select
+  source_budget.id as source_id,
+  target_budget.id as target_id
+from public.budgets as source_budget
+join public.categories as source_category
+  on source_category.id = source_budget.category_id
+join public.financial_contexts as source_context
+  on source_context.id = source_category.context_id
+ and source_context.user_id = source_category.user_id
+ and source_context.slug = 'silentra'
+join moneyflow_category_merge as category_merge
+  on category_merge.source_id = source_category.id
+join public.budgets as target_budget
+  on target_budget.user_id = source_budget.user_id
+ and target_budget.category_id = category_merge.target_id
+ and target_budget.month_start = source_budget.month_start;
+
+update public.budgets as target_budget
+set amount = target_budget.amount + source_budget.amount,
+    updated_at = timezone('utc', now())
+from moneyflow_budget_merge as budget_merge
+join public.budgets as source_budget
+  on source_budget.id = budget_merge.source_id
+where target_budget.id = budget_merge.target_id;
+
+delete from public.budgets as source_budget
+using moneyflow_budget_merge as budget_merge
+where source_budget.id = budget_merge.source_id;
+
 -- Deduplicate imported events across both former contexts.
 with ranked_imports as (
   select transaction.id,
