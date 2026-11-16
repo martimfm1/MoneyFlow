@@ -58,7 +58,7 @@ jobs:
             BASE_SHA="HEAD^"
           fi
 
-          FILES="$(git diff --name-only "$BASE_SHA" "$GITHUB_SHA" -- \
+          FILES="$(git diff --diff-filter=ACMRT --name-only "$BASE_SHA" "$GITHUB_SHA" -- \
             '*.js' '*.jsx' '*.ts' '*.tsx' '*.mjs' '*.cjs' \
             '*.json' '*.md' '*.css' '*.yml' '*.yaml')"
 

@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createClient } from '@/lib/supabase/server'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -26,11 +26,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const admin = createAdminClient()
+    const supabase = await createClient()
     const tokenHash = createHash('sha256')
       .update(parsed.data.pairingToken)
       .digest('hex')
-    const { data, error } = await admin.rpc('claim_silentra_pairing', {
+    const { data, error } = await supabase.rpc('claim_silentra_pairing', {
       p_token_hash: tokenHash,
     })
 
