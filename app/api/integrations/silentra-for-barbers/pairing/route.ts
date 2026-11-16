@@ -2,7 +2,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
-import { getFinancialContextBySlug } from '@/lib/financial-context'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -42,10 +42,10 @@ export async function POST(request: Request) {
     )
   }
 
-  const context = await getFinancialContextBySlug(supabase, user.id, 'silentra')
+  const context = await getFinancialContext(supabase, user.id)
   if (!context) {
     return NextResponse.json(
-      { ok: false, error: 'O espaço financeiro Silentra não está disponível.' },
+      { ok: false, error: 'O espaço financeiro não está disponível.' },
       { status: 404 },
     )
   }
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        error: 'Escolhe uma conta ativa em EUR do espaço Silentra.',
+        error: 'Escolhe uma conta ativa em EUR.',
       },
       { status: 400 },
     )

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { SilentraForBarbersPanel } from '@/components/integrations/silentra-for-barbers-panel'
 import { createClient } from '@/lib/supabase/server'
-import { getFinancialContextBySlug } from '@/lib/financial-context'
+import { getFinancialContext } from '@/lib/financial-context'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,7 +16,7 @@ export default async function IntegrationsSettingsPage() {
   } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const context = await getFinancialContextBySlug(supabase, user.id, 'silentra')
+  const context = await getFinancialContext(supabase, user.id)
   if (!context) {
     return (
       <main className="moneyflow-shell py-6 sm:py-10">
@@ -27,7 +27,7 @@ export default async function IntegrationsSettingsPage() {
         </Button>
         <Card className="mt-6 max-w-2xl">
           <CardContent className="p-5 text-sm text-muted-foreground">
-            O espaço financeiro Silentra não está disponível nesta conta.
+            O espaço financeiro não está disponível nesta conta.
           </CardContent>
         </Card>
       </main>

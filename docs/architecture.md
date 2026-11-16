@@ -8,16 +8,13 @@ MoneyFlow should make a user's financial position understandable within seconds 
 
 ## Information architecture
 
-### Financial spaces
+### Unified financial space
 
-MoneyFlow separates the user's data into two independently managed contexts:
+MoneyFlow uses one financial space for the user's complete financial picture. Personal accounts and movements, together with confirmed Silentra for Barbers platform subscription revenue, appear in the same dashboard, history, account list, analytics and planning tools. The old Personal / Silentra selector and read-only General view are retired.
 
-- **Personal** — private accounts, movements, budgets, savings goals and wishlist.
-- **Silentra** — business accounts, income, expenses, budgets and recurring commitments.
+Silentra for Barbers only imports confirmed platform subscription revenue. Barbershop appointments and customer payments are not imported. Users can choose any active EUR account in the unified space as the destination for those platform payments.
 
-The persistent space selector changes the context used by the dashboard and its management pages. The **General** page is read-only: it presents each context separately, groups balances and monthly cash flow by currency, and never adds amounts from different currencies without an explicit conversion. Switching contexts is not a transfer and does not change account balances.
-
-Existing records are migrated to Personal. The Silentra space starts empty and receives its own default categories. Cross-context links between movements, accounts, categories, budgets, goals, wishlist items, contributions and recurring records are rejected at the database boundary.
+All existing accounts, transactions, recurring records, budgets, goals and wishlist items are preserved and moved into the unified space. Duplicate categories are merged and linked records are reassigned. Currency totals remain separate: MoneyFlow never adds amounts from different currencies without an explicit conversion.
 
 ### Primary mobile navigation
 
@@ -81,7 +78,7 @@ All user-owned records require `user_id` ownership and Row Level Security. Conte
 Core tables:
 
 - `profiles`
-- `financial_contexts`
+- `financial_contexts` (one canonical context per user)
 - `accounts`
 - `categories`
 - `transactions`
@@ -100,8 +97,8 @@ Important principles:
 - Destructive category operations must protect or explicitly reassign related records.
 - Goal contribution mutations must be transactional where multiple balances are affected.
 - Recurring expenses and recurring income are planning records, not transactions.
-- Financial contexts are isolated in application queries and relationship-validation triggers; Personal and Silentra records must never be cross-linked.
-- General is a read-only projection. It does not create internal transfers or merge balances across currencies.
+- Every financial record belongs to the user's single canonical financial context.
+- The database validates account, category, goal, wishlist, budget and recurring-record relationships within that unified context.
 
 ## Dashboard model
 

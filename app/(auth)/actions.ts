@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { REMEMBER_COOKIE, SESSION_MAX_AGE } from '@/lib/supabase/session'
 import { signInSchema, signUpSchema } from '@/lib/validations/auth'
-import { FINANCIAL_CONTEXT_COOKIE } from '@/lib/financial-context'
 
 export type AuthState = { error?: string }
 
@@ -27,13 +26,6 @@ export async function signIn(
   if (!error) {
     const cookieStore = await cookies()
     cookieStore.set(REMEMBER_COOKIE, '1', {
-      httpOnly: true,
-      maxAge: SESSION_MAX_AGE,
-      path: '/',
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-    })
-    cookieStore.set(FINANCIAL_CONTEXT_COOKIE, 'personal', {
       httpOnly: true,
       maxAge: SESSION_MAX_AGE,
       path: '/',
@@ -90,13 +82,6 @@ export async function signUp(
   if (data.session) {
     const cookieStore = await cookies()
     cookieStore.set(REMEMBER_COOKIE, '1', {
-      httpOnly: true,
-      maxAge: SESSION_MAX_AGE,
-      path: '/',
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-    })
-    cookieStore.set(FINANCIAL_CONTEXT_COOKIE, 'personal', {
       httpOnly: true,
       maxAge: SESSION_MAX_AGE,
       path: '/',
