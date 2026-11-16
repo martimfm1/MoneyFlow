@@ -114,9 +114,7 @@ export function SilentraForBarbersPanel({
           <div className="min-w-0">
             <CardTitle>Silentra for Barbers</CardTitle>
             <CardDescription className="mt-1">
-              Regista no teu espaço financeiro unificado as receitas confirmadas
-              das subscrições da plataforma. Marcações e pagamentos dos
-              clientes das barbearias não são importados.
+              Importa subscrições da plataforma, não pagamentos das marcações.
             </CardDescription>
           </div>
         </div>
