@@ -70,9 +70,7 @@ export default async function DashboardLayout({
                 {isEnglish ? 'Unified finances' : 'Finanças unificadas'}
               </p>
               <p className="mt-1 text-sm font-medium text-sidebar-foreground">
-                {isEnglish
-                  ? 'One financial space'
-                  : 'Um só espaço financeiro'}
+                {isEnglish ? 'One financial space' : 'Um só espaço financeiro'}
               </p>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 {isEnglish
@@ -135,9 +133,7 @@ export default async function DashboardLayout({
                   </Link>
                 </div>
                 <span className="hidden text-xs font-medium text-muted-foreground sm:inline">
-                  {isEnglish
-                    ? 'Unified finances'
-                    : 'Finanças num só lugar'}
+                  {isEnglish ? 'Unified finances' : 'Finanças num só lugar'}
                 </span>
               </div>
               <div className="flex shrink-0 items-center gap-2">
