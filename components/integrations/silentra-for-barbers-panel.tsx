@@ -114,9 +114,7 @@ export function SilentraForBarbersPanel({
           <div className="min-w-0">
             <CardTitle>Silentra for Barbers</CardTitle>
             <CardDescription className="mt-1">
-              Regista no espaço Silentra as receitas confirmadas das subscrições
-              da plataforma. Marcações e pagamentos dos clientes das barbearias
-              não são importados.
+              Importa subscrições da plataforma, não pagamentos das marcações.
             </CardDescription>
           </div>
         </div>
@@ -131,7 +129,7 @@ export function SilentraForBarbersPanel({
             <p className="mt-2 text-sm text-muted-foreground">
               Conta de destino:{' '}
               <span className="font-medium text-foreground">
-                {accountName ?? 'Conta Silentra'}
+                {accountName ?? 'Conta principal'}
               </span>
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
@@ -189,8 +187,7 @@ export function SilentraForBarbersPanel({
             </Button>
             {accounts.length === 0 ? (
               <p className="text-xs text-muted-foreground">
-                Cria primeiro uma conta ativa em EUR no espaço financeiro
-                Silentra.
+                Cria primeiro uma conta ativa em EUR na tua dashboard.
               </p>
             ) : null}
             {pairingToken ? (

@@ -107,7 +107,7 @@ export default async function DashboardPage() {
         <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
           <div className="min-w-0">
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
-              O teu espaço financeiro
+              As tuas finanças, num só lugar
             </p>
             <h1 className="mt-2 text-[clamp(1.8rem,4vw,2.65rem)] font-semibold tracking-[-0.045em] text-foreground">
               Olá{firstName ? `, ${firstName}` : ''}.
@@ -146,7 +146,7 @@ export default async function DashboardPage() {
               </p>
               <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-[11px] font-medium text-white/75">
                 <span className="size-1.5 rounded-full bg-primary shadow-[0_0_10px_hsl(var(--primary))]" />
-                {financialContext.name}
+                Todas as finanças
               </span>
             </div>
             <p className="mt-4 break-words text-[clamp(2.25rem,6vw,4rem)] font-semibold tracking-[-0.055em] tabular-nums">

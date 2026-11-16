@@ -16,10 +16,10 @@ The application currently includes the core personal-finance workflows, responsi
 
 ### Money management
 
-- Separate Personal and Silentra financial spaces with a consolidated General overview
-- Existing financial history preserved in the Personal space
-- Context-aware accounts, transactions, categories, budgets, goals, wishlist and recurring records
-- Monthly General overview grouped by space and currency, with no implicit currency conversion
+- One unified financial space for personal finances and Silentra platform revenue
+- Existing financial history from both former spaces preserved in one dashboard
+- Unified accounts, transactions, categories, budgets, goals, wishlist and recurring records
+- Consolidated monthly overview with currency totals kept separate and no implicit currency conversion
 - Supabase SSR authentication with Next.js App Router
 - Guided onboarding with profile, currency and first account
 - Multiple financial accounts with balances and active/inactive state
@@ -40,7 +40,7 @@ The application currently includes the core personal-finance workflows, responsi
 - Active / paused recurring items
 - Editing and secure deletion
 - Recurring-cost projections and annualized spending context
-- Independent recurring entries and exits for each financial space
+- Recurring entries and exits managed from the same financial space
 - Dedicated tabbed navigation between recurring income and expenses
 - Editable free-text labels with suggested categories for common income and expense types
 
@@ -184,7 +184,7 @@ See [`SECURITY.md`](SECURITY.md) for the security baseline and vulnerability-rep
 
 ## Roadmap
 
-The core product foundation is in place. Recurring income/expense tracking, multi-space finance, CSV transaction import and the installable PWA are already implemented.
+The core product foundation is in place. Recurring income/expense tracking, unified finance, CSV transaction import and the installable PWA are already implemented.
 
 The next work is tracked in the [API integrations and platform roadmap](docs/roadmap/api-integrations-and-platform.md). It covers provider eligibility and selection, secure Open Banking architecture, stronger CSV import/reconciliation, sandbox integration, incremental bank sync, webhooks, recurring suggestions, API contracts, FX/export decisions, automated testing, privacy and production rollout.
 

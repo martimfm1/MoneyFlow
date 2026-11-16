@@ -7,8 +7,6 @@ import { SilentraCredit } from '@/components/silentra-credit'
 import { QuickAdd } from '@/components/dashboard/quick-add'
 import { createClient } from '@/lib/supabase/server'
 import { createTranslator, normalizeLocale } from '@/lib/i18n'
-import { FinancialContextSwitcher } from '@/components/dashboard/financial-context-switcher'
-import { getFinancialContextSelection } from '@/lib/financial-context'
 import { Button } from '@/components/ui/button'
 import { signOut } from './actions'
 
@@ -23,16 +21,13 @@ export default async function DashboardLayout({
   const { data: profile } = user
     ? await supabase
         .from('profiles')
-        .select('locale, active_finance_context')
+        .select('locale')
         .eq('id', user.id)
         .maybeSingle()
     : { data: null }
 
   const locale = normalizeLocale(profile?.locale)
   const t = createTranslator(locale)
-  const activeContext = user
-    ? await getFinancialContextSelection(supabase, user.id)
-    : null
   const isEnglish = locale === 'en'
 
   return (
@@ -72,23 +67,15 @@ export default async function DashboardLayout({
 
             <div className="glass-panel mx-2 mt-7 rounded-xl px-3 py-3">
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                {isEnglish ? 'Your workspace' : 'O teu espaço'}
+                {isEnglish ? 'Unified finances' : 'Finanças unificadas'}
               </p>
               <p className="mt-1 text-sm font-medium text-sidebar-foreground">
-                {activeContext === 'silentra'
-                  ? 'Silentra'
-                  : activeContext === 'general'
-                    ? isEnglish
-                      ? 'Overview'
-                      : 'Visão geral'
-                    : isEnglish
-                      ? 'Personal space'
-                      : 'Espaço pessoal'}
+                {isEnglish ? 'One financial space' : 'Um só espaço financeiro'}
               </p>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">
                 {isEnglish
-                  ? 'One clear view of your money.'
-                  : 'Uma visão clara do teu dinheiro.'}
+                  ? 'Personal money and Silentra platform income, together.'
+                  : 'Dinheiro pessoal e receitas da plataforma Silentra, juntos.'}
               </p>
             </div>
 
@@ -145,25 +132,15 @@ export default async function DashboardLayout({
                     </span>
                   </Link>
                 </div>
-                {activeContext ? (
-                  <FinancialContextSwitcher
-                    active={activeContext}
-                    locale={locale}
-                  />
-                ) : null}
-                {activeContext === 'general' ? (
-                  <span className="hidden text-xs text-muted-foreground sm:inline">
-                    {isEnglish
-                      ? 'Read-only overview'
-                      : 'Visão geral · só leitura'}
-                  </span>
-                ) : null}
+                <span className="hidden text-xs font-medium text-muted-foreground sm:inline">
+                  {isEnglish ? 'Unified finances' : 'Finanças num só lugar'}
+                </span>
               </div>
               <div className="flex shrink-0 items-center gap-2">
                 <span className="hidden text-xs font-medium text-muted-foreground md:inline">
                   {isEnglish ? 'Make every move count' : 'Cada movimento conta'}
                 </span>
-                {user && activeContext !== 'general' ? (
+                {user ? (
                   <Button
                     asChild
                     size="sm"
@@ -199,9 +176,7 @@ export default async function DashboardLayout({
         </div>
       </div>
 
-      {user && activeContext !== 'general' ? (
-        <QuickAdd locale={locale} />
-      ) : null}
+      {user ? <QuickAdd locale={locale} /> : null}
       <div className="lg:hidden">
         <DashboardNavigation locale={locale} />
       </div>
